@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta name=¡±viewport¡± content=¡±width=device-width,height=screen.height,initial-scale=1¡å />
+<style>
+body
+{
+background-color:black;
+color:white;
+font-size:20px;
+text-align:center;
+}
+pre
+{
+max-height:600px;
+border:3px solid white;
+overflow:scroll;
+}
+</style>
+</head>
+
+<body>
+<h1>Fibonacci</h1>
+<pre>
+
+<script>
+var n=prompt("Type in Data Range");
+var i;
+var fib=new Array();
+fib[0]=0,fib[1]=1;
+for(i=2;i<=n;i++)
+{
+fib[i]=fib[i-1]+fib[i-2];
+document.writeln(i,' : ',fib[i]);
+}
+if(n<1)
+{
+document.write("Nothing Inputted!\nPlease refresh to run again!");
+}
+</script>
+
+</pre>
+</body>
+</html>

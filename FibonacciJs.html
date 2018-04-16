@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>	
+<head>
+<link rel="stylesheet"type="text/css" href="css/article.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<link href="css/styles/atom-one-dark.css" rel="stylesheet">
+<script src="js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body background="picture/articleBG1.jpg">
+<title>Fibonacci的JavaScript实现方法</title>
+<div class="header">
+<h1>Fibonacci</h1>
+</div>
+<body>
+<div class="article">
+<h1>斐波那契数列的JavaScript实现方法</h1>
+
+<p>其实JavaScript有一个好处，就是通常不用担心数据类型问题，数据超大了会自动转换为科学计数法表示。</p><br />
+<p>不多说了，直接上代码：</p><br />
+
+	<div class="code">
+	<pre><code class="javascript">
+var n=prompt("Type in Data Range");
+var i;
+var fib=new Array();
+fib[0]=0,fib[1]=1;
+for(i=2;i&lt=n;i++)
+{
+fib[i]=fib[i-1]+fib[i-2];
+document.writeln(i,' : ',fib[i]);
+}
+	</code></pre>
+	</div>
+	<a href="fibonacci.html"><strong>Packed Page[html]</strong></a><br /><br />
+	<strong><italics>last edit on 2018/2/3</italics></strong><br />
+	<div class="RT"><a class="RT" href="javascript:history.go(-1)">Return</a></div>
+
+</div>
+</body>

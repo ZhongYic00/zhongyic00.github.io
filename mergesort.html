@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>	
+<head>
+<link rel="stylesheet"type="text/css" href="css/article.css" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<link href="css/styles/atom-one-dark.css" rel="stylesheet">
+<script src="js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body background="picture/articleBG1.jpg">
+<div class="header">
+<h1>Merge Sort</h1>
+</div>
+<div class="article">
+	<title>Mergesort的C++实现方法</title>
+	<p>I don't have enough time today, so complete this next time.</p><br />
+	<div class="code">
+	<pre><code class="C++">
+#include &ltcstdio&gt
+#include &ltiostream&gt
+#include &ltalgorithm&gt
+#include &ltcstring&gt
+#define N 500000
+#define M 1000000
+using namespace std;
+int sort[N],unsort[N],in,arr[N];
+void mergesort(int st,int l)
+{
+    int a=l/2;
+    if(a&gt1)mergesort(st,a);
+    if(l-a&gt1)mergesort(st+a,l-a);
+    int i=st,j=st+a,k=0;
+    while(i&lt=st+a-1&amp&ampj&lt=st+l-1)
+    {
+        if(unsort[i]&ltunsort[j]){arr[k]=unsort[i];i++;}
+        else {arr[k]=unsort[j];j++;}
+        k++;
+    }
+    while(i&lt=st+a-1){arr[k]=unsort[i];i++,k++;}
+    while(j&lt=st+l-1){arr[k]=unsort[j];j++,k++;}
+    for(i=0;i&ltl;i++)unsort[st+i]=arr[i];
+}
+int main()
+{
+    int n;cin&gt&gtn;
+    for(int i=1;i&lt=n;i++)
+        {scanf("%d",&ampin);unsort[++unsort[0]]=in;}
+    mergesort(1,unsort[0]);
+    for(int i=1;i&lt=unsort[0];i++)
+        cout&lt&ltunsort[i]&lt&lt' ';
+    printf("\n");
+    return 0;
+}
+
+	</code></pre>
+	</div>
+	<br />
+	<strong><italics>last edit on 2018/2/3***<italics><strong><br />
+	<a href="javascript:history.go(-1)">Return</a>
+</div>
+</body>
