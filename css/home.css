@@ -2,33 +2,35 @@ body {
     margin:0;
 	padding:0;
     font-family: Tahoma, Verdana, Arial, sans-serif;
-text-align:center;
-background-repeat:no-repeat;
-background-position:center;
-background-size:cover;
-background-attachment:fixed;
+    text-align:center;
+    background-repeat:no-repeat;
+    background-position:center;
+    background-size:cover;
+    background-attachment:fixed;
 }
-h1 {
-font-size:6em;
+h1,h2,h3,h4,h5,h6 {
 font-family:Arial,Droid Sans,"Microsoft YaHei";
-color:#F8FE88;
-text-shadow:0.1em 0.05em 0.1em #888666;
-line-height:1em;
+margin: 0;
+line-height:auto
 }
+h1 {font-size:6em;}
+h2 {font-size:5em;}
+h3 {font-size:3em;}
+h4 {font-size:2em;}
+ul {min-height:2em;}
 div.head {
 position:static;
 top:0;
-padding-bottom:0.01em;
+padding-bottom:0.1em;
 padding-top:1em;
-height:16.1em;
-background-color:rgba(160,120,150,0.6);
-box-shadow:0 0.3em 0.5em 0.2em rgb(145,120,145);
+background-color:rgba(82, 55, 126, 0.7);
+box-shadow:0 0.3em 0.5em 0.2em rgb(87, 66, 104);
 }
 div.bottom {
 position:fixed;
 bottom:0;left:0;
 width:100%;
-margin0;
+margin:0;
 text-align:center;
 background:black;
 color:white;
@@ -36,6 +38,7 @@ font-size:0.6em;
 }
 ul.menu,ul.footer,li.footer {
 list-style:none;
+color:grey;
 margin:0;padding:0;
 }
 li.footer {
@@ -48,13 +51,13 @@ border-width:2px;
 }
 .option {
 width:25%;
-background-color:rgba(135,130,135,0.8);
+background-color:rgba(87, 66, 104, 0.8);
 height:auto;
 text-align:center;
 float:left;
 }
 .option:hover {
-background-color:#BBBABA;
+background-color:rgb(124, 135, 165);
 }
 a {
 color:white;
@@ -62,3 +65,13 @@ font-size:2em;
 font-family:Arial;
 text-decoration:none;
 }
+.grey {color:#AAAAAA;}
+.grey:hover {color:white;}
+.small {font-size:1.6em;}
+.block {display:block;}
+.bluishgreen {
+    color:rgb(97, 216, 166);
+    text-shadow:0.1em 0.05em 0.1em #668870;
+}
+.white {color:#FFFFFF;text-shadow:0.05em 0.05em 0.1em #EAEAEA;}
+.no-shadow {text-shadow:none;}
