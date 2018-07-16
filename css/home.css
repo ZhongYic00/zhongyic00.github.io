@@ -16,8 +16,11 @@ line-height:auto
 h1 {font-size:6em;}
 h2 {font-size:5em;}
 h3 {font-size:3em;}
-h4 {font-size:2em;}
+h4 {font-size:1.6em;}
 ul {min-height:2em;}
+div {
+    margin:auto;
+}
 div.head {
 position:static;
 top:0;
@@ -27,7 +30,7 @@ background-color:rgba(82, 55, 126, 0.7);
 box-shadow:0 0.3em 0.5em 0.2em rgb(87, 66, 104);
 }
 div.bottom {
-position:fixed;
+position: relative;
 bottom:0;left:0;
 width:100%;
 margin:0;
@@ -61,12 +64,13 @@ background-color:rgb(124, 135, 165);
 }
 a {
 color:white;
-font-size:2em;
 font-family:Arial;
 text-decoration:none;
 }
-.grey {color:#AAAAAA;}
-.grey:hover {color:white;}
+a.big{font-size:2em;}
+.grey-hover {color:rgb(205, 205, 205);}
+.grey-hover:hover {color:rgb(255, 255, 255);}
+.bg-grey {background-color: rgba(159, 124, 216, 0.3);}
 .small {font-size:1.6em;}
 .block {display:block;}
 .bluishgreen {
@@ -75,3 +79,14 @@ text-decoration:none;
 }
 .white {color:#FFFFFF;text-shadow:0.05em 0.05em 0.1em #EAEAEA;}
 .no-shadow {text-shadow:none;}
+.shadow-in {box-shadow:0 0 0.2em 0.1em rgb(159, 124, 216);}
+.radius {border-radius: 0.1em/0.1em;}
+.center{text-align: center;}
+.left{text-align: left;}
+.no-padding {padding:0;}
+.padding-thin {padding:2%;}
+.padding-wide {padding:5%;}
+.no-margin {margin:0;}
+.margin-thin {margin:2%;}
+.margin-wide {margin:5%;}
+.horizontal{float: left;}

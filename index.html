@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>ZhongYic00-Home</title>
+<title>ZhYic-Home</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta charset="UTF-8">
 <meta http-equiv="x-dns-prefetch-control" content="on">
@@ -20,25 +20,52 @@
 body {background-image:url(picture/index.jpg);}
 </style>
 </head>
-<body class="bg-grey" gtools_scp_screen_capture_injected="true">
+<body gtools_scp_screen_capture_injected="true">
 <!--[if lt IE 8]>
 <div class="browsehappy" role="dialog"> 当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/" target="_blank">升级你的浏览器</a>。
 </div> <![endif]-->
 <div class="head">
-    <div style="margin-top:1em;"><h1 class="bluishgreen">ZhongYic</h1></div>
+    <div style="margin-top:1em;"><h1 class="bluishgreen">ZhYic</h1></div>
     <div style="margin-left:30%"><h4 class="white">A vegetable chicken</h4></div>
     <ul class="menu">
-        <li class="option"><a class="block" href="pagelist.html">Pagelist</a></li>
-        <li class="option"><a class="block" href="tags.html">Tags</a></li>
-        <li class="option"><a class="block" href="gallery.html">Gallery</a></li>
-        <li class="option"><a class="block" href="friend.html">Friends</a></li>
+        <li class="option"><a class="block big" href="archive.html">Archive</a></li>
+        <li class="option"><a class="block big" href="tags.html">Tags</a></li>
+        <li class="option"><a class="block big" href="gallery.html">Gallery</a></li>
+        <li class="option"><a class="block big" href="friend.html">Friends</a></li>
     </ul>
 </div>
+<div class="white" style="width:60%;margin-top:3%;background-color: rgba(90, 82, 126, 0.3);padding-left:5%;padding-right:5%;padding-bottom:1%;padding-top:1%;box-shadow:0 0 0.3em 1px rgb(95, 87, 131);">
+    <a class="block bg-grey shadow-float radius" href="Spfa.html">
+        <div class="center grey-hover no-shadow padding-thin margin-thin">
+            <h4>Spfa最短路模板</h4>
+            <p class="center no-margin">Spfa的写法 bfs正规spfa (code) 区别 bfs是将目前搜到的点所连的边加入搜索队列，堆优化后每次取最短的边进行松弛，dfs需要一回走到底，每条分支都进行更新，相当于剪枝搜索。因此dfs对于每个点需要多次更新，时间复杂度远大于bfs。策略：dfs是剪枝暴搜，如果顺当前道路走到当前点p，费用大于到p的最短路，那么以此更新p后所有点必然大于原最短路径。bfs是纯正dp思想，贝尔曼福德的改进版。适用：dfs适用于边少......</p>
+        </div>
+    </a>
+    <a class="block bg-grey shadow-float radius" href="TreelikeArry.html">
+        <div class="center grey-hover no-shadow padding-thin margin-thin">
+            <h4>树状数组模板</h4>
+            <p class="center no-margin">(code)解释如下： 来源：百度图片搜索(img)树状数组每个节点所存的值都有不同含义，具体意义则为C[i]=A[i]+A[i-1]+....+A[i-2^k+1]（k表示i的二进制末尾连续0的个数）; 举个粟子......</p>
+        </div>
+    </a>
+    <a class="block bg-grey shadow-float radius" href="Sanjiaoxing-Tijie.html">
+        <div class="center grey-hover no-shadow padding-thin margin-thin">
+            <h4>洛谷OJP1222三角形题解</h4>
+            <p class="center no-margin">这道题已经有一位巨神发了汤普森积分的解法了，而且我的解法并不是最优的，仅供参考。 首先，计算几何中一种非常常用的算法是扫描线算法（这是一篇比较全面的博文），但是与矩形中的扫描线算法不同，三角形因为边不是都与坐标轴平行，故不能采用矩形面积计算中常用的差分+线段树维护 回顾一下扫描线算法的思想(quote)......于是我们可以想到，仿照类似于矩形面</p>
+        </div>
+    </a>
+    <a class="block bg-grey shadow-float radius" href="Tourist's_budget.html">
+        <div class="center grey-hover no-shadow padding-thin margin-thin">
+            <h4>洛谷OJP1016旅行家的预算题解</h4>
+            <p class="center no-margin">看了一下各位大佬的题解，感觉代码有些长，这里介绍一下~~简短的~~简陋的方法（不涉及单调队列，完全按照题面意思的贪心+模拟）<strong>思路</strong> 首先将起点和终点与道路上的加油站视为等价节点，按照距离起点的距离（即为通过顺序）排序。然后对于每一个节点我们可以进行以下贪心策略 - 如果可以直达下一个油价更低的节点就加满够到此节点的油，开过去（中间的不用管） - 如果不能直达就加满油（因为中转节点的油更贵要少加），开到能到范围内油价最低的加油站[1] 对于[1]的证明： 因为从A到B的路</p>
+        </div>
+    </a>
+</div>
+<div style="margin-left: auto!important;margin-right: auto!important"><span class="white">page: </span><a href="index.html">1</a><p>...</p></div>
 <div class="bottom">
     <ul class=footer">
-    <li class="footer"><a class="small grey" href="about.html">About</a></li>
-    <li class="footer"><a class="small grey" href="support.html">Support</a></li>
-    <li class="footer" style="border-style:none none none none"><a class="small grey" href="mailto:zhong200234@outlook.com">Contact</a></li>
+    <li class="footer"><a class="small grey-hover" href="about.html">About</a></li>
+    <li class="footer"><a class="small grey-hover" href="support.html">Support</a></li>
+    <li class="footer" style="border-style:none none none none"><a class="small grey-hover" href="mailto:zhong200234@outlook.com">Contact</a></li>
     </ul>
 <br />
 <p>© 2018 ZhongYic00</p>

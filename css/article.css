@@ -10,20 +10,23 @@ overflow:auto;
 }
 h1
 {
-font-size:32px;
+font-size:1.2em;
+font-family:Arial, Helvetica, sans-serif, Microsoft Yahei;
 }
 div.header
 {
-height:10%;
+height:auto;
 width:100%;
 position:fixed;
 top:0;
-line-height:8%;
+padding-top:0.5%;
+padding-bottom:0.3%;
+line-height:6%;
 text-align:center;
 font-size:32px;
-background-color:#E1FFFB;
-color:#2036C8;
-box-shadow:0px 3px 5px #668666;
+background-color:rgb(44, 53, 136);
+color:rgb(137, 247, 255);
+box-shadow:0px 3px 5px #3a4f8a;
 z-index:1;
 }
 div.navbar
@@ -46,7 +49,7 @@ width:1px;
 }
 div.article
 {
-margin-top:8%;
+margin-top:3%;
 margin-left:auto;
 margin-right:auto;
 margin-bottom:10%;
@@ -55,39 +58,37 @@ padding-top:0;
 box-shadow:0px 2px 6px 0px #668866;
 background-color:rgba(255,255,255,0.9);
 opacity:1;
-width:auto;
+width:60%;
 font-size:16px;
 color:black;
 text-align:left;
 display:inline-block; 
 *display:inline; 
 *zoom:1;
-over-flow:hidden;
+overflow:hidden;
 }
-a,a:link,a:visited,a:focus{
+a{color:white;text-decoration:none;}
+a:visited,a:focus{
             text-decoration:none;color:#FF00FC;
         }
         .center-to-head{
-            position:relative;
+            width: 100%;
+            height: 1px;color:#FF00FC;
+            position: relative;
         }
         .center-to-head::after{
-            content:'';
-            display:block;
-            /*开始时候下划线的宽度为100%*/
-            width:100%;
-            height:1px;
-            position:absolute;
-            bottom:-10px;
-            background:#FF00FC;
-            transition:all 0.3s ease-in-out;
-            /*通过transform的缩放scale来让初始时x轴为0*/
-            transform: scale3d(0,1,1);
-            /*将坐标原点移到元素的中间，以原点为中心进行缩放*/
-            transform-origin:50% 0;
+            content: "";
+            width: 0;
+            height: 5%;
+            background: #FF00FC;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transition: all 0.3s;
         }
         .center-to-head:hover::after{
-            /*鼠标经过时还原到正常比例*/
-            transform:scale3d(1,1,1);
+            left: 0%;
+            width: 100%;
         }
 list
 {
@@ -109,10 +110,10 @@ over-flow:hidden;
 }
 div.code
 {
-box-shadow:5px 5px 3px 3px #668666;
+box-shadow:3px 3px 3px 2px #668666;
+border-radius:3px;
 padding:0;
-opacity:2;
-color:#10800F;
+opacity:1;
 text-align:left;
 }
 .RT
@@ -141,9 +142,10 @@ opacity:0.8;
 code
 {
 text-align:left;
-font-size:18px;
+line-height:1.5em;
+font-size:1em;
 font-family: serif;
-font-weight:500;
+font-weight:450;
 }
 pre
 {
@@ -169,3 +171,50 @@ video
 width:100%;
 height:100%;
 }
+.in-line{box-shadow:2px 2px 3px rgba(40, 51, 39, 0.8);border-radius:3px;}
+del{text-decoration: line-through;}div.bottom {
+position:relative;
+bottom:0;left:0;
+width:100%;
+margin:0;
+text-align:center;
+background:black;
+color:white;
+font-size:0.6em;
+}
+ul.menu,ul.footer,li.footer {
+list-style:none;
+color:grey;
+margin:0;padding:0;
+}
+li.footer {
+display:inline;
+width:min-content;
+padding-right:0.5em;
+border-style: none solid none none;
+border-color:white;
+border-width:2px;
+}
+div.bottom {
+position:relative;
+ bottom:0;left:0;
+width:100%;
+margin:0;
+    text-align:center;
+    background:black;
+    color:white;
+    font-size:0.6em;
+    }
+    ul.menu,ul.footer,li.footer {
+    list-style:none;
+    color:grey;
+    margin:0;padding:0;
+    }
+    li.footer {
+    display:inline;
+    width:min-content;
+    padding-right:0.5em;
+    border-style: none solid none none;
+    border-color:white;
+    border-width:2px;
+    }
