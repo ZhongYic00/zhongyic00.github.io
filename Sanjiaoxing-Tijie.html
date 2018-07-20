@@ -15,6 +15,7 @@
 <title>题解-三角形-ZhYic</title>
 </head>
 <body background="picture/articleBG1.jpg">
+    <a name="TP"></a>
     <div class="header" ><h1><a class="center-to-head" style="color: white;" href="https://www.luogu.org/problemnew/show/P1222">P1222三角形</a></h1></div><br>
     <div class="article" style="width:60%;">
     <hr>
@@ -127,7 +128,7 @@
     </code></pre></div>
     <p>先不看代码，如果你照着这个思路打过不了样例，就是因为梯形的上底和下底要分别计算。
     我们还是看样例</p>
-    <img src="/picture/22941.png" alt="">
+    <img src="picture/22941.png" alt="">
     <p>当扫描线到\(AB\)时，没有上底，下底为\(AB\)；接着扫描，到\(R-D-S-E\)时，上底为\(RS\)，此时应先计算下方梯形面积，再更新应计算的三角形\(\triangle DEF\)，更新上底为\(RS+SE\)。即用上一条扫描线上的全部覆盖值作为下底，该扫描线上的覆盖值作为上底，最后再向三角形表中加入新的三角形。</p>
     <hr>
     <p>好了，如果你真这么打了，也许只有60分</p>
@@ -161,6 +162,8 @@
     本蒟蒻的代码比较丑，然后跑得也很慢，反正也就提供一下大概思路了。 </p>
     <h3><em>end</em></h3>
     </div>
+    <a id="TOP" href="#TP">^</a>
+    <script src="js/test.js"></script>
     <div class="bottom">
         <ul class="footer">
         <li class="footer"><a class="small grey" href="about.html">About</a></li>

@@ -16,11 +16,8 @@
 <script src="//cdn.bootcss.com/html5shiv/r29/html5.min.js"></script>
 <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
-<style>
-body {background-image:url(picture/index.jpg);}
-</style>
 </head>
-<body gtools_scp_screen_capture_injected="true">
+<body id="base" gtools_scp_screen_capture_injected="true">
 <!--[if lt IE 8]>
 <div class="browsehappy" role="dialog"> 当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/" target="_blank">升级你的浏览器</a>。
 </div> <![endif]-->
@@ -28,10 +25,10 @@ body {background-image:url(picture/index.jpg);}
     <div style="margin-top:1em;"><h1 class="bluishgreen">ZhYic</h1></div>
     <div style="margin-left:30%"><h4 class="white">A vegetable chicken</h4></div>
     <ul class="menu">
-        <li class="option"><a class="block big" href="archive.html">Archive</a></li>
-        <li class="option"><a class="block big" href="tags.html">Tags</a></li>
-        <li class="option"><a class="block big" href="gallery.html">Gallery</a></li>
-        <li class="option"><a class="block big" href="friend.html">Friends</a></li>
+        <li class="option"><div class="selfcontain"><a class="block big circle-spread" href="javascript:jump(500,this,'archive.html')">Archive</a></div></li>
+        <li class="option"><div class="selfcontain"><a class="block big circle-spread" href="javascript:jump(500,this,'tags.html')">Tags</a></div></li>
+        <li class="option"><div class="selfcontain"><a class="block big circle-spread" href="javascript:jump(500,this,'gallery.html')">Gallery</a></div></li>
+        <li class="option"><div class="selfcontain"><a class="block big circle-spread" href="javascript:jump(500,this,'Friends.html')">Friends</a></div></li>
     </ul>
 </div>
 <div class="white" style="width:60%;margin-top:3%;background-color: rgba(90, 82, 126, 0.3);padding-left:5%;padding-right:5%;padding-bottom:1%;padding-top:1%;box-shadow:0 0 0.3em 1px rgb(95, 87, 131);">
@@ -62,7 +59,7 @@ body {background-image:url(picture/index.jpg);}
 </div>
 <div style="margin-left: auto!important;margin-right: auto!important"><span class="white">page: </span><a href="index.html">1</a><p>...</p></div>
 <div class="bottom">
-    <ul class=footer">
+    <ul class="footer">
     <li class="footer"><a class="small grey-hover" href="about.html">About</a></li>
     <li class="footer"><a class="small grey-hover" href="support.html">Support</a></li>
     <li class="footer" style="border-style:none none none none"><a class="small grey-hover" href="mailto:zhong200234@outlook.com">Contact</a></li>
@@ -70,5 +67,8 @@ body {background-image:url(picture/index.jpg);}
 <br />
 <p>© 2018 ZhongYic00</p>
 </div>
+<script src="js/test.js"></script>
+<script>background_load([216,191,216],[106,90,205]);</script>
 </body>
+
 </html>
