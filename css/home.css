@@ -8,6 +8,7 @@ body {
     background-size:cover;
     background-attachment:fixed;
 }
+*,*::after,*::before{box-sizing: border-box;}
 h1,h2,h3,h4,h5,h6 {
 font-family:Arial,Droid Sans,"Microsoft YaHei";
 margin: 0;
@@ -40,10 +41,13 @@ color:white;
 font-size:0.6em;
 }
 ul.menu,ul.footer,li.footer {
+height: 2.3em;
 list-style:none;
 color:grey;
 margin:0;padding:0;
+overflow: hidden;
 }
+ul{position: relative;width:100%;}
 li.footer {
 display:inline;
 width:min-content;
@@ -53,14 +57,12 @@ border-color:white;
 border-width:2px;
 }
 .option {
-width:25%;
-background-color:rgba(87, 66, 104, 0.8);
-height:auto;
-text-align:center;
-float:left;
-}
-.option:hover {
-background-color:rgb(124, 135, 165);
+    height:2.3em;
+    text-align:center;
+    float:left;
+    width:25%;
+    overflow: hidden;
+    display: block;
 }
 a {
 color:white;
@@ -90,3 +92,56 @@ a.big{font-size:2em;}
 .margin-thin {margin:2%;}
 .margin-wide {margin:5%;}
 .horizontal{float: left;}
+.circle-spread::before{
+    position: absolute;
+    z-index: -1;
+    content:"";
+    background-color:rgba(87, 66, 104, 0.8);
+    background-size: 100%;
+    opacity: 0.5;
+    height:100%;
+    width:25%;
+    display: block;
+    overflow: hidden;
+}
+.circle-spread:active::before{
+    content:"";
+    background: -moz-radial-gradient(center,circle,rgba(160,160,160,0.2),rgba(200,200,200,0.8),transparent 10%);
+    background: -webkit-radial-gradient(center,circle,rgba(160,160,160,0.2),rgba(200,200,200,0.8),transparent 10%);
+    background-position: 50%;
+    transform: scale(10,10);
+    opacity: 1;
+    -webkit-transition: opacity,transform 0.1s,0.3s ease-out;
+    transition:opacity,transform 0.1s,0.3s ease-out;
+    overflow: hidden;
+}
+div.selfcontain{height: auto;width: auto;overflow: hidden;}
+
+.ripple {
+    position: relative;
+    overflow: hidden;
+    transform: translate3d(0, 0, 0);
+  
+    &:after {
+      content: "";
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      background-image: radial-gradient(circle, #000 10%, transparent 10.01%);
+      background-repeat: no-repeat;
+      background-position: 50%;
+      transform: scale(10,10);
+      opacity: 0;
+      transition: transform .5s, opacity 1s;
+    }
+  
+    &:active:after {
+      transform: scale(0,0);
+      opacity: .2;
+      transition: 0s;
+    }
+  }

@@ -218,3 +218,23 @@ margin:0;
     border-color:white;
     border-width:2px;
     }
+    #TOP{
+        background: #777;
+        position: fixed;
+        z-index: 999;
+        display: block;
+        bottom:8%;
+        right: 8%;
+        color:#eee;
+        font-size: 40px;
+        text-align: center;
+        text-decoration: none;
+        bottom:65px;
+        right:20px;
+        overflow: hidden;
+        width:46px;
+        height:46px;
+        border:none;
+        opacity:.8;
+        &:active{opacity:.7;}
+    }
