@@ -150,11 +150,11 @@
                 Velocity(document.getElementsByClassName("header"),{opacity:1},{duration:"fast"});
             }
             if(a>b&&flag==false){
-                flag=true,Velocity(document.getElementsByClassName("header"),{opacity:0},{display:"none"},{duration:"slow",easing:"ease-out"});
+                flag=true,Velocity(document.getElementsByClassName("header"),{opacity:0},{display:"none"},{duration:"fast",easing:"ease-out"});
                 console.log("turn");
             }
             if(a<=b&&flag==true){
-                flag=false,Velocity(document.getElementsByClassName("header"),{opacity:0.8},{display:"block"},{duration:"slow",easing:"ease-out"});
+                flag=false,Velocity(document.getElementsByClassName("header"),{opacity:0.8},{display:"block"},{duration:"fast",easing:"ease-out"});
             }
             setTimeout(function(){},100);
         }
