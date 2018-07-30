@@ -1,5 +1,6 @@
 div.header{
     position: fixed;
+    z-index: 990;
     top:0;left:0;right:0;
     width:100%;
     height:auto;
@@ -8,6 +9,26 @@ div.header{
     opacity: 1;
     background-color: white;
 }
-div h1{
+div.header h1{
     line-height: 3%;
+}
+#to-top{
+    background: white;
+    display: none;
+    opacity: 0;
+    position: fixed;
+    z-index: 998;
+    border-radius: 5%;
+    bottom:5%;right:3%;
+    box-shadow: 0 0 1px 1px rgba(0,0,0,0.2);
+}
+#to-top-symbol{
+    z-index: 999;
+    opacity: 1;
+}
+main{
+    position: absolute;
+    top:6%;
+    padding-left:2%;padding-right:2%;
+    word-break:break-all;
 }

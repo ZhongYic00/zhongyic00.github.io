@@ -15,9 +15,14 @@
     <script>
         Velocity(document.getElementsByTagName("body"),{backgroundColor:'#E8E8E8'},{duration:1200,easing:"ease-in-out"});
     </script>
-    <div class="header">
+    <div class="header" style="top:-3%;">
+        <a on></a>
         <h1>Hello</h1>
     </div>
+    <div class="header-space"><br></div>
+    <script>Velocity(document.getElementsByClassName("header"),{top:0},{duration:"slow",easing:"spring"});</script>
+    <main>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
+    我我我我我我我我我我我我我我我我我我我我我我我我我我我<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
@@ -133,30 +138,8 @@
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
-    <script>
-        //var tp=document.getElementById("PAGETOP");
-        var cnt=0,flag=false;
-        window.onscroll=function navibar(){
-            var a=document.documentElement.scrollTop||document.body.scrollTop,
-                b=(document.documentElement.clientHeight||document.body.clientHeight)/2;
-            console.log(cnt++,a,b,flag);
-            if(a>100&&flag==false){
-                Velocity(document.getElementsByClassName("header"),{opacity:0.8},{duration:"fast"});
-            }
-            else if(a<=100){
-                Velocity(document.getElementsByClassName("header"),{opacity:1},{duration:"fast"});
-            }
-            if(a>b&&flag==false){
-                flag=true,Velocity(document.getElementsByClassName("header"),{opacity:0},{display:"none"},{duration:"fast",easing:"ease-out"});
-                console.log("turn");
-            }
-            if(a<=b&&flag==true){
-                flag=false,Velocity(document.getElementsByClassName("header"),{opacity:0.8},{display:"block"},{duration:"fast",easing:"ease-out"});
-            }
-            setTimeout(function(){},100);
-        }
-    </script>
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br></main>
+    
+    <div id="to-top"><canvas id="to-top-symbol"></canvas></div>
+    <script src="animation.js"></script>
 </body>
