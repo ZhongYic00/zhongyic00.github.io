@@ -84,6 +84,6 @@ MenuDiv.onclick = function show_menu() {
     if(!Menuflag)Velocity(MenuButton,{rotateZ:"45deg"},{duration:"normal",easing:"ease-out"}),
         Velocity(Menulist,{opacity:1},{duration:"fast",begin:function(){Velocity(Header,{height:"20%"},{duration:"fast"});HeaderContext.appendChild(Menubox);}});
     else Velocity(MenuButton,{rotateZ:"0deg"},{duration:"fast",easing:"ease-out"}),
-        Velocity(Menulist,{opacity:0},{duration:"fast",begin:function(){Velocity(Header,{height:"6%"},{duration:"fast"});},complete:function(){HeaderContext.removeChild(Menubox)}});
+        Velocity(Menulist,"reverse",{begin:function(){Velocity(Header,"reverse");},complete:function(){HeaderContext.removeChild(Menubox);}});
     Menuflag=!Menuflag;
 }
