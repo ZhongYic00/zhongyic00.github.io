@@ -1,10 +1,13 @@
 var cnt = 0, flag = false, hideflag = false, Topflag = false, Menuflag=false;
-var a, b;
+var a, b, lineH, fontH;
 var TopCanvas = document.getElementById("to-top-symbol"), TopDiv = document.getElementById("to-top"), TopButton = new Array(),MenuDiv=document.getElementById("menu-button"),MenuCanvas=document.getElementById("menu-symbol"),MenuButton=new Array(),Header=document.getElementById("header"),HeaderContext=document.getElementById("header-context");
 TopButton[0] = TopCanvas, TopButton[1] = TopDiv,MenuButton[0]=MenuCanvas,MenuButton[1]=MenuDiv;
+var Menubox=document.createElement("div"),Menulist=document.createElement("ul"),Menucontext=new Array();
+Menubox.className="menu",Menulist.className="menu",Menucontext[0]="home",Menucontext[1]="archive",Menucontext[2]="friends";
 function Draw_button() {
     a = document.documentElement.scrollTop || document.body.scrollTop,
-    b = (document.documentElement.clientHeight || document.body.clientHeight) / 2;
+    b = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
+    lineH = b/16, fontH=b/18;
     HeaderContext.style.paddingRight=HeaderContext.style.paddingLeft=b/8+"px",TopCanvas.height = TopCanvas.width = b / 10,MenuCanvas.height=MenuCanvas.width=b/8;
     var TPcxt = TopCanvas.getContext("2d");
     TPcxt.beginPath();
@@ -33,6 +36,17 @@ function Draw_button() {
         cxt.lineWidth=2;
         cxt.stroke();
     }
+    while(Menulist.hasChildNodes())Menulist.removeChild(Menulist.firstChild);
+    Velocity(Menubox,{translateY:-b*0.12},{duration:0});
+    for(var i=0;i<3;i++){
+        var Menuli=document.createElement("li"),Menuop=document.createElement("a");
+        Menuop.style.fontSize=fontH+"px",Menuop.style.lineHeight=lineH+"px";
+        var tmp=document.createTextNode(Menucontext[i]);
+        Menuop.href=Menucontext[i]+".html",Menuop.appendChild(tmp);
+        Menuli.appendChild(Menuop),Menulist.appendChild(Menuli);
+    }
+    console.log(lineH);
+    Menubox.appendChild(Menulist);
 }
 window.onload = Draw_button(), window.onresize = Draw_button();
 //  TopButton.addEventListener("onclick",return_to_top);
@@ -44,15 +58,6 @@ else Velocity(TopButton, { opacity: 0 }, { display: "none" }, { duration: "fast"
 if (a > b) {
     hideflag = true, Velocity(Header, { opacity: 0 }, { display: "none" }, { duration: "slow" });
 }
-var Menubox=document.createElement("div"),Menulist=document.createElement("ul"),Menucontext=new Array();
-Menubox.className="menu",Menulist.className="menu",Menucontext[0]="home",Menucontext[1]="archive",Menucontext[2]="friends";
-for(var i=0;i<3;i++){
-    var Menuli=document.createElement("li"),Menuop=document.createElement("a");
-    var tmp=document.createTextNode(Menucontext[i]);
-    Menuop.href=Menucontext[i]+".html",Menuop.appendChild(tmp);
-    Menuli.appendChild(Menuop),Menulist.appendChild(Menuli);
-}
-Menubox.appendChild(Menulist);
 window.onscroll = function navibar() {
     var a = document.documentElement.scrollTop || document.body.scrollTop,
         b = (document.documentElement.clientHeight || document.body.clientHeight) / 2;
@@ -82,8 +87,8 @@ TopDiv.onclick = function return_to_top() {
 }
 MenuDiv.onclick = function show_menu() {
     if(!Menuflag)Velocity(MenuButton,{rotateZ:"45deg"},{duration:"normal",easing:"ease-out"}),
-        Velocity(Menulist,{opacity:1},{duration:"fast",begin:function(){Velocity(Header,{height:"20%"},{duration:"fast"});HeaderContext.appendChild(Menubox);}});
-    else Velocity(MenuButton,{rotateZ:"0deg"},{duration:"fast",easing:"ease-out"}),
-        Velocity(Menulist,"reverse",{begin:function(){Velocity(Header,"reverse");},complete:function(){HeaderContext.removeChild(Menubox);}});
+        Velocity(Header,{height:(0.15*b+3.5*lineH)+"px"},{duration:"fast",begin:function(){HeaderContext.appendChild(Menubox);Velocity(Menubox,{opacity:1,translateY:0},{duration:"slow",easing:"ease-out"});}});
+    else Velocity(MenuButton,"reverse",{duration:"fast",easing:"ease-out"}),
+        Velocity(Header,{height:0.12*b},{duration:"normal",begin:function(){Velocity(Menubox,{opacity:0,translateY:-b*0.12},{duration:"fast"});},complete:function(){HeaderContext.removeChild(Menubox);}});
     Menuflag=!Menuflag;
 }
