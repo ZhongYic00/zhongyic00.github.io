@@ -9,18 +9,19 @@
 <meta http-equiv="Cache-Control" content="no-transform"/>
 <meta http-equiv="Cache-Control" content="no-siteapp"/>
 <link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
-<script src="velocity.js"></script>
+<script src="js/velocity.js"></script>
 </head>
 <body>
     <script>
         Velocity(document.getElementsByTagName("body"),{backgroundColor:'#E8E8E8'},{duration:1200,easing:"ease-in-out"});
     </script>
-    <div class="header" style="top:-3%;">
-        <a on></a>
-        <h1>Hello</h1>
+    <div id="header" style="top:-3%;">
+        <div id="menu-button">
+            <canvas id="menu-symbol"></canvas>
+        </div>
+        <div id="header-context"><h1>Hello</h1></div>
     </div>
-    <div class="header-space"><br></div>
-    <script>Velocity(document.getElementsByClassName("header"),{top:0},{duration:"slow",easing:"spring"});</script>
+    <script>Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});</script>
     <main>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     我我我我我我我我我我我我我我我我我我我我我我我我我我我<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
@@ -141,5 +142,5 @@
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br></main>
     
     <div id="to-top"><canvas id="to-top-symbol"></canvas></div>
-    <script src="animation.js"></script>
+    <script src="js/animation.js"></script>
 </body>

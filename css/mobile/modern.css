@@ -1,15 +1,15 @@
-div.header{
+#header{
     position: fixed;
     z-index: 990;
     top:0;left:0;right:0;
-    width:100%;
     height:auto;
     box-shadow: 0 1px 2px 1px rgba(0,0,0,0.2);
+    transform:none;
     text-align: center;
     opacity: 1;
     background-color: white;
 }
-div.header h1{
+#header h1{
     line-height: 3%;
 }
 #to-top{
@@ -25,6 +25,22 @@ div.header h1{
 #to-top-symbol{
     z-index: 999;
     opacity: 1;
+}
+#menu-button{
+    float: left;
+    width:auto;height:auto;
+}
+a{
+    text-decoration-line: none;
+}
+div.menu{
+    overflow: hidden;
+    display: block;
+}
+ul.menu{
+    list-style:none;overflow:hidden;
+    text-align:center;padding:0;
+    column-count:1;
 }
 main{
     position: absolute;
