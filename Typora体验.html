@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<head>
+<title>ZhYic-Typora</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta http-equiv="x-dns-prefetch-control" content="on">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-transform"/>
+<meta http-equiv="Cache-Control" content="no-siteapp"/>
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
+<script src="js/velocity.js"></script>
+<link rel="stylesheet" href="css/styles/atom-one-dark.css">
+<script src="js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+</head>
+<body>
+    <script>
+        Velocity(document.getElementsByTagName("body"),{backgroundColor:'#E8E8E8'},{duration:1200,easing:"ease-in-out"});
+    </script>
+    <div id="header" style="top:-3%;">
+        <div id="menu-button">
+            <canvas id="menu-symbol"></canvas>
+        </div>
+        <div id="theme-button">
+            <canvas id="theme-symbol"></canvas>
+        </div>
+        <div id="header-context"><div><h1>Typora</h1><!--here--></div></div>
+    </div>
+    <script>
+        Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
+    </script>
+    <main><h1>Typora体验</h1>
+<blockquote><p>Typora是一款写作与预览合一的markdown编辑器，支持<strong>实时预览</strong>你的markdown文档</p>
+</blockquote>
+<p>支持markdown表格，并有快捷操作框，可以自动扩展表格行</p>
+<table>
+<thead>
+<tr><th>日期</th><th>项目</th></tr></thead>
+<tbody><tr><td>2018-07-23</td><td>模拟赛</td></tr><tr><td>2018-07-24</td><td><del>做题</del> 水</td></tr></tbody>
+</table>
+<p>支持内嵌HTML</p>
+<p><em style="color:red">红</em></p>
+<p>代码风格</p>
+<pre><code class='language-cpp' lang='cpp'>#include &lt;bits/stdc++.h&gt;
+#define N 50020
+#define Side(x) for(int i=p[x];i;i=nt[i])
+using namespace std;
+int a[N],c[N],tot,id,top,e[N&lt;&lt;1],nt[N&lt;&lt;1],p[N],SCC,dfn[N],low[N],bel[N],stk[N],f[N],x[N&lt;&lt;1],y[N&lt;&lt;1];
+bool vis[N];
+inline void add(int x,int y)
+{
+    e[++tot]=y,nt[tot]=p[x],p[x]=tot;
+}
+void Tarjan(int x)
+{
+    low[x]=dfn[x]=++id,vis[x]=true,stk[++top]=x;
+    Side(x)
+        if(!dfn[e[i]])
+            Tarjan(e[i]),low[x]=min(low[x],low[e[i]]);
+        else if(vis[e[i]])low[x]=min(low[x],dfn[e[i]]);
+    if(low[x]==dfn[x])
+    {
+        bel[x]=++SCC,vis[x]=false,c[SCC]+=a[x];
+        while(stk[top]!=x)
+            bel[stk[top]]=SCC,c[SCC]+=a[stk[top]],vis[stk[top--]]=false;
+        top--;
+    }
+}
+int dfs(int x)
+{
+    if(f[x])return f[x];
+    f[x]=c[x];
+    int mx=0;
+    Side(x)
+        mx=max(mx,dfs(e[i]));
+    return f[x]+=mx;
+}
+int main()
+{
+    int n,m,xi,yi,ans=0;
+    scanf(&quot;%d%d&quot;,&amp;n,&amp;m);
+    for(int i=1;i&lt;=n;i++)
+        scanf(&quot;%d&quot;,&amp;a[i]);
+    for(int i=1;i&lt;=m;i++)
+        scanf(&quot;%d%d&quot;,&amp;x[i],&amp;y[i]),add(x[i],y[i]);
+    for(int i=1;i&lt;=n;i++)
+        if(!bel[i])Tarjan(i);
+    memset(p,0,sizeof(p));
+    for(int s=1;s&lt;=m;s++)
+        if(bel[x[s]]!=bel[y[s]])add(bel[x[s]],bel[y[s]]);
+    for(int i=1;i&lt;=SCC;i++)
+        if(!f[i])ans=max(ans,dfs(i));
+    cout&lt;&lt;ans;
+}
+
+</code></pre>
+<p>可以不带样式导出/带样式导出为HTML等格式</p></main>
+    <div id="to-top"><canvas id="to-top-symbol"></canvas></div>
+    <script>
+            Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+    <script src="js/animation.js"></script>
+</body>lementById("headQ
