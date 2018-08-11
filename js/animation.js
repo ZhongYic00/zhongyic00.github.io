@@ -1,15 +1,43 @@
-var cnt = 0, flag = false, hideflag = false, Topflag = false, Menuflag=false;
-var a, b, lineH, fontH;
-var TopCanvas = document.getElementById("to-top-symbol"), TopDiv = document.getElementById("to-top"), TopButton = new Array(),MenuDiv=document.getElementById("menu-button"),MenuCanvas=document.getElementById("menu-symbol"),MenuButton=new Array(),Header=document.getElementById("header"),HeaderContext=document.getElementById("header-context");
+var cnt = 0, flag = false, hideflag = false, Topflag = false, Menuflag=false, nightshift = false;
+var a, b, last, lineH, fontH;
+var TopCanvas = document.getElementById("to-top-symbol"), TopDiv = document.getElementById("to-top"), TopButton = new Array(),MenuDiv=document.getElementById("menu-button"),MenuCanvas=document.getElementById("menu-symbol"),MenuButton=new Array(),Header=document.getElementById("header"),HeaderContext=document.getElementById("header-context"),ThemeDiv=document.getElementById("theme-button"),ThemeCanvas=document.getElementById("theme-symbol");
 TopButton[0] = TopCanvas, TopButton[1] = TopDiv,MenuButton[0]=MenuCanvas,MenuButton[1]=MenuDiv;
-var Menubox=document.createElement("div"),Menulist=document.createElement("ul"),Menucontext=new Array();
+var Menubox=document.createElement("div"),Menulist=document.createElement("ul"),Menucontext=new Array(),TPcxt,TMcxt;
 Menubox.className="menu",Menulist.className="menu",Menucontext[0]="home",Menucontext[1]="archive",Menucontext[2]="friends";
+function Draw_moon(h,w,obj){
+    obj.beginPath();
+    obj.arc(w*0.3,h*0.5,h*0.4,0,2*Math.PI,false);
+    //obj.arcTo(w*0.9,h*0.5,w*0.3,h*0.1,h*0.5);
+    obj.closePath();
+    obj.lineWidth=1;
+    obj.strokeStyle= 'rgb(80,80,100)';
+    obj.stroke();
+    obj.fillStyle='rgb(100,100,150)';
+    obj.fill();
+    obj.beginPath();
+    obj.arc(w*-0.2,h*0.5,h*0.6,0,2*Math.PI,false);
+    obj.closePath();
+    obj.fillStyle='rgb(255,255,255)';
+    obj.fill();
+}
+function Draw_sun(h,w,obj){
+    obj.beginPath();
+    obj.arc(w*0.5,h*0.5,h*0.4,0,2*Math.PI,false);
+    //obj.arcTo(w*0.9,h*0.5,w*0.3,h*0.1,h*0.5);
+    obj.closePath();
+    obj.lineWidth=1;
+    obj.strokeStyle= 'rgb(255,255,0)';
+    obj.stroke();
+    obj.fillStyle='rgb(255,255,0)';
+    obj.fill();
+}
 function Draw_button() {
+    Velocity(document.getElementsByTagName("main"),{opacity:1},{duration:"slow",easing:"ease-out",delay:200});
     a = document.documentElement.scrollTop || document.body.scrollTop,
     b = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
     lineH = b/16, fontH=b/18;
-    HeaderContext.style.paddingRight=HeaderContext.style.paddingLeft=b/8+"px",TopCanvas.height = TopCanvas.width = b / 10,MenuCanvas.height=MenuCanvas.width=b/8;
-    var TPcxt = TopCanvas.getContext("2d");
+    HeaderContext.style.marginRight=HeaderContext.style.marginLeft=b/8+"px",TopCanvas.height = TopCanvas.width = b / 10, ThemeCanvas.height = ThemeCanvas.width = MenuCanvas.height = MenuCanvas.width = b*0.12;
+    TPcxt = TopCanvas.getContext("2d"), TMcxt = ThemeCanvas.getContext("2d");
     TPcxt.beginPath();
     TPcxt.moveTo(b / 10 * 0.5, b / 10 * 0.2);
     TPcxt.lineTo(b / 10 * 0.8, b / 10 * 0.5);
@@ -24,6 +52,7 @@ function Draw_button() {
     TPcxt.stroke();
     TPcxt.fillStyle = 'rgb(200,200,230)';
     TPcxt.fill();
+    Draw_sun(ThemeCanvas.height,ThemeCanvas.width,TMcxt);
     var cxt=MenuCanvas.getContext("2d");
     for(var i=1;i<=3;i++)
     {
@@ -45,8 +74,16 @@ function Draw_button() {
         Menuop.href=Menucontext[i]+".html",Menuop.appendChild(tmp);
         Menuli.appendChild(Menuop),Menulist.appendChild(Menuli);
     }
-    console.log(lineH);
+    //console.log(lineH);
     Menubox.appendChild(Menulist);
+}
+function sleep(d){
+    var cur=new Date().getTime(), now = cur;
+    while(now - cur <= d)now=new Date().getTime();
+    //console.log(cur);
+}
+function clear(obj,cxt){
+    cxt.clearRect(0,0,obj.width,obj.height);
 }
 window.onload = Draw_button(), window.onresize = Draw_button();
 //  TopButton.addEventListener("onclick",return_to_top);
@@ -59,9 +96,10 @@ if (a > b) {
     hideflag = true, Velocity(Header, { opacity: 0 }, { display: "none" }, { duration: "slow" });
 }
 window.onscroll = function navibar() {
-    var a = document.documentElement.scrollTop || document.body.scrollTop,
-        b = (document.documentElement.clientHeight || document.body.clientHeight) / 2;
-    //console.log(cnt++, a, b, flag, hideflag);
+    last=a,
+    a = document.documentElement.scrollTop || document.body.scrollTop,
+    b = (document.documentElement.clientHeight || document.body.clientHeight) / 2;
+    //console.log(cnt++, a, b, last, flag, hideflag);
     if (a > 100 && flag == false) {
         flag = true, Velocity(Header, { opacity: 0.8 }, { duration: "fast" });
         Velocity(TopButton, { opacity: 1 }, { display: "block" }, { duration: "fast", easing: "ease-in" });
@@ -72,23 +110,28 @@ window.onscroll = function navibar() {
         Velocity(TopButton, { opacity: 0 }, { display: "none" }, { duration: "fast", easing: "ease-in" });
         //console.log("hidebutton");
     }
-    if (a > b && hideflag == false) {
+    if (a > b && last < a && hideflag == false) {
         hideflag = true, Velocity(Header, { opacity: 0 }, { display: "none" }, { duration: "slow" });
     }
-    if (a < b && hideflag == true) {
+    if ((a < b || last-a>b*0.4) && hideflag == true) {
         hideflag = false, Velocity(Header, { opacity: 0.8 }, { display: "block" }, { duration: "slow" });
     }
-    setTimeout(function () {}, 100);
 }
 TopDiv.onclick = function return_to_top() {
-    Velocity(document.body, "scroll", { duration: "slow", easing: "ease-in-out" });
+    Velocity(document.body, "scroll", { duration: "slow", easing: "ease-out" });
     //Velocity(TopButton,{display:"none"},{opacity:0},{duration:"fast"});
     //Topflag=true;
 }
 MenuDiv.onclick = function show_menu() {
-    if(!Menuflag)Velocity(MenuButton,{rotateZ:"45deg"},{duration:"normal",easing:"ease-out"}),
-        Velocity(Header,{height:(0.15*b+3.5*lineH)+"px"},{duration:"fast",begin:function(){HeaderContext.appendChild(Menubox);Velocity(Menubox,{opacity:1,translateY:0},{duration:"slow",easing:"ease-out"});}});
+    if(!Menuflag)Velocity(MenuButton,{rotateZ:"45deg"},{duration:"fast",easing:"ease-out"}),
+        Velocity(Header,{height:(0.15*b+4*lineH)+"px"},{duration:"fast",begin:function(){HeaderContext.appendChild(Menubox);Velocity(Menubox,{opacity:1,translateY:0},{duration:"fast",easing:"ease-out"});}});
     else Velocity(MenuButton,"reverse",{duration:"fast",easing:"ease-out"}),
-        Velocity(Header,{height:0.12*b},{duration:"normal",begin:function(){Velocity(Menubox,{opacity:0,translateY:-b*0.12},{duration:"fast"});},complete:function(){HeaderContext.removeChild(Menubox);}});
+        Velocity(Header,{height:0.12*b},{duration:"fast",begin:function(){Velocity(Menubox,{opacity:0,translateY:-b*0.12},{duration:"fast"});},complete:function(){HeaderContext.removeChild(Menubox);}});
     Menuflag=!Menuflag;
+}
+ThemeDiv.onclick = function change(){
+    var Body=document.getElementsByTagName("body"),Main=document.getElementsByTagName("main");
+    if(!nightshift)clear(ThemeCanvas,TMcxt),Draw_moon(ThemeCanvas.height,ThemeCanvas.width,TMcxt),Velocity(Body,{ backgroundColor:'#555555'},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
+    else clear(ThemeCanvas,TMcxt),Draw_sun(ThemeCanvas.height,ThemeCanvas.width,TMcxt),Velocity(Body,"reverse"),Velocity(Main,"reverse");
+    nightshift=!nightshift;
 }

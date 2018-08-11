@@ -14,10 +14,14 @@
 <body>
     <script>
         Velocity(document.getElementsByTagName("body"),{backgroundColor:'#E8E8E8'},{duration:1200,easing:"ease-in-out"});
+        Velocity(document.getElementsByTagName("main"),{opacity:1});
     </script>
     <div id="header" style="top:-3%;">
         <div id="menu-button">
             <canvas id="menu-symbol"></canvas>
+        </div>
+        <div id="theme-button">
+            <canvas id="theme-symbol"></canvas>
         </div>
         <div id="header-context"><div><h1>Hello</h1></div></div>
     </div>

@@ -28,7 +28,12 @@
     opacity: 1;
 }
 #menu-button{
-    float: left;
+    float:left;
+    width:auto;height:auto;
+}
+#theme-button{
+    float:right;
+    overflow:hidden;
     width:auto;height:auto;
 }
 a{
@@ -46,7 +51,16 @@ ul.menu{
 }
 main{
     position: absolute;
+    opacity:0;
     top:6%;
-    padding-left:2%;padding-right:2%;
+    width:100%;
+    left:2%;right:2%;
     word-break:break-all;
+}
+body{
+    transform:none;width:100%;
+}
+img{
+    max-width:100%;
+    max-height:100%;
 }
