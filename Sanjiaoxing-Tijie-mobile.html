@@ -18,9 +18,6 @@
 </script>
 </head>
 <body>
-    <script>
-        Velocity(document.getElementsByTagName("body"),{backgroundColor:'#E8E8E8'},{duration:1200,easing:"ease-in-out"});
-    </script>
     <div id="header" style="top:-3%;">
         <div id="menu-button">
             <canvas id="menu-symbol"></canvas>
@@ -28,7 +25,7 @@
         <div id="theme-button">
             <canvas id="theme-symbol"></canvas>
         </div>
-        <div id="header-context"><div><h1>洛谷<a href="https://www.luogu.org/problemnew/show/P1222">P1222三角形</a>题解</h1></div></div>
+        <div id="header-context"><h1>洛谷<a href="https://www.luogu.org/problemnew/show/P1222">P1222三角形</a>题解</h1></div>
     </div>
     <script>
         Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
@@ -57,89 +54,89 @@
     对于扫描线我们需要进行离散化处理，即三角形底边、顶点处添加扫描线。</p><br>
     <del>AC</del>代码如下：
     <pre><code class="language-cpp">
-            #include &ltbits/stdc++.h&gt
-            #define eps 1e-4
-            #define N 2008
-            using namespace std;
-            int n,xi,yi,mi,lennow,lenbef,cnt,cnt1,cnt2=1,ori[N*2];
-            double ans;
-            struct node
-            {
-                int x,f;
-            }line[N*2];
-            struct tri
-            {
-                int x,y,m;
-                bool operator &lt (const tri&amp a) const
-                {
-                    return y&lta.y;
-                }
-            }shape[N];
-            vector&lttri&gtq;
-            int sum_up(int x)
-            {
-                int len=0;
-                for(int j=1,last=0,s=0;j&lt=cnt;j++)
-                {
-                if(s==0)last=j;
-                if(s+line[j].f==0)len+=(line[j].x-line[last].x);
-                s+=line[j].f;
-                }
-                return len;
-            }
-            void put(int x)
-            {
-                cnt=0;
-                for(vector&lttri&gt::iterator iter=q.begin();iter!=q.end();)
-                {
-                    tri now=*iter;
-                    int x1=now.x,x2=now.x+(now.m-(ori[x]-ori[now.y]));
-                    line[++cnt]={x1,1},line[++cnt]={x2,-1};
-                    if(x1==x2)iter=q.erase(iter);
-                    else iter++;
-                }
-            }
-            void add(int y)
-            {
-                while(shape[cnt2].y==y)
-                {
-                    q.push_back(shape[cnt2]);
-                    int x1=shape[cnt2].x,x2=shape[cnt2].x+shape[cnt2].m;
-                    line[++cnt]={x1,1},line[++cnt]={x2,-1};
-                    cnt2++;
-                }
-            }
-            bool cmp(node a,node b)
-            {
-                 return a.x&ltb.x;
-            }
-            int main()
-            {
-                scanf(&quot%d&quot,&ampn);
-                for(int i=1;i&lt=n;i++)
-                {
-                    scanf(&quot%d%d%d&quot,&ampxi,&ampyi,&ampmi);
-                    ori[++cnt]=yi,ori[++cnt]=yi+mi;//离散化纵坐标
-                    shape[i]={xi,yi,mi};
-                }
-                sort(ori+1,ori+1+cnt);//离散化
-                for(register int i=1;i&lt=cnt;i++)
-                    if(ori[i]!=ori[i-1])ori[++cnt1]=ori[i];
-                sort(shape+1,shape+1+n);
-                for(register int i=1;i&lt=n;i++)
-                    shape[i].y=lower_bound(ori+1,ori+1+cnt1,shape[i].y)-ori;
-                for(int i=1;i&lt=cnt1;i++)//枚举扫描线
-                {
-                    put(i);
-                    sort(line+1,line+1+cnt,cmp);
-                    lennow=sum_up(i);//上底
-                    ans+=(double)(lennow+lenbef)*(ori[i]-ori[i-1])/2.00;//面积
-                    add(i);
-                    sort(line+1,line+1+cnt,cmp);
-                    lenbef=sum_up(i);//下底
-                }
-                printf(&quot%.1lf\n&quot,ans);
-            }
+#include &ltbits/stdc++.h&gt
+#define eps 1e-4
+#define N 2008
+using namespace std;
+int n,xi,yi,mi,lennow,lenbef,cnt,cnt1,cnt2=1,ori[N*2];
+double ans;
+struct node
+{
+    int x,f;
+}line[N*2];
+struct tri
+{
+    int x,y,m;
+    bool operator &lt (const tri&amp a) const
+    {
+        return y&lta.y;
+    }
+}shape[N];
+vector&lttri&gtq;
+int sum_up(int x)
+{
+    int len=0;
+    for(int j=1,last=0,s=0;j&lt=cnt;j++)
+    {
+    if(s==0)last=j;
+    if(s+line[j].f==0)len+=(line[j].x-line[last].x);
+    s+=line[j].f;
+    }
+    return len;
+}
+void put(int x)
+{
+    cnt=0;
+    for(vector&lttri&gt::iterator iter=q.begin();iter!=q.end();)
+    {
+        tri now=*iter;
+        int x1=now.x,x2=now.x+(now.m-(ori[x]-ori[now.y]));
+        line[++cnt]={x1,1},line[++cnt]={x2,-1};
+        if(x1==x2)iter=q.erase(iter);
+        else iter++;
+    }
+}
+void add(int y)
+{
+    while(shape[cnt2].y==y)
+    {
+        q.push_back(shape[cnt2]);
+        int x1=shape[cnt2].x,x2=shape[cnt2].x+shape[cnt2].m;
+        line[++cnt]={x1,1},line[++cnt]={x2,-1};
+        cnt2++;
+    }
+}
+bool cmp(node a,node b)
+{
+     return a.x&ltb.x;
+}
+int main()
+{
+    scanf(&quot%d&quot,&ampn);
+    for(int i=1;i&lt=n;i++)
+    {
+        scanf(&quot%d%d%d&quot,&ampxi,&ampyi,&ampmi);
+        ori[++cnt]=yi,ori[++cnt]=yi+mi;//离散化纵坐标
+        shape[i]={xi,yi,mi};
+    }
+    sort(ori+1,ori+1+cnt);//离散化
+    for(register int i=1;i&lt=cnt;i++)
+        if(ori[i]!=ori[i-1])ori[++cnt1]=ori[i];
+    sort(shape+1,shape+1+n);
+    for(register int i=1;i&lt=n;i++)
+        shape[i].y=lower_bound(ori+1,ori+1+cnt1,shape[i].y)-ori;
+    for(int i=1;i&lt=cnt1;i++)//枚举扫描线
+    {
+        put(i);
+        sort(line+1,line+1+cnt,cmp);
+        lennow=sum_up(i);//上底
+        ans+=(double)(lennow+lenbef)*(ori[i]-ori[i-1])/2.00;//面积
+        add(i);
+        sort(line+1,line+1+cnt,cmp);
+        lenbef=sum_up(i);//下底
+    }
+    printf(&quot%.1lf\n&quot,ans);
+}
     </code></pre>
     <p>先不看代码，如果你照着这个思路打过不了样例，就是因为梯形的上底和下底要分别计算。
     我们还是看样例</p>
@@ -156,29 +153,28 @@
     <pre class="in-line"><code class="language-cpp in-line">bool cmp1(tri a,tri b){return a.y&lt;b.y;}</code></pre>
     以及</p>
     <pre><code class="hljs cpp"><span class="hljs-comment">
-        //读入
-            sort(shape+1,shape+1+n);//shape{int x,y,m}存储三角形，重载运算符按x排序
-         for(int i=1;i&lt=n;i++)
-         {
-         tri now={shape[i].x+shape[i].m,0,0};
-         int k1=lower_bound(shape+1,shape+1+n,shape[i])-shape,//在此三角形左端以右的
-         k2=lower_bound(shape+1,shape+1+n,now)-shape;//在此三角形右端以左的
-         for(int j=k1;j&lt=k2;j++)
-         {
-         int crossy=shape[i].y+(shape[i].x+shape[i].m-shape[j].x);//交点的纵坐标
-         if(shape[j].x&gtshape[i].x&amp&ampshape[j].x&ltshape[i].x+shape[i].m&amp&ampshape[j].y&ltcrossy&amp&ampshape[j].y+shape[j].m&gtcrossy)ori[++cnt]=crossy;
-         }
-         }
-         sort(shape+1,shape+1+n,cmp1);//按y排序
-         //ori（扫描线纵坐标数组）排序去重并离散化
-         //枚举扫描线，计算面积
+//读入
+sort(shape+1,shape+1+n);//shape{int x,y,m}存储三角形，重载运算符按x排序
+for(int i=1;i&lt=n;i++)
+{
+    tri now={shape[i].x+shape[i].m,0,0};
+    int k1=lower_bound(shape+1,shape+1+n,shape[i])-shape,//在此三角形左端以右的
+    k2=lower_bound(shape+1,shape+1+n,now)-shape;//在此三角形右端以左的
+    for(int j=k1;j&lt=k2;j++)
+    {
+        int crossy=shape[i].y+(shape[i].x+shape[i].m-shape[j].x);//交点的纵坐标
+        if(shape[j].x&gtshape[i].x&amp&ampshape[j].x&ltshape[i].x+shape[i].m&amp&ampshape[j].y&ltcrossy&amp&ampshape[j].y+shape[j].m&gtcrossy)ori[++cnt]=crossy;
+    }
+}
+sort(shape+1,shape+1+n,cmp1);//按y排序
+//ori（扫描线纵坐标数组）排序去重并离散化
+//枚举扫描线，计算面积
     </code></pre>
     <p>这样就可以AC了。<br>
     本蒟蒻的代码比较丑，然后跑得也很慢，反正也就提供一下大概思路了。 </p>
     <h3><em>end</em></h3>
     </main>
     <div id="to-top"><canvas id="to-top-symbol"></canvas></div>
-    <script>
-            Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
     <script src="js/animation.js"></script>
+    <script src="js/loading.js"></script>
 </body>
