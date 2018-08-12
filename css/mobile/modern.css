@@ -49,6 +49,7 @@ main{
     opacity:0;
     display:block;
     position: relative;
+    background-color:#FFFFF0;
     right:0;left:0;
     word-break:break-all;
 }
