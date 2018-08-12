@@ -93,7 +93,8 @@ function init() {
     TPcxt.stroke();
     TPcxt.fillStyle = 'rgb(200,200,230)';
     TPcxt.fill();
-    Draw_sun(ThemeCanvas.height,ThemeCanvas.width,TMcxt);
+    if(!nightshift)Draw_sun(ThemeCanvas.height,ThemeCanvas.width,TMcxt);
+    else Draw_moon(ThemeCanvas.height,ThemeCanvas.width,TMcxt);
     var cxt=MenuCanvas.getContext("2d");
     for(var i=1;i<=3;i++)
     {
@@ -117,17 +118,18 @@ function init() {
     }
     //console.log(lineH);
     Menubox.appendChild(Menulist);
-    Velocity(Body,{backgroundColor:'#E8E8E8'},{duration:1200,easing:"ease-in-out"});
+    if(!nightshift)Velocity(Body,{backgroundColor:'#E8E8E8'},{duration:1200,easing:"ease-in-out"});
+    else Velocity(Body,{backgroundColor:'#555555'},{duration:1200,easing:"ease-in-out"});
     if(b*2>c){
             platform="mobile";
-            Main.style.backgroundColor='#E8E8E8';
-            Velocity(Main,{opacity:1},{duration:"normal",delay:500,easing:"ease-out"});
+            if(!nightshift)Main.style.backgroundColor='#E8E8E8',Velocity(Main,{opacity:1},{duration:"normal",delay:500,easing:"ease-out"});
+            else Main.style.backgroundColor='#555555',Velocity(Main,{opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
     }
     else {
             platform="PC";
-            Velocity(Main,{backgroundColor:'#FFFFF0',opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
+            if(!nightshift)Velocity(Main,{backgroundColor:'#FFFFF0',opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
+            else Velocity(Main,{backgroundColor:'#666666',opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
     }
-    console.log(platform);
     set_theme(platform);
 }
 function sleep(d){
@@ -187,7 +189,13 @@ MenuDiv.onclick = function show_menu() {
     Menuflag=!Menuflag;
 }
 ThemeDiv.onclick = function change(){
-    if(!nightshift)clear(ThemeCanvas,TMcxt),Draw_moon(ThemeCanvas.height,ThemeCanvas.width,TMcxt),Velocity(Body,{ backgroundColor:'#555555'},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
-    else clear(ThemeCanvas,TMcxt),Draw_sun(ThemeCanvas.height,ThemeCanvas.width,TMcxt),Velocity(Body,"reverse"),Velocity(Main,"reverse");
+    if(!nightshift){
+        if(platform=="PC")clear(ThemeCanvas,TMcxt),Draw_moon(ThemeCanvas.height,ThemeCanvas.width,TMcxt),Velocity(Body,{ backgroundColor:'#555555'},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:'#666666',color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
+        else clear(ThemeCanvas,TMcxt),Draw_moon(ThemeCanvas.height,ThemeCanvas.width,TMcxt),Velocity(Body,{ backgroundColor:'#555555'},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:'#555555',color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
+    }
+    else {
+        if(platform=="PC")clear(ThemeCanvas,TMcxt),Draw_sun(ThemeCanvas.height,ThemeCanvas.width,TMcxt),Velocity(Body,{backgroundColor:'#E8E8E8'},{duration:"normal"}),Velocity(Main,{backgroundColor:"#FFFFF0",color:'#000000'},{duration:"normal",easing:"ease-in-out"});
+        else clear(ThemeCanvas,TMcxt),Draw_sun(ThemeCanvas.height,ThemeCanvas.width,TMcxt),Velocity(Body,{backgroundColor:'#E8E8E8'},{duration:"normal"}),Velocity(Main,{backgroundColor:'#E8E8E8',color:'#000000'},{duration:"normal",easing:"ease-in-out"});
+    }
     nightshift=!nightshift;
 }
