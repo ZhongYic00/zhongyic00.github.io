@@ -1,0 +1,138 @@
+<!DOCTYPE HTML>
+<head>
+<title>ZhYic-NOI2018归程solution</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta http-equiv="x-dns-prefetch-control" content="on">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-transform"/>
+<meta http-equiv="Cache-Control" content="no-siteapp"/>
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
+<script src="js/velocity.js"></script>
+<link rel="stylesheet" href="css/styles/atom-one-dark.css">
+<script src="js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$']]}
+});
+</script>
+</head>
+<body>
+    <script src="js/loading.js"></script>
+    <div id="header" style="top:-3%;">
+        <div id="menu-button">
+            <canvas id="menu-symbol"></canvas>
+        </div>
+        <div id="theme-button">
+            <canvas id="theme-symbol"></canvas>
+        </div>
+        <div id="header-context"><h1>NOI2018归程solution</h1><!--here--></div>
+    </div>
+    <script>
+        Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
+    </script>
+    <main>
+<h4><a href='https://loj.ac/problem/2721'>题目链接</a></h4>
+<h2>题目大意</h2>
+<p>有n条龙，分别具有$a_i,p_i,atk'_i$三个属性</p>
+<p>代表生命力，恢复能力，奖励的剑的攻击力。初始有m把剑，攻击力分别为$atk_i​$其中每杀死第$i​$条龙可以获得攻击力为$atk'_i​$的剑。攻击后龙会恢复生命力直至生命力不小于0，只有在龙的生命力恢复后为0时算作击杀。</p>
+<p>询问最少多少次攻击可以保证任意的龙都被杀死。</p>
+<p>每条龙对应使用的剑的攻击力$ATK_i$满足条件：</p>
+<p>$$ATK_i=\begin{equation}\left\{ \begin{array}{lr}atk_j~~(\exists atk_j\le=a_i ~\&\&~atk_{j+1}\ge a_i) \\atk_1 \end{array}\right.\end{equation}$$</p>
+<p>即要求一个同余方程组$$x \cdot ATK_i \equiv a_i\pmod{p_i}$$此处$atk_j$指第$i$条龙对应的剑的攻击力。</p>
+<h2>解题步骤</h2>
+<h4>概述</h4>
+<p>题目可以分为两个子问题来进行处理。</p>
+<ol start='' >
+<li>我们首先处理出每条龙对应使用的剑的攻击力。很好处理，不用手写平衡树，直接multiset维护即可。需要注意的细节是使用迭代器记得判断<code>iter != t.begin()</code>，不大于生命力故使用<code>upper_bound</code>，可能有多把相同攻击力的剑故使用<code>multiset</code>。</li>
+<li>处理了$ATK_i$后就需要求解同余方程组了。我们先使用扩展欧几里得将方程变形为扩展中国剩余定理的基本形式（形如$x \equiv a_i \pmod{p_i}$的方程组），然后使用扩展中国剩余定理求解即可得到答案。细节部分需要注意的是，求出的$x$ 为方程组的最小可行解，但不是此题答案。此题的答案还需要满足$x\cdot ATK_i\ge a_i$，对答案与$\max{\lceil {\frac{a_i}{ATK_i}}\rceil}$取较大值即可。</li>
+
+</ol>
+<h4>数学变形</h4>
+<p>对于$$x \cdot ATK_i \equiv a_i\pmod{p_i}^{[1]}$$我们如何将其化作ExCRT的一般形式？</p>
+<ol start='' >
+<li>显然上式$^{[1]}$可变形为$x\cdot ATK_i+k\cdot p_i=a_i$，我们可以对其使用扩展欧几里得求解出一组特解$x',y'$使得$x'\cdot ATK_i\frac{a_i}{(ATK_i,p_i)}+y'\cdot P_i\frac{a_i}{(ATK_i,p_i)}=(ATK_i,p_i)$。随后我们可以由此得到原方程的特解$sx=x'\times(ATK_i,p_i),sy=y'\times(ATK_i,p_i)$。然后由此可以构造通解$x=sx+k\cdot\frac{a_i}{(ATK_i,p_i)}$。这里注意了，此时得到的式子<del>变形</del>直接可以得到$x\equiv sx\pmod{\frac{a_i}{(ATK_i,p_i)}}^{[2]}$。</li>
+<li>得到的式$^{[2]}$即为ExCRT的基本形式，接下来就是基本的解ExCRT套路了，套用版子即可，但注意<code>long long*long long</code>爆<code>long long</code>的问题。ExCRT模板在<a href=''>此处</a>。</li>
+
+</ol>
+<h2>AC代码</h2>
+<pre><code class='language-c++' lang='c++'>#include &lt;bits/stdc++.h&gt;
+using namespace std;
+const int N=100020;
+long long exgcd(long long a,long long b,long long &amp;x,long long &amp;y)
+{
+    if(!b){x=1,y=0;return a;}
+    long long d=exgcd(b,a%b,y,x);
+    y-=a/b*x;return d;
+}
+long long mul(long long x,long long y,long long mod){ return (x*y-(long long)(x/(long double)mod*y+1e-3)*mod+mod)%mod; }
+long long ExCRT(long long *a,long long *m,long long n)
+{
+    long long A=a[1],M=m[1],x,y;
+    for(int i=2;i&lt;=n;i++)
+    {
+        long long d=exgcd(M,m[i],x,y);
+        if((a[i]-A)%d!=0)
+            return -1;
+        long long t=m[i]/d;
+        x=mul(x,(a[i]-A)/d,t);
+        A+=x*M,M*=t;
+        A=(A%M+M)%M;
+    }
+    return A;
+}
+long long lcm(long long x,long long y)
+{
+    return x/__gcd(x,y)*y;
+}
+int attack[N],g[N];
+long long life[N],recovery[N],aa[N],bb[N];
+int main()
+{
+    //freopen(&quot;dragon.in&quot;,&quot;r&quot;,stdin);
+    int T;
+    scanf(&quot;%d&quot;,&amp;T);
+    while(T--)
+    {
+        int n,m;bool NoSolution=false;
+        long long mi=0;
+        scanf(&quot;%d%d&quot;,&amp;n,&amp;m);
+        for(int i=1;i&lt;=n;i++)
+            scanf(&quot;%lld&quot;,&amp;life[i]);
+        for(int i=1;i&lt;=n;i++)
+            scanf(&quot;%lld&quot;,&amp;recovery[i]);
+        for(int i=1;i&lt;=n;i++)
+            scanf(&quot;%d&quot;,&amp;g[i]);
+        multiset&lt;long long&gt;t;
+        for(int i=1;i&lt;=m;i++)
+            scanf(&quot;%d&quot;,&amp;attack[i]),t.insert(attack[i]);
+        for(int i=1,now;i&lt;=n;i++)
+        {
+            multiset&lt;long long&gt;::iterator iter=t.upper_bound(life[i]);
+            if(iter!=t.begin()&amp;&amp;*(--iter)&lt;=life[i])now=*iter,t.erase(iter);
+            else now=*t.begin(),t.erase(t.begin());
+            mi=max(mi,life[i]/now+(life[i]%now!=0));
+            //cerr&lt;&lt;i&lt;&lt;&#39;:&#39;&lt;&lt;now&lt;&lt;endl;
+            long long xnow,ynow,d=exgcd(now,recovery[i],xnow,ynow);
+            if(life[i]%d!=0)NoSolution=true;
+            aa[i]=mul(xnow,life[i]/d,recovery[i]/d),bb[i]=recovery[i]/d;
+            t.insert(g[i]);
+        }
+        printf(&quot;%lld\n&quot;,NoSolution?-1:(max(ExCRT(aa,bb,n),mi)));
+    }
+}
+</code></pre>
+<p>&nbsp;</p>
+<h5>其他</h5>
+<p>膜一波教会我的ViXbob Orz</p>
+</main>
+    <div id="to-top"><canvas id="to-top-symbol"></canvas></div>
+    <script>
+            Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+    <script src="js/animation.js"></script>
+</body>
