@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<head>
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
+<script>
+    function copyToClipboard(url){
+        var clipboardData = window.clipboardData; //for IE
+        if (!clipboardData) {// for chrome
+            document.execCommand("copy("+url+")");
+        }
+        else clipboardData.setData('Text',url);
+    }
+</script>
+</head>
+<body>
+    <div class="footer-container">
+        <div class="footer-functions">
+            <ul>
+                <li><a href="mailto:zhong200234@outlook.com">Contact Author</a></li>
+                <li><a onclick="copyToClipboard(
+                    'https://zhongyic00.github.io'
+                )">Share</a></li>
+            </ul>
+        </div>
+
+    <div class="footer-copyright">© 2018 ZhongYic00</div>>
+    </div>
+</body>

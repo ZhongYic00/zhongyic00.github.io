@@ -5,7 +5,7 @@ var Body=Bodys[0],Main=Mains[0];
 var TopCanvas = document.getElementById("to-top-symbol"), TopDiv = document.getElementById("to-top"), TopButton = new Array(),MenuDiv=document.getElementById("menu-button"),MenuCanvas=document.getElementById("menu-symbol"),MenuButton=new Array(),Header=document.getElementById("header"),HeaderContext=document.getElementById("header-context"),ThemeDiv=document.getElementById("theme-button"),ThemeCanvas=document.getElementById("theme-symbol");
 TopButton[0] = TopCanvas, TopButton[1] = TopDiv,MenuButton[0]=MenuCanvas,MenuButton[1]=MenuDiv;
 var Menubox=document.createElement("div"),Menulist=document.createElement("ul"),Menucontext=new Array(),TPcxt,TMcxt;
-Menubox.className="menu",Menulist.className="menu",Menucontext[0]="home",Menucontext[1]="archive",Menucontext[2]="friends";
+Menubox.className="menu",Menulist.className="menu",Menucontext[0]="home",Menucontext[1]="archive",Menucontext[2]="Friends";
 function Draw_moon(h,w,obj){
     obj.beginPath();
     obj.arc(w*0.3,h*0.5,h*0.4,0,2*Math.PI,false);
