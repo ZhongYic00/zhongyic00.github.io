@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<head>
+<title>ZhYic-被神仙吊打及跟着大佬混记录01</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta http-equiv="x-dns-prefetch-control" content="on">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-transform"/>
+<meta http-equiv="Cache-Control" content="no-siteapp"/>
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
+<script src="js/velocity.js"></script>
+<link rel="stylesheet" href="css/styles/atom-one-dark.css">
+<script src="js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$']]}
+});
+</script>
+</head>
+<body>
+    <script src="js/loading.js"></script>
+    <div id="header" style="top:-3%;">
+        <div id="menu-button">
+            <canvas id="menu-symbol"></canvas>
+        </div>
+        <div id="theme-button">
+            <canvas id="theme-symbol"></canvas>
+        </div>
+        <div id="header-context"><h1>被神仙吊打及跟着大佬混记录01</h1><!--here--></div>
+    </div>
+    <script>
+        Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
+    </script>
+    <main>
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>被神仙吊打及跟着大佬混记录1</title></head>
+<body><h5>前言：</h5>
+<blockquote><p>跟着大佬上分不愁<br/></p>
+</blockquote>
+<blockquote><p>我等蒟蒻又被吊打啦！</p>
+</blockquote>
+<p><img src='picture/3immortals.jpeg' alt='OrzImmortals' referrerPolicy='no-referrer' /></p>
+<h2>ARC 058</h2>
+<h3>C - こだわり者いろはちゃん / Iroha&#39;s Obsession</h3>
+<h4>题意</h4>
+<p>给定数字N,K,和K个数字$D_i(0\le D_i \le 9)$，求一个最小数C$(C\ge N)$使得C在十进制下各个位上没有出现D中的数字。</p>
+<h4>方法</h4>
+<p>感觉不太难，应该是从高位向低位推，如果有冲突的数字就把前几位（十进制表示下）扩大使得这几位没有出现冲突的数字，后面的变成0即可。</p>
+<p>然而看神仙题解，</p>
+<blockquote><p>考虑直接暴力枚举, 如果符合条件直接输出就好了</p>
+</blockquote>
+<p>好吧够直接，暴力美学。。。</p>
+<p>正解本人<strong>不会打</strong>，溜了溜了。</p>
+<h3>D - いろはちゃんとマス目 / Iroha and a Grid</h3>
+<p>正经题目来了</p>
+<h4>题意</h4>
+<p>有一个$H\times W$的矩阵，只能向右/向下走，问不经过左下角$A\times B$的矩阵的路径数。</p>
+<h4>题解</h4>
+<h5>思路</h5>
+<p>首先<del>复习</del>预习一波组合数学计算无限制的路径数。假设我们有一个$n\times m$的矩阵，从$(1,1)$到$(n,m)$的路线总会走过$n+m-2$个点，而其中纵向移动的有$n-1$步，所以总路径数即为从$n+m-2$步中选$n-1$步的方案数，即$$\dbinom{n+m-2}{n-1}$$</p>
+<p>再来考虑有障碍的情况：</p>
+<p><img src='http://wx4.sinaimg.cn/mw690/0060lm7Tly1fvds0m53huj30bl09674k.jpg' alt='source:官方题解pdf' referrerPolicy='no-referrer' /></p>
+<p>如图，我们把图分成两部分来看，可通过部分以$H-A-1,H-A$为分界线分成了上下两个矩形。<del>显然</del>所有的路径都经过$(H-A-1,i),(H-A,i)~~(i\in [W-B,W])$，因此总方案数=经过分界线上每个点的方案数之和。</p>
+<p>根据乘法原理即为$$\sum_{i=B+1}^{i\le W}{\dbinom{(H-A)+i-2}{(H-A)-1}\cdot \dbinom{A+(W-B)-2}{A-1}}$$</p>
+<h5>代码</h5>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+#define mul(x,y) (((x)%P*(y))%P)
+#define pls(x,y) ((x)%P+(y))%P
+using namespace std;
+const long long P=1e9+7;
+const int N=100020;
+long long qpow(long long x,long long k)
+{
+    long long rt=1,base=x;
+    while(k)
+    {
+        if(k&amp;1)rt=mul(rt,base);
+        base=mul(base,base),k&gt;&gt;=1;
+    }return rt;
+}
+int fac[N*2];
+long long solve(int h,int w)
+{
+    long long rt=0;
+    rt=fac[h+w-2];
+    rt=mul(rt,mul(qpow(fac[h+w-2-h+1],P-2),qpow(fac[h-1],P-2)));
+    return rt;
+}
+int main()
+{
+    int H,W,A,B;
+    long long ans=0;
+    scanf(&quot;%d%d%d%d&quot;,&amp;H,&amp;W,&amp;A,&amp;B);
+    fac[0]=1;for(int i=1;i&lt;=H+W-2;i++)fac[i]=mul(fac[i-1],i);
+    for(int i=B+1;i&lt;=W;i++)
+        ans=pls(ans,mul(solve(H-A,i),solve(A,W-i+1)));
+    cout&lt;&lt;ans;
+    return 0;
+}
+</code></pre>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</body>
+</html></main>
+    <div id="to-top"><canvas id="to-top-symbol"></canvas></div>
+    <script>
+            Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+    <script src="js/animation.js"></script>
+</body>Id("header"),{toQ
