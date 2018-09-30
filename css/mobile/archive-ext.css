@@ -1,0 +1,7 @@
+@font-face{font-family: 'comfortaa';src:url('../../resources/Comfortaa-Light.ttf')}
+@font-face{font-family: 'respective';src:url('../../resources/Respective_Slanted.ttf')}
+.year{font-size:5em;}
+.month{font-size:4em;font-family:'respective','comfortaa','serif';font-variant-numeric: oldstyle-nums;}
+.day{font-size: 2em;}
+.year,.day{font-family:'comfortaa';font-weight: bold;}
+.year,.month,.day,.item{text-align: center;}

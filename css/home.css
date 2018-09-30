@@ -1,7 +1,8 @@
+@font-face{font-family: 'comfortaa';src:url('../resources/Comfortaa-Light.ttf')}
 body {
     margin:0;
 	padding:0;
-    font-family: Tahoma, Verdana, Arial, sans-serif;
+    font-family: 'comfortaa',Tahoma, Verdana, Arial, sans-serif;
     text-align:center;
     background-repeat:no-repeat;
     background-position:center;
@@ -10,7 +11,6 @@ body {
 }
 *,*::after,*::before{box-sizing: border-box;}
 h1,h2,h3,h4,h5,h6 {
-font-family:Arial,Droid Sans,"Microsoft YaHei";
 margin: 0;
 line-height:auto
 }
@@ -66,7 +66,7 @@ border-width:2px;
 }
 a {
 color:white;
-font-family:Arial;
+font-family: inherit;
 text-decoration:none;
 }
 a.big{font-size:2em;}
