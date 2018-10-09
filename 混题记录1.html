@@ -167,8 +167,8 @@ int main()
 <h2><a href='https://www.lydsy.com/JudgeOnline/problem.php?id=1010'>[HNOI2008]玩具装箱TOY</a></h2>
 <h3>题解</h3>
 <h4>不加优化</h4>
-<p>复杂度$O(n^2)$，动规方程为$$dp_i=min(dp_j+[sum_i-sum_j+(i-j-1)-L]^2)$$。</p>
-<p>我们可以先进行一下简化：令$C=L+1,g_i=sum_i+i$，原方程变形为$dp_i=min(dp_j+(g_i-g_j-C)^2)$。</p>
+<p>复杂度$O(n^2)$，动规方程为$$dp_i=min(dp_j+[sum_i-sum_j+(i-j-1)-L]^2)$$</p>
+<p>我们可以先进行一下简化：令$C=L+1,g_i=sum_i+i$，原方程变形为$dp_i=min(dp_j+(g_i-g_j-C)^2)$</p>
 <h4>斜率优化</h4>
 <p>复杂度可变为$O(n)$？<del>假的吧</del>。</p>
 <p>将简化的式子展开，变为$dp_i=g_i^2−2\cdot C\cdot g_i+min(2\cdot C\cdot g_j+g_j^2+C^2−2\cdot g_i\cdot g_j)$ 。</p>
