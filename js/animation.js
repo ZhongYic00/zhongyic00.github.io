@@ -69,6 +69,7 @@ function init() {
     b = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
     c = (document.documentElement.clientWidth || document.body.clientWidth),
     lineH = b/16, fontH=b/18;
+    if(HeaderContext==null)return;
     HeaderContext.style.marginRight=HeaderContext.style.marginLeft=b/8+"px",TopCanvas.height = TopCanvas.width = b / 10, ThemeCanvas.height = ThemeCanvas.width = MenuCanvas.height = MenuCanvas.width = b*0.12;
     var HeaderTitle;
     for(var i=0;i<HeaderContext.childNodes.length;i++){
@@ -169,7 +170,7 @@ window.onscroll = function navibar() {
         Velocity(TopButton, { opacity: 0 }, { display: "none" }, { duration: "fast", easing: "ease-in" });
         //console.log("hidebutton");
     }
-    if (a > b && last < a && hideflag == false) {
+    if (a > b && last < a && hideflag == false && !Menuflag) {
         hideflag = true, Velocity(Header, { opacity: 0 }, { display: "none" }, { duration: "slow" });
     }
     if ((a < b || last-a>b*0.4) && hideflag == true) {
