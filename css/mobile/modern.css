@@ -116,3 +116,4 @@ iframe.fullscreen{width: 100%;}
 .footer-copyright{text-align:center;color:white;font-size:0.3em;font-family: serif;display: block;}
 @font-face{font-family: 'comfortaa';src:url('../../resources/Comfortaa-Regular.ttf')}
 body,code,pre{font-family: 'comfortaa'}
+.code-hidden{background: antiquewhite;display:block;}

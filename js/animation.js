@@ -64,7 +64,7 @@ function set_theme(type) {
         //console.log(now2.getTime());
     }
 }
-function init() {
+function init(f) {
     a = document.documentElement.scrollTop || document.body.scrollTop,
     b = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
     c = (document.documentElement.clientWidth || document.body.clientWidth),
@@ -131,6 +131,18 @@ function init() {
             if(!nightshift)Velocity(Main,{backgroundColor:'#FFFFF0',opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
             else Velocity(Main,{backgroundColor:'#666666',opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
     }
+    if(f){
+        var codes=document.getElementsByTagName("pre");
+        var CodeSymbol=document.createElement('div'),CodeSymbolPic=document.createElement('img'),CodeSymbolText=document.createTextNode('click to view code');
+        CodeSymbolPic.src='picture/code-hidden-sym.svg',CodeSymbolPic.style.height=b/20+'px',CodeSymbol.classList.add('code-hidden'),CodeSymbol.appendChild(CodeSymbolPic),CodeSymbol.appendChild(CodeSymbolText);
+        for(var i=0;i<codes.length;i++){
+            if(codes[i].classList.contains('in-line'))continue;
+            codes[i].style.display="none",codes[i].id='code'+i+'main';
+            var now=CodeSymbol.cloneNode(1);
+            now.id='code'+i+'sym',now.onclick=showCode;
+            codes[i].parentNode.insertBefore(now,codes[i]);
+        }
+    }
     set_theme(platform);
 }
 function sleep(d){
@@ -141,9 +153,9 @@ function sleep(d){
 function clear(obj,cxt){
     cxt.clearRect(0,0,obj.width,obj.height);
 }
-window.onload = init();
+window.onload = init(1);
 window.onresize = function(){
-    init();
+    init(0);
     //console.log("+1");
 };
 //  TopButton.addEventListener("onclick",return_to_top);
@@ -199,4 +211,10 @@ ThemeDiv.onclick = function change(){
         else clear(ThemeCanvas,TMcxt),Draw_sun(ThemeCanvas.height,ThemeCanvas.width,TMcxt),Velocity(Body,{backgroundColor:'#E8E8E8'},{duration:"normal"}),Velocity(Main,{backgroundColor:'#E8E8E8',color:'#000000'},{duration:"normal",easing:"ease-in-out"});
     }
     nightshift=!nightshift;
+}
+function showCode()
+{
+    var str=new String(this.id).replace(/sym/g,'main');
+    console.log(str);
+    document.getElementById(str).style.display='block',this.style.display='none';
 }
