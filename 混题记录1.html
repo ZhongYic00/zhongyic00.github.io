@@ -36,7 +36,8 @@ MathJax.Hub.Config({
     <script>
         Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
     </script>
-    <main><h1>树剖类</h1>
+    <main>
+    <h1>树上问题类</h1>
 <h2><a href='https://www.luogu.org/problemnew/show/P2146'>[NOI2015]软件包管理器</a></h2>
 <h3>题解</h3>
 <p>对于树上每个点，0表示未安装，1表示已安装。
@@ -44,6 +45,90 @@ MathJax.Hub.Config({
 每次取已安装软件总数绝对值作为答案即可。</p>
 <h4>细节</h4>
 <p>注意大众写法应该将编号整体+1，避免对编号为0的点进行操作。</p>
+<h2><a href='https://www.luogu.org/problemnew/show/P1600'>[NOIP2016]天天爱跑步</a></h2>
+<h3>题解</h3>
+<p>树上差分变种。</p>
+<p>首先对于每个询问来更新一些点的答案是不现实的，所以可以对于每个观察者（点）计算哪些询问（路线）有贡献。我们发现对于每个j，能对它的答案产生贡献的点分两类：它的子树中的$s_i$和$LCA(s_i,t_i)$为其祖先且$s_i$不在j-LCA链上且$t_i$在j子树中的$s_i$。</p>
+<ul>
+<li>对于子树中的s，有$depth_j-depth_s=w_j$即$depth_s=depth_j+w_j$，我们需要知道每个点子树中有多少这样的点。形象说就是当前点下面的s。</li>
+<li>对于LCA为它祖先的s，令$l_i=depth_{s_i}-depth_{LCA_i}$有$depth_j-depth_{LCA_i}+l_i=w_j$，变形得到$depth_j-w_j=depth_{LCA_i}\cdot2-depth_{s_i}$。因此需要知道它子树中的t有多少对应的s满足此式。形象说就是路径顶点（LCA）在当前点上方的s。</li>
+
+</ul>
+<p>最开始我想到了dp，用<code>dp[i][j]</code>表示i的子树中depth为j的s的个数，但数组显然开不下，且难以维护。好像有一种线段树合并的维护方法，好麻烦。后来想到tarjan算法中记录dfn作为当前递归层的栈底，我们也可以对于dfs遍历树时每个节点记录进入时的<code>cnt[depth[j]+w[j]]</code>，然后遍历完子树后统计答案时用此时的cnt减去进入时的cnt，得到当前节点子树中的cnt，类似于一个差分。此方法是可行的，因为每个节点要用的cnt值只有一个，空间时间复杂度均很优秀。</p>
+<h4>细节</h4>
+<p>LCA处的处理我没有想得很透彻。首先当遍历来到某个询问的LCA后其子树中存在有s，t对上方的节点是不会产生贡献的（不会经过上方节点），所以要在LCA处减去对应的s对cnt（一些节点的答案）的贡献。其次LCA处可能会将同一跑步路线中的s按照上述两类都计算一遍贡献（形象说就是LCA在路径中没有过顶点又过了顶点），因此需要减去重复计算的贡献，此类情况下一定有<code>depth[si]==depth[LCA]+w[LCA]</code>。</p>
+<h4>代码</h4>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+#define Side(x) for(int i=p[x];i;i=nt[i])
+using namespace std;
+const int N=300020;
+int tot,e[N&lt;&lt;1],nt[N&lt;&lt;1],p[N];
+void _add(int x,int y){e[++tot]=y,nt[tot]=p[x],p[x]=tot;}
+inline void add(int x,int y){_add(x,y),_add(y,x);}
+int n,m,o[N],depth[N],f[N][22],cnt_base[N*2],cnt_base1[N*2],start[N],ans[N];
+int *cnt=&amp;cnt_base[N],*cnt1=&amp;cnt_base1[N];
+vector&lt;int&gt;player[N],lca[N],lca1[N];
+char ch;
+void read(int &amp;v)
+{
+	v=0,ch=getchar();
+	while(!isdigit(ch))ch=getchar();
+	while(isdigit(ch))v=(v&lt;&lt;1)+(v&lt;&lt;3)+ch-&#39;0&#39;,ch=getchar();
+}
+void dfs(int x)
+{
+    for(int i=1;i&lt;=20;i++)f[x][i]=f[f[x][i-1]][i-1];
+    Side(x)
+    {
+        if(!f[e[i]][0])
+        {
+            f[e[i]][0]=x,depth[e[i]]=depth[x]+1;
+            dfs(e[i]);
+        }
+    }
+}
+int LCA(int x,int y)
+{
+    if(depth[x]&gt;depth[y])swap(x,y);
+    int d=depth[y]-depth[x];
+    for(int i=0;d;i++,d&gt;&gt;=1)if(d&amp;1)y=f[y][i];
+    for(int i=20;i&gt;-1;i--)if(f[x][i]!=f[y][i])x=f[x][i],y=f[y][i];
+    return x==y?x:f[x][0];
+}
+void dfs2(int x)
+{
+    int tmp=cnt[o[x]+depth[x]],tmp1=cnt1[depth[x]-o[x]];
+    cnt[depth[x]]+=start[x];
+    for(vector&lt;int&gt;::iterator iter=player[x].begin();iter!=player[x].end();iter++)
+        cnt1[*iter]++;
+    Side(x)
+        if(e[i]!=f[x][0])dfs2(e[i]);
+    ans[x]+=cnt[o[x]+depth[x]]-tmp,ans[x]+=cnt1[depth[x]-o[x]]-tmp1;
+    for(auto iter=lca[x].begin();iter!=lca[x].end();iter++)cnt1[*iter]--;
+    for(auto iter=lca1[x].begin();iter!=lca1[x].end();iter++)cnt[*iter]--;
+}
+int main()
+{
+    scanf(&quot;%d%d&quot;,&amp;n,&amp;m);
+    for(int i=1,xi,yi;i&lt;n;i++)
+        scanf(&quot;%d%d&quot;,&amp;xi,&amp;yi),add(xi,yi);
+    f[1][0]=1,depth[1]=1,dfs(1);
+    for(int i=1;i&lt;=n;i++)read(o[i]);
+    for(int i=1,si,ti;i&lt;=m;i++)
+    {
+        read(si),read(ti);
+        int l=LCA(si,ti);
+        //cerr&lt;&lt;&quot;LCA:&quot;&lt;&lt;si&lt;&lt;&#39; &#39;&lt;&lt;ti&lt;&lt;&#39;:&#39;&lt;&lt;l&lt;&lt;endl;
+        start[si]++,ans[l]-=(bool)(depth[si]==depth[l]+o[l]);//,start[ti]++;
+        player[ti].push_back((depth[l]*2)-depth[si]),lca[l].push_back((depth[l]*2)-depth[si]),lca1[l].push_back(depth[si]);
+        //player[ti].push_back((depth[l]&lt;&lt;2)-depth[ti]);
+    }
+    dfs2(1);
+    for(int i=1;i&lt;=n;i++)printf(&quot;%d &quot;,ans[i]);
+}
+
+</code></pre>
+<p>&nbsp;</p>
 <h1>期望与概率DP类</h1>
 <h2><a href='https://www.luogu.org/problemnew/show/P1365'>WJMZBMR打osu! / Easy</a></h2>
 <h3>题解</h3>
@@ -82,7 +167,7 @@ MathJax.Hub.Config({
 <p>先离线询问（按右端点升序排列），离散化a数列，再建值域线段树，维护每个值出现的最右端位置$mx_i$的最小值，查询时找到最小的pos使得$mx_{pos}\le l$即得到所求最小自然数。</p>
 <p>该方法非常神仙，在此$Orz_{Orz_{Orz}}$一波WerKeyTom_FTD神仙。</p>
 <p>细节处，离散化时先排序，然后扫一遍，若$a_i+1=a_{i+1}$说明比$a_i$大1的自然数（可能取到为答案）在序列里，否则同时向去重后的数组加入$a_i+1$。</p>
-<p>离散化线段树代码较主席树方法短，常数小，进了第一面（lydsy）<img src='picture/img181006_1.png' alt='' referrerPolicy='no-referrer' /></p>
+<p>离散化线段树代码较主席树方法短，常数小，进了第一面（lydsy）<img src='/home/zyc/Desktop/深度截图_选择区域_20181006001851.png' alt='' referrerPolicy='no-referrer' /></p>
 <h4>代码</h4>
 <pre><code class='language-cpp' lang='cpp'>#include &lt;bits/stdc++.h&gt;
 using namespace std;
@@ -161,20 +246,20 @@ int main()
 <h2><a href='https://www.lydsy.com/JudgeOnline/problem.php?id=1010'>[HNOI2008]玩具装箱TOY</a></h2>
 <h3>题解</h3>
 <h4>不加优化</h4>
-<p>复杂度$O(n^2)$，动规方程为$$dp_i=min(dp_j+[sum_i-sum_j+(i-j-1)-L]^2)$$</p>
-<p>我们可以先进行一下简化：令$C=L+1,g_i=sum_i+i$，原方程变形为$dp_i=min(dp_j+(g_i-g_j-C)^2)$</p>
+<p>复杂度$O(n^2)$，动规方程为$$dp_i=min(dp_j+[sum_i-sum_j+(i-j-1)-L]^2)$$。</p>
+<p>我们可以先进行一下简化：令$C=L+1,g_i=sum_i+i$，原方程变形为$dp_i=min(dp_j+(g_i-g_j-C)^2)$。</p>
 <h4>斜率优化</h4>
 <p>复杂度可变为$O(n)$？<del>假的吧</del>。</p>
 <p>将简化的式子展开，变为$dp_i=g_i^2−2\cdot C\cdot g_i+min(2\cdot C\cdot g_j+g_j^2+C^2−2\cdot g_i\cdot g_j)$ 。</p>
 <p>然而没什么用。</p>
-<p>直接列不等式求解，假设i前面有j、k两状态，j&lt;k且j优于k，则有$dp_j+(g_i-g_j-C)^2 \le dp_k+(g_i-g_k-C)^2$<del>解得</del>抄答案得$$\frac{(dp_j+(g_j+C)^2)-(dp_k+(g_k+C)^2)}{2\cdot(g_j-g_k)}\ge g_i$$</p>
+<p>直接列不等式求解，假设i前面有j、k两状态，j&lt;k且j优于k，则有$dp_j+(g_i-g_j-C)^2 \le dp_k+(g_i-g_k-C)^2​$<del>解得</del>抄答案得$$\frac{(dp_j+(g_j+C)^2)-(dp_k+(g_k+C)^2)}{2\cdot(g_j-g_k)}\ge g_i​$$</p>
 <p>发现左边形似斜率式，我们就令Slope(x,y)=左式。</p>
 <p>然后我们可以证明两个单调队列维护要用到的结论：</p>
 <blockquote><p>1.若$Slope(q[l],q[l+1])\le f[i]$，则q[l]没有q[l+1]优，则删除q[l] </p>
 <p>2.若$Slope(q[r-1],q[r])\ge Slope(q[r],i)$,则删除q[r]</p>
 </blockquote>
 <p>这里证明一下两个策略：</p>
-<ol>
+<ol start='' >
 <li>策略1比较显然，对于当前更新到的i当然要选择最优的来进行更新，当前l不比l+1优（$slope(l,l+1)\le g_i$），而$g_i$是单增序列，则一定有$slope(l,l+1)\le g_{i+1}$，因此之后l也不比l+1优。</li>
 <li>对于策略2，我们整个用单调队列维护的更新过程是从队首取出较优的状态，需要保证队首l与次队首l+1的斜率小于等于次队首l+1与之后l+2的斜率，否则弹出队首l之后后面的斜率$slope(l+1,l+2)$比队首更小，则l不可能成为新的更优状态，也就一定是无用状态了。因此我们需要满足单调队列中两两间的斜率是单增的。</li>
 <li>另外对于队首后面的所有点，因为两两间斜率单增，所以l和l+2,l+3,l+4...的斜率也是单增的（不懂就画个图），即比后面的都优，因此整个队列中队首最优且<del>优秀程度</del>单增。</li>
@@ -200,6 +285,7 @@ int main()
         while(l&lt;r&amp;&amp;calc(q[l],q[l+1])&lt;=g[i])l++;
         int w=q[l];
         dp[i]=dp[w]+(long long)(g[i]-g[w]-L)*(g[i]-g[w]-L);
+        //cerr&lt;&lt;dp[i]&lt;&lt;endl;
         while(l&lt;r&amp;&amp;calc(q[r],i)&lt;calc(q[r-1],q[r]))r--;
         q[++r]=i;
     }
@@ -207,8 +293,9 @@ int main()
     return 0;
 }
 </code></pre>
-<p>&nbsp;</p></main>
-<iframe src="footer.html" id="footer" frameborder="0"></iframe>
+<p>&nbsp;</p>
+</main>
+	<iframe src="footer.html" id="footer" frameborder="0"></iframe>
     <div id="to-top"><canvas id="to-top-symbol"></canvas></div>
     <script>
             Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
