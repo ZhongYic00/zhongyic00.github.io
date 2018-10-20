@@ -167,7 +167,7 @@ int main()
 <p>先离线询问（按右端点升序排列），离散化a数列，再建值域线段树，维护每个值出现的最右端位置$mx_i$的最小值，查询时找到最小的pos使得$mx_{pos}\le l$即得到所求最小自然数。</p>
 <p>该方法非常神仙，在此$Orz_{Orz_{Orz}}$一波WerKeyTom_FTD神仙。</p>
 <p>细节处，离散化时先排序，然后扫一遍，若$a_i+1=a_{i+1}$说明比$a_i$大1的自然数（可能取到为答案）在序列里，否则同时向去重后的数组加入$a_i+1$。</p>
-<p>离散化线段树代码较主席树方法短，常数小，进了第一面（lydsy）<img src='/home/zyc/Desktop/深度截图_选择区域_20181006001851.png' alt='' referrerPolicy='no-referrer' /></p>
+<p>离散化线段树代码较主席树方法短，常数小，进了第一面（lydsy）<img src='/picture/img181006_1.png' alt='' referrerPolicy='no-referrer' /></p>
 <h4>代码</h4>
 <pre><code class='language-cpp' lang='cpp'>#include &lt;bits/stdc++.h&gt;
 using namespace std;
