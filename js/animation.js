@@ -30,7 +30,6 @@ function set_theme(type) {
         //var now1=new Date();
         //console.log(now1.getTime());
         Main.style.marginTop=0.16*b+"px";
-        Main.style.boxShadow="0 0 1px 1px rgba(0,0,0,0.2)";Main.style.borderRadius="3px";
         var mgW=Math.floor(0.2*c);
         Main.style.width=c-2*mgW-0.8*mgW+"px",Main.style.marginLeft=Main.style.marginRight=mgW+"px",Main.style.paddingLeft=Main.style.paddingRight=mgW*0.4+"px",Main.style.paddingTop=0.1*mgW+"px",Main.style.marginBottom=mgW*0.5+"px";
         var pres=document.getElementsByTagName("pre");
@@ -77,18 +76,20 @@ function init(f) {
     else Velocity(Body,{backgroundColor:LYELLOW2},{duration:1200,easing:"ease-in-out"});
     if(b*2>c){
             platform="mobile";
+            if(Main.classList.contains('pc'))Main.classList.remove('pc');
             if(!nightshift)Main.style.backgroundColor=LGREY,Velocity(Main,{opacity:1},{duration:"normal",delay:500,easing:"ease-out"});
             else Main.style.backgroundColor=LYELLOW2,Velocity(Main,{opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
     }
     else {
             platform="PC";
+            Main.classList.add('pc');
             if(!nightshift)Velocity(Main,{backgroundColor:'#FFFFF0',opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
             else Velocity(Main,{backgroundColor:LYELLOW1,opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
     }
     if(f){
         var codes=document.getElementsByTagName("pre");
-        var CodeSymbol=document.createElement('div'),CodeSymbolPic=document.createElement('img'),CodeSymbolText=document.createTextNode('click to view code');
-        CodeSymbolPic.src='picture/code-hidden-sym.svg',CodeSymbolPic.style.height=b/20+'px',CodeSymbol.classList.add('code-hidden'),CodeSymbol.appendChild(CodeSymbolPic),CodeSymbol.appendChild(CodeSymbolText);
+        var CodeSymbol=document.createElement('span'),CodeSymbolPic=document.createElement('img'),CodeSymbolText=document.createTextNode('click to view code');
+        var codes=document.getElementsByTagName("pre");var CodeSymbol=document.createElement('span'),CodeSymbolPic=document.createElement('img'),CodeSymbolText=document.createTextNode('click to view code');CodeSymbolPic.src='picture/code-hidden-sym.svg',CodeSymbol.classList.add('code-hidden'),CodeSymbol.appendChild(CodeSymbolPic),CodeSymbol.appendChild(CodeSymbolText);
         for(var i=0;i<codes.length;i++){
             if(codes[i].classList.contains('in-line'))continue;
             codes[i].style.display="none",codes[i].id='code'+i+'main';
