@@ -18,20 +18,23 @@
 </script>
 <script type="text/x-mathjax-config">
 MathJax.Hub.Config({
-  tex2jax: {inlineMath: [['$','$']]}
+  tex2jax: {inlineMath: [['$','$'],['\\(','\\)']]}
 });
 </script>
 </head>
 <body>
-    <div id="header" style="top:-3%;">
-        <div id="menu-button">
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
             <img id="menu-symbol"/>
-        </div>
-        <div id="theme-button">
+        </span>
+        <div id="header-context"><h1>NOI2018屠龙勇士题解</h1><!--here--></div>
+        <span id="theme-button">
             <img id="theme-symbol"/>
-        </div>
-        <div id="header-context"><h1>GeneralArchive</h1><!--here--></div>
+        </span>
     </div>
+    </div>
+    <div id="menu-container"></div>
     <main>
 <h4><a href='https://loj.ac/problem/2721'>题目链接</a></h4>
 <h2>题目大意</h2>
@@ -131,5 +134,5 @@ int main()
 <div id="to-top"><img id="to-top-symbol"/></div>
     <script>
             Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
-    <script src="js/animation.js"></script>
+    <script src="js/animation.min.js"></script>
 </body>

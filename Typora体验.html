@@ -19,15 +19,18 @@
 </head>
 <body>
     <script src="js/loading.js"></script>
-    <div id="header" style="top:-3%;">
-        <div id="menu-button">
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
             <img id="menu-symbol"/>
-        </div>
-        <div id="theme-button">
-            <img id="theme-symbol"/>
-        </div>
+        </span>
         <div id="header-context"><h1>Typora体验</h1><!--here--></div>
+        <span id="theme-button">
+            <img id="theme-symbol"/>
+        </span>
     </div>
+    </div>
+    <div id="menu-container"></div>
     <script>
         Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
     </script>
@@ -100,5 +103,5 @@ int main()
     <div id="to-top"><img id="to-top-symbol"/></div>
     <script>
             Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
-    <script src="js/animation.js"></script>
+    <script src="js/animation.min.js"></script>
 </body>

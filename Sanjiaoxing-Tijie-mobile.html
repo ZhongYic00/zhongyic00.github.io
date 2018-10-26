@@ -1,4 +1,5 @@
 <!DOCTYPE HTML>
+<html>
 <head>
 <title>ZhYic-三角形</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -18,15 +19,18 @@
 </script>
 </head>
 <body>
-    <div id="header" style="top:-3%;">
-        <div id="menu-button">
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
             <img id="menu-symbol"/>
-        </div>
-        <div id="theme-button">
+        </span>
+        <div id="header-context"><h1>洛谷<a href="https://www.luogu.org/problemnew/show/P1222">P1222三角形</a>题解</h1><!--here--></div>
+        <span id="theme-button">
             <img id="theme-symbol"/>
-        </div>
-        <div id="header-context"><h1>洛谷<a href="https://www.luogu.org/problemnew/show/P1222">P1222三角形</a>题解</h1></div>
+        </span>
     </div>
+    </div>
+    <div id="menu-container"></div>
     <script>
         Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
     </script>
@@ -173,8 +177,11 @@ sort(shape+1,shape+1+n,cmp1);//按y排序
     <p>这样就可以AC了。<br>
     本蒟蒻的代码比较丑，然后跑得也很慢，反正也就提供一下大概思路了。 </p>
     <h3><em>end</em></h3>
-    </main>
-    <div id="to-top"><img id="to-top-symbol"/></div>
-    <script src="js/animation.js"></script>
-    <script src="js/loading.js"></script>
+</main>
+<iframe src="footer.html" id="footer" frameborder="0"></iframe>
+<div id="to-top"><img id="to-top-symbol"/></div>
+<script>
+        Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+<script src="js/animation.min.js"></script>
 </body>
+</html>

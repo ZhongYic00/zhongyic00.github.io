@@ -1,35 +1,51 @@
-
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-	<meta name="blog-name" content="ZhYic">
-	<meta charset="UTF-8">
-	<link rel="stylesheet"type="text/css" href="css/article.css" />
-	<link rel="stylesheet" href="css/styles/solarized-light.css">
-	<script src="js/highlight.pack.js"></script>
-	<script>hljs.initHighlightingOnLoad();</script>
-	<script type="text/javascript" async
-		src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
-	</script>
-<title>题解 P3368 【【模板】树状数组 2】-ZhYic</title>
+<title>ZhYic-题解 P3368 【【模板】树状数组 2】</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta http-equiv="x-dns-prefetch-control" content="on">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-transform"/>
+<meta http-equiv="Cache-Control" content="no-siteapp"/>
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
+<script src="js/velocity.js"></script>
+<link rel="stylesheet" href="css/styles/solarized-light.css">
+<script src="js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'],['\\(','\\)']]}
+});
+</script>
 </head>
-<body background="picture/articleBG1.jpg">
-<a href="https://www.luogu.org/blog/noipruoji2017/" >ZhYic</a>
-<div class="header">
-	<h1>题解 P3368 【【模板】树状数组 2】</h1>
-</div>
-<br>
-<div class="article">
-	<br/>
+<body>
+    <script src="js/loading.js"></script>
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
+            <img id="menu-symbol"/>
+        </span>
+        <div id="header-context"><h1>题解 P3368 【【模板】树状数组 2】</h1><!--here--></div>
+        <span id="theme-button">
+            <img id="theme-symbol"/>
+        </span>
+    </div>
+    </div>
+    <div id="menu-container"></div>
+    <script>
+        Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
+    </script>
+    <main>
 	<div style="float:left;">2017-12-23 16:13:22</div>
 	<div style="float:right;">首发于<span><a class="center-to-head" href="https://www.luogu.org/blog/noipruoji2017/">ZhYic的洛谷博客</a></span></div>
 	<br/>
 	<hr/>
-	<div class="mdui-typo mdblog-article-content" id="article-content">
 	<h2>就是常规写法</h2>
-	<div class="code">
 	<pre><code class="language-cpp">
 #include &lt;iostream&gt;
 #include &lt;cstdio&gt;
@@ -73,17 +89,14 @@ int main()
 	}
 }
 	</code></pre>
-	</div>
 	<h5>解释如下：</h5>
 	<p><img src="https://ss1.bdstatic.com/70cFuXSh\_Q1YnxGkpoWK1HF6hhy/it/u=2531321565,556560620&amp;fm=27&amp;gp=0.jpg" alt="来源：百度图片搜索" /></p>
 	<p>树状数组每个节点所存的值都有不同含义，具体意义则为C[i]=A[i]+A[i-1]+....+A[i-2^k+1]（k表示i的二进制末尾连续0的个数）;</p>
 	<p><strong> 举个粟子 </strong></p>
-	<div class="code">
-	<pre><code class="language-cpp">C[1]=a[1];
+	<pre class="in-line"><code class="language-cpp">C[1]=a[1];
 	C[2]=a[2]+a[1];
 	C[3]=a[3];(3='11'[2]，所以k=0，i-2^k+1=3-1+1=3)
 	C[4]=a[4]+a[3]+a[2]+a[1];(4='100'，k=2，i-2^k+1=4-2^2+1=1)</code></pre>
-	</div>
 	<p>依此类推。
 	而如何得到一个数二进制末尾0的个数呢？这就需要用到<a class="center-to-head" href="http://blog.csdn.net/chen\_lady/article/details/51105535">补码（戳这里）</a>了，具体解释见此<a class="center-to-head" href="https://www.cnblogs.com/GeniusYang/p/5756975.html">完全认识树状数组</a>。</p>
 	<p>易知（假的，二进制数A在第k位有个1且最低位不为1，则表示的是第1～k位有1，且小于A的C[ ]的和。</p>
@@ -92,8 +105,11 @@ int main()
 	<p><img src="https://timgsa.baidu.com/timg?image&amp;quality=80&amp;size=b9999\_10000&amp;sec=1514049702566&amp;di=c7a25c2d69cad8d07194c8b4558d5560&amp;imgtype=0&amp;src=http%3A%2F%2Fwanzao2.b0.upaiyun.com%2Fsystem%2Fpictures%2F35531836%2Foriginal%2F1462339175\_500x500.png" alt="微笑" /></p>
 	<br />
 	<hr />
-	<div class="RT"><a class="rt" href="javascript:history.go(-1)">Return</a></div>
-</div>
+</main>
+<iframe src="footer.html" id="footer" frameborder="0"></iframe>
+<div id="to-top"><img id="to-top-symbol"/></div>
+<script>
+        Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+<script src="js/animation.min.js"></script>
 </body>
 </html>
-

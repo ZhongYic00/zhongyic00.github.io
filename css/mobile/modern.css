@@ -1,17 +1,26 @@
-#header{
+body{
+    height:100%;transform:none;width:100%;margin:0;
+}
+#menu-container,#header-container{box-shadow: 0 1px 2px 1px rgba(0,0,0,0.2);}
+#header-container{
     position: fixed;
-    z-index: 990;
-    top:0;left:0;right:0;
-    height:auto;
-    box-shadow: 0 1px 2px 1px rgba(0,0,0,0.2);
+    z-index: 980;
+    top:0;
+    height:6%;width:100%;
+    font-size:0;
     transform:none;
-    text-align: center;
     opacity: 1;
     background-color: white;
 }
+#header-context{
+float:left;width:92%;display:inline-block;line-height:100%;font-size:1rem;text-align: center;
+}
+#menu-container{position: fixed;width:100%;top:6%;z-index:980;background:white;}
+#header{height:100%;width:100%;font-size:100%;}
 #to-top{
     background: white;
     display: none;
+    height:5%;
     opacity: 0;
     position: fixed;
     z-index: 998;
@@ -25,12 +34,11 @@
 }
 #menu-button{
     float:left;
-    width:auto;height:auto;
+    height:100%;
 }
 #theme-button{
     float:right;
-    overflow:hidden;
-    width:auto;height:auto;
+    height:100%;
 }
 a,a:visited,a:focus{
     color:rgb(47, 53, 83);
@@ -40,14 +48,15 @@ a:hover{
     color:rgb(77, 89, 151);
     text-shadow: 1px 2px rgba(55, 242, 255, 0.308);
 }
-div.menu{
+.menu{
+    position: absolute;height:100%;width:100%;z-index: 996;
     overflow: hidden;
     display: block;
     box-shadow:0 -1px 0px 0px rgba(0,0,0,0.2);
 }
 ul.menu{
-    list-style:none;overflow:hidden;
-    text-align:center;padding:0;margin:0;
+    list-style:none;overflow:hidden;box-shadow:none;
+    text-align:center;padding:0;margin:0;font-size:3%;
     column-count:1;
 }
 main,iframe.PageMain{
@@ -62,6 +71,7 @@ main,iframe.PageMain{
 main{box-shadow:rgba(0,0,0,.2) 0 0 1px 1px;border-radius: 3px;}
 main.pc{
     transition: box-shadow 0.5s ease 0s;
+    width:60%;margin:15%;margin-top:8%;margin-bottom:0;padding:5%;
 }
 main.pc:hover{box-shadow:
     rgba(0,0,0,.2) 0px 0px 1px 0px,
@@ -69,10 +79,6 @@ main.pc:hover{box-shadow:
     rgba(0, 0, 0, .12) 0px 8px 20px -8px !important;
 }
 iframe.PageMain{margin-top:6%;opacity:1;height: auto;}
-body{
-    transform:none;width:100%;
-    margin:0;
-}
 img{
     max-width:96%;
     max-height:96%;
