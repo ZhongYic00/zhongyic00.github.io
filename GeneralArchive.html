@@ -13,15 +13,19 @@
 <link rel="stylesheet" type="text/css" href="css/mobile/archive-ext.css">
 </head>
 <body>    
-    <div id="header" style="top:-3%;">
-    <div id="menu-button">
-        <img id="menu-symbol"/>
+    <script src="js/loading.js"></script>
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
+            <img id="menu-symbol"/>
+        </span>
+        <div id="header-context"><h1>GeneralArchive</h1><!--here--></div>
+        <span id="theme-button">
+            <img id="theme-symbol"/>
+        </span>
     </div>
-    <div id="theme-button">
-        <img id="theme-symbol"/>
     </div>
-    <div id="header-context"><h1>GeneralArchive</h1><!--here--></div>
-    </div>
+    <div id="menu-container"></div>
     <script>
         Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
     </script>
