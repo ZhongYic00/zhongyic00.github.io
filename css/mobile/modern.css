@@ -1,22 +1,24 @@
 body{
     height:100%;transform:none;width:100%;margin:0;
 }
+blockquote{padding-left:5px;border-left: 4px #BBB solid;background-color: rgba(127,127,127,.1);border-radius:2px;}
 #menu-container,#header-container{box-shadow: 0 1px 2px 1px rgba(0,0,0,0.2);}
 #header-container{
     position: fixed;
     z-index: 980;
     top:0;
-    height:6%;width:100%;
-    font-size:0;
+    height:3.5rem;width:100%;
+    font-size:0;line-height:0;
     transform:none;
     opacity: 1;
     background-color: white;
 }
 #header-context{
-float:left;width:92%;display:inline-block;line-height:100%;font-size:1rem;text-align: center;
+float:left;width:92%;display:inline-block;height:auto;font-size:1rem;text-align: center;
 }
-#menu-container{position: fixed;width:100%;top:6%;z-index:980;background:white;}
-#header{height:100%;width:100%;font-size:100%;}
+#header h1{font-size:2.8rem;}
+#menu-container{position: fixed;line-height:1rem;width:100%;top:3.5rem;z-index:980;background:white;}
+#header{height:100%;width:100%;}
 #to-top{
     background: white;
     display: none;
