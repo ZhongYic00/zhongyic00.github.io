@@ -1,4 +1,4 @@
-const BLACK='#000',LYELLOW1='#666666',LYELLOW2='#555555',LGREY='#E8E8E8';
+const BLACK='#000',LYELLOW1='#3c3c3c',LYELLOW2='#2c2c2c',LGREY='#E8E8E8';
 var cnt = 0, flag = false, hideflag = false, Topflag = false, Menuflag=false, nightshift = false;
 var a, b, c, last, lineH, fontH, platform;
 var Bodys=document.getElementsByTagName("body"),Mains=document.getElementsByTagName("main");
@@ -15,6 +15,11 @@ const Draw_sun=()=>{Draw(ThemeSvg,'theme_light_sym');};
 function set_theme(type) {
     if(type=='mobile'){if(Main.classList.contains('pc'))Main.classList.remove('pc');}
     else if(!Main.classList.contains('pc'))Main.classList.add('pc');
+}
+const ClassAttach=(ori,nw,type)=>{
+    for(var a=document.getElementsByClassName(ori),i=0;i<a.length;i++)
+        if(type==-1)a[i].classList.remove(nw);
+        else a[i].classList.add(nw);
 }
 function CodeHideProcess(){{
     var codes=document.getElementsByTagName("pre");
@@ -115,19 +120,27 @@ TopDiv.onclick = function return_to_top() {
 }
 MenuDiv.onclick = function show_menu() {
     if(!Menuflag)Velocity(MenuButton,{rotateZ:"45deg"},{duration:"fast",easing:"ease-out"}),
-        Velocity(MenuContainer,{height:'+10%'},{duration:"fast"});
+        Velocity(MenuContainer,{height:'6rem'},{duration:"fast"});
     else Velocity(MenuButton,"reverse",{duration:"fast",easing:"ease-out"}),
-        Velocity(MenuContainer,{height:'-10%'},{duration:"fast"});
+        Velocity(MenuContainer,{height:'0rem'},{duration:"fast"});
     Menuflag=!Menuflag;
 }
 ThemeDiv.onclick = function change(){
     if(!nightshift){
-        if(platform=="PC")clear(ThemeSvg,ThemeSvg),Draw_moon(ThemeSvg.height,ThemeSvg.width,ThemeSvg),Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW1,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
-        else clear(ThemeSvg,ThemeSvg),Draw_moon(ThemeSvg.height,ThemeSvg.width,ThemeSvg),Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW2,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
+        Draw_moon();
+        if(platform=="PC")Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW1,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
+        else Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW2,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
+        ClassAttach('code-hidden','code-hidden-dark',1);
+        ClassAttach('hljs','code-dark',1);
+        for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.add('a-lighter');
     }
     else {
-        if(platform=="PC")clear(ThemeSvg,ThemeSvg),Draw_sun(ThemeSvg.height,ThemeSvg.width,ThemeSvg),Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:"#FFFFF0",color:BLACK},{duration:"normal",easing:"ease-in-out"});
-        else clear(ThemeSvg,ThemeSvg),Draw_sun(ThemeSvg.height,ThemeSvg.width,ThemeSvg),Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:LGREY,color:BLACK},{duration:"normal",easing:"ease-in-out"});
+        Draw_sun();
+        if(platform=="PC")Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:"#FFFFF0",color:BLACK},{duration:"normal",easing:"ease-in-out"});
+        else Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:LGREY,color:BLACK},{duration:"normal",easing:"ease-in-out"});
+        ClassAttach('code-hidden','code-hidden-dark',-1);
+        ClassAttach('hljs','code-dark',-1);
+        for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.remove('a-lighter');
     }
     nightshift=!nightshift;
 }

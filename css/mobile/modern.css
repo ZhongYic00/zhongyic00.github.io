@@ -14,7 +14,7 @@ blockquote{padding-left:5px;border-left: 4px #BBB solid;background-color: rgba(1
     background-color: white;
 }
 #header-context{
-float:left;width:92%;display:inline-block;height:auto;font-size:1rem;text-align: center;
+width:100%;margin:0 auto;display:inline-block;height:auto;font-size:1rem;text-align: center;
 }
 #header h1{font-size:2.8rem;}
 #menu-container{position: fixed;line-height:1rem;width:100%;top:3.5rem;z-index:980;background:white;}
@@ -35,11 +35,11 @@ float:left;width:92%;display:inline-block;height:auto;font-size:1rem;text-align:
     opacity: 1;
 }
 #menu-button{
-    float:left;
+    position:absolute;left:0;
     height:100%;
 }
 #theme-button{
-    float:right;
+    position:absolute;right:0;
     height:100%;
 }
 a,a:visited,a:focus{
@@ -133,7 +133,7 @@ iframe.fullscreen{width: 100%;}
 .footer-copyright{text-align:center;color:white;font-size:0.3em;font-family: serif;display: block;}
 @font-face{font-family: 'comfortaa';src:url('../../resources/Comfortaa-Regular.ttf')}
 body,code,pre{font-family: 'comfortaa'}
-.code-hidden{background: antiquewhite;text-align:center;display:block;cursor: pointer;}
+.code-hidden{background: antiquewhite;text-align:center;display:block;}
 .code-hidden img{float: left;max-height:16px;}
 @keyframes boxAnimation {
 
@@ -146,3 +146,7 @@ body,code,pre{font-family: 'comfortaa'}
         rgba(0, 0, 0, .12) 0px 8px 20px -8px;
     }
 }
+.code-hidden, #to-top, #theme-button, #menu-button{cursor: pointer;}
+.code-hidden-dark{background:slategrey !important;}
+.code-dark{background-color:black !important;color:white !important;}
+.a-lighter{color:rgb(126, 144, 235) !important;}
