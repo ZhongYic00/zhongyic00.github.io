@@ -123,13 +123,17 @@ iframe.fullscreen{width: 100%;}
 .footer-container{position: absolute;bottom: 0;width:100%;background-color: rgb(18, 18, 18);}
 .footer-functions,.footer-functions > ul > li > a{
     text-align: center;
-    font-size: 0.5em;
+    font-size: 0.9rem;
     color: white;
 }
 .footer-functions>ul>li{
-    list-style: inside;
-    display: inline;padding:2%;
+    list-style: inside;cursor: pointer;margin:0 1.3rem;display: inline-table;
+    display: inline;
 }
+.footer-functions>ul>li::before{content:"[";position: absolute;margin-right:0;opacity:0;transition: all 0.3s ease-out 0s;}
+.footer-functions>ul>li::after{content:"]";position: absolute;margin-left:0;opacity:0;transition: all 0.3s ease-out 0s;}
+.footer-functions>ul>li:hover::before{padding-right:-0.3rem;opacity:1;margin-left:-0.4rem;}
+.footer-functions>ul>li:hover::after{padding-left:0.3rem;opacity:1;margin-right:0.4rem;}
 .footer-copyright{text-align:center;color:white;font-size:0.3em;font-family: serif;display: block;}
 @font-face{font-family: 'comfortaa';src:url('../../resources/Comfortaa-Regular.ttf')}
 body,code,pre{font-family: 'comfortaa'}
