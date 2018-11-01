@@ -126,14 +126,32 @@ iframe.fullscreen{width: 100%;}
     font-size: 0.9rem;
     color: white;
 }
+.effect-brackets,
 .footer-functions>ul>li{
     list-style: inside;cursor: pointer;margin:0 1.3rem;display: inline-table;
-    display: inline;
+    display: inline;position:relative;text-transform: capitalize;
 }
-.footer-functions>ul>li::before{content:"[";position: absolute;margin-right:0;opacity:0;transition: all 0.3s ease-out 0s;}
-.footer-functions>ul>li::after{content:"]";position: absolute;margin-left:0;opacity:0;transition: all 0.3s ease-out 0s;}
-.footer-functions>ul>li:hover::before{padding-right:-0.3rem;opacity:1;margin-left:-0.4rem;}
-.footer-functions>ul>li:hover::after{padding-left:0.3rem;opacity:1;margin-right:0.4rem;}
+.effect-bracktes::before,.effect-brackets::after,
+.footer-functions>ul>li::before,
+.footer-functions>ul>li::after{
+    opacity:0;display:inline-block;transition:all 0.3s ease-in 0s;
+}
+.effect-bracktes::before,
+.footer-functions>ul>li::before{
+    margin-right:0.3rem;
+    content:'[';transform:translateX(0.6rem);
+}
+.effect-brackets::after,
+.footer-functions>ul>li::after{
+    margin-left:0.3rem;
+    content:']';transform:translateX(-0.6rem);
+}
+.effect-brackets:hover::before,.effect-brackets:hover::after,
+.footer-functions>ul>li:hover::before,
+.footer-functions>ul>li:hover::after{
+    transform:translateX(0rem);
+    opacity:1;
+}
 .footer-copyright{text-align:center;color:white;font-size:0.3em;font-family: serif;display: block;}
 @font-face{font-family: 'comfortaa';src:url('../../resources/Comfortaa-Regular.ttf')}
 body,code,pre{font-family: 'comfortaa'}
@@ -154,3 +172,4 @@ body,code,pre{font-family: 'comfortaa'}
 .code-hidden-dark{background:slategrey !important;}
 .code-dark{background-color:black !important;color:white !important;}
 .a-lighter{color:rgb(126, 144, 235) !important;}
+.first-em:first-letter{font-size:1.3rem;}

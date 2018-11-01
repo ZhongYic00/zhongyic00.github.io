@@ -1,51 +1,65 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE HTML>
 <head>
-<title>Welcome to nginx!</title> <link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
-<style>
-    body {
-        width: 35em;
-        margin: 0 auto;
-        font-family: Tahoma, Verdana, Arial, sans-serif;
-	text-align:center;
-	background-image:url(picture/indexbg.JPG);
-	background-repeat:no-repeat;
-	background-position:center;
-	background-size:cover;
-	background-attachment:fixed;
-    }
-</style>
+<title>ZhYic-Archive</title> <link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta charset="UTF-8">
 <meta http-equiv="x-dns-prefetch-control" content="on">
-<link rel="dns-prefetch" href="//cdn.bootcss.com" />
-<link rel="dns-prefetch" href="//secure.gravatar.com" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
 <meta name="renderer" content="webkit">
 <meta http-equiv="Cache-Control" content="no-transform"/>
 <meta http-equiv="Cache-Control" content="no-siteapp"/>
-<link href="//cdn.bootcss.com/highlight.js/9.10.0/styles/xcode.min.css" rel="stylesheet">
-<!--[if lt IE 9]>
-<script src="//cdn.bootcss.com/html5shiv/r29/html5.min.js"></script>
-<script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
+<script src="js/velocity.js"></script>
+<link rel="stylesheet" type="text/css" href="css/mobile/archive-ext.css">
 </head>
-<body class="bg-grey" gtools_scp_screen_capture_injected="true">
-<!--[if lt IE 8]>
-<div class="browsehappy" role="dialog"> 当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/" target="_blank">升级你的浏览器</a>。
-</div> <![endif]-->
-<header id="header" class="header bg-white"> <div class="navbar-container">
-<h1>Welcome to nginx!</h1>
-<p>If you see this page, the nginx web server is successfully installed and
-working. Further configuration is required.</p>
+<body>    
+    <script src="js/loading.js"></script>
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
+            <img id="menu-symbol"/>
+        </span>
+        <div id="header-context"><h1>GeneralArchive</h1><!--here--></div>
+        <span id="theme-button">
+            <img id="theme-symbol"/>
+        </span>
+    </div>
+    </div>
+    <div id="menu-container"></div>
+    <script>
+        Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
+    </script>
+    <main>
+<h1>Welcome to ZhYic's Blog!</h1>
+<div style="width:100%"><img src="picture/ZhYiclogo_v2.svg" style="width:50%">
+	<div style="float:right;width:45%;font-weight:bold;font-size:1.2rem;">
+		<p>Name: ZhYic</p>
+		<p>Age: in range of Highschool ages</p>
+		<p>Profession: Student(in fact just watering)</p>
+	</div>
+</div>
+<p class="first-em">ZhYic is A vegetable OIer.</p>
 
-<p>For online documentation and support please refer to
-<a href="http://nginx.org/">nginx.org</a>.<br/>
-Commercial support is available at
-<a href="http://nginx.com/">nginx.com</a>.</p>
-
-<p><em>Thank you for using nginx.</em></p>
-<br/>
-<a href="index.html">go to homepage<a>
+<p>Whose Grades are always not good.</p>
+<p>So he escaped from academic subjects ans come to <s>Chicken Room</s> to play.</p>
+<p>He learned a bit of HTML/CSS/JavaScript at home by himself, with the help of search engine, <a href="http://www.w3school.com.cn" target="_blank">W3school</a> and many warm-hearted people whose blogs are of much practicle experience.</p>
+<p>And NOIP2018 is coming soon, he is very worried about his easy life, so he turns to the Immortals in his school for help.</p>
+<p>The Immortals are:</p>
+<ul style="width:100%;margin:auto 0">
+	<li><a href="https://anoxiacxy.github.io">Anoxiacxy</a></li>
+	<li><a href="http://www.cnblogs.com/XYZinc">XYZine</a></li>
+	<li><a href="http://edgration.com" target="_blank">Edgration</a></li>
+	<li><a href="http://www.vixbob-lwc.pw" target="_blank">ViXbob</a></li>
+	<li><a href="https://dimensiontripper.github.io">Dimension Tripper</a></li>
+	<li><a href="https://aokiumi.github.io">Aoki_umi</a></li>
+	<li><a href="https://kl-lovesagiri.github.io">KL-lovesagiri</a></li>
+	<li><a href="https://hydranazis.github.io">HydraNazis</a></li>
+</ul>
+</main>
+<iframe src="footer.html" id="footer" frameborder="0"></iframe>
+<div id="to-top"><img id="to-top-symbol"/></div>
+<script>
+		Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+<script src="js/animation.js"></script>
 </body>
 </html>
