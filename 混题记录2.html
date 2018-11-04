@@ -1,0 +1,259 @@
+<!DOCTYPE HTML>
+<head>
+<title>ZhYic-混题记录2</title><link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta http-equiv="x-dns-prefetch-control" content="on">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-transform"/>
+<meta http-equiv="Cache-Control" content="no-siteapp"/>
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css"/>
+<script src="js/velocity.js"></script>
+<link rel="stylesheet" href="css/styles/solarized-light.css"/>
+<script src="js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'],['\\(','\\)']]}
+});
+</script>
+</head>
+<body>    
+    <script src="js/loading.js"></script>
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
+            <img id="menu-symbol"/>
+        </span>
+        <div id="header-context"><h1>混题记录2</h1><!--here--></div>
+        <span id="theme-button">
+            <img id="theme-symbol"/>
+        </span>
+    </div>
+    </div>
+    <div id="menu-container"></div>
+    <script>
+        Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
+    </script>
+    <main><h1>前言</h1>
+<p>NOIp2018即将来临，ZhYic踏上了每天水水水的道路。没有作业没有文化课没有卷子，有的只是每天一两题的龟速和时常的爆零、垫底。ZhYic虽然文化课也不是特别差劲（反正之前没全校垫底过），<del>但OI还是想好好搞的</del>，还是很珍惜水水水的机会的。为了吸取教训防止持续的爆零，ZhYic新开一篇博文记录一下抄题解的经历和理解。</p>
+<h1>正文</h1>
+<p><em>以下进入正文部分</em></p>
+<h2><a href='https://www.luogu.org/problemnew/show/CF467C'>CF467C George and Job</a></h2>
+<h3>题意</h3>
+<p>给出一组有n个整数的数列$p_1,p_2,...,p_n$,你需要挑出k组长度为m的数，要求这些数互不重叠 即$[l_{1},r_{1}],[l_{2},r_{2}],...,[l_{k},r_{k}] (1\le l_{1}\le r_{1}<l_{2}\le r_{2}<...<l_{k}\le r_{k}\le n; r_{i}-l_{i}+1=m)$使选出的数的和值最大。</p>
+<h3>题解</h3>
+<p>具体怎么想到的我记不清了（我怕不是阿尔茨海默症了）。</p>
+<p>首先我们可以想到以<code>dp[i][j]</code>来表示数列的前i个位置中选择了j个子区间且以i为第j个子区间结尾的最大子区间和，容易列出转移方程为：</p>
+<p><code>dp[i][j]=max(dp[i][j],dp[k][j-1]+sum[i-l+1][i])</code>($k\in [1,i-l]$)，</p>然后最终答案为<code>dp[n][m]</code>，复杂度为$O(n^3)$。</p>
+<p>然后思考如何优化dp。我们首先发现sum数组只需要用前缀和维护以下就好了，然后对于dp转移的过程，我们移项发现其实就是找一个区间最大值（<code>dp[i][j]=max(dp[k][j-1])+sum</code>就是找到1～i-l内最大dp值转移过来），所以思考一下可以怎么维护区间最大值。</p>
+<p>由于n，m都很小，我们可以直接使用数组记录：<code>mx[i][j]</code>表示形成j了个子区间的最大子区间和。</p>
+<p>其实是个假的，我们只需要一个一维mx数组即可，每次扫到一个新的i时用i-l的dp值更新mx数组（i-l及之前的dp都可转移过来），然后对每个<code>dp[i][j]</code>$O(1)$转移即可。总复杂度$O(n^2)$。</p>
+<h3>代码</h3>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+using namespace std;
+const int N=5020;
+int n,m,l,p[N];
+long long s[N],dp[N][N],mx[N];
+int main()
+{
+    scanf(&quot;%d%d%d&quot;,&amp;n,&amp;l,&amp;m);
+    for(int i=1;i&lt;=n;i++)scanf(&quot;%d&quot;,p+i),s[i]=s[i-1]+p[i];
+    for(int i=1;i&lt;=n;i++)
+    {
+        long long sum=s[i]-s[i-l];
+        for(int j=1;j&lt;=m&amp;&amp;j*l&lt;=(i-l);j++)
+            mx[j]=max(mx[j],dp[i-l][j]);
+        for(int j=1;j&lt;=m&amp;&amp;j*l&lt;=i;j++)
+        {
+            dp[i][j]=max(dp[i-1][j],mx[j-1]+sum);
+        }
+    }
+    printf(&quot;%lld&quot;,dp[n][m]);
+}	
+</code></pre>
+<h2><a href='https://www.luogu.org/problemnew/show/P1273'>有线电视网</a></h2>
+<h3>题意</h3>
+<p>有一棵树，树上有给定的点权（部分为正整数部分为0）及边权，问一颗点权和&gt;边权和的子树最大是多大。</p>
+<h3>题解</h3>
+<h4>思路</h4>
+<p>看到最优化就有几个方向：dp，二分，贪心。首先贪心是不存在的。其次二分是不能直接check的。那么很明显就是一道树形DP了。</p>
+<p>首先可以想到用<code>dp[i]</code>表示一个节点i的子树内最大的子树点集，然后会发现这样DP不能转移，我们还需要中间状态（非局部最优）。考虑加一维变成<code>dp[i][j]</code>表示节点i的子树内花费为j时最大子树点集，看上去可以转移了，但看数据范围，j会很大，时空复杂度不满足。考虑换个状态，发现我们可以计算i的子树中选j个点时的最小花费即最大收益，这样就是一个树形背包DP，并且如果dp值非负则此状态可以达到。即<code>dp[i][j]</code>表示i的子树中选j个点的最大收益，最后check所有<code>dp[1][i]</code>值中大于等于0的最大的i，即为答案。</p>
+<p>此题巧妙之处在于转换状态，通过合法性确定最优答案。存在合法性条件的dp很多都是此类做法。</p>
+<h4>时间复杂度问题</h4>
+<p>之前某大佬@<a href='https://www.vixbob-lwc.pw' target="_blank">  </a>打了个假的$O(n^2)$dp，他的dfs是这么个结构：</p>
+<pre><code class='language-c++' lang='c++'>void dfs(int now) {
+    size[now]=1;
+    for(edges) {
+        dfs(v);
+        size[now]+=size[v];
+    }
+    for(edges) {
+        for(size[now])
+        	for(size[v])
+        	dp[now][j]=......;
+    }
+}
+</code></pre>
+<p>这个dp的时间复杂度是错的，每个节点的复杂度为$O(son\cdot size^2)$，由于数据过水没卡掉。。。</p>
+<p>实际上dfs结构应为</p>
+<pre><code class='language-c++' lang='c++'>void dfs(int now) {
+    size[now]=1;
+    for(edges) {
+        dfs(v);
+        size[now]+=size[v];
+        for(size[now])
+        	for(size[v])
+        	dp[now][j]=......;
+    }
+}
+</code></pre>
+<p>即每次更新当前节点子树大小时dp，这样dp的时间复杂度相当于枚举点对的复杂度（数学证明我再想想），为严格$O(n^2)$。</p>
+<h3>代码</h3>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+#define Side(x) for(int i=p[x];i;i=nt[i])
+using namespace std;
+const int N=3020;
+int n,m,ans,tot,e[N&lt;&lt;1],nt[N&lt;&lt;1],w[N&lt;&lt;1],p[N],tsize[N],a[N];
+void add(int x,int y,int z){e[++tot]=y,nt[tot]=p[x],w[tot]=z,p[x]=tot;}
+long long dp[N][N];
+void dfs(int x)
+{
+    tsize[x]=1,dp[x][0]=0,dp[x][1]=a[x];
+    Side(x)
+    {
+        dfs(e[i]);
+        tsize[x]+=tsize[e[i]];
+        for(int j=tsize[x];j;j--)
+        {
+            for(int k=min(tsize[e[i]],j);k;k--)
+                dp[x][j]=max(dp[x][j],dp[x][j-k]+dp[e[i]][k]-w[i]);
+        }
+    }
+}
+int main()
+{
+    scanf(&quot;%d%d&quot;,&amp;n,&amp;m);
+    memset(dp,-0x3f,sizeof(dp));
+    for(int i=1;i&lt;=n;i++)a[i]=-INFINITY;
+    for(int i=1,k;i&lt;=n-m;i++)
+    {
+        scanf(&quot;%d&quot;,&amp;k);
+        for(int j=1,ai,ci;j&lt;=k;j++)
+            scanf(&quot;%d%d&quot;,&amp;ai,&amp;ci),add(i,ai,ci);
+    }
+    for(int i=n-m+1;i&lt;=n;i++)scanf(&quot;%d&quot;,&amp;a[i]);
+    dfs(1);
+    for(int i=1;i&lt;=n;i++)if(dp[1][i]&gt;=0)ans=i;
+    printf(&quot;%d&quot;,ans);
+}
+</code></pre>
+<p>&nbsp;</p>
+<h2><a href='https://www.luogu.org/problemnew/show/CF5C'>CF5C Longest Regular Bracket Sequence</a></h2>
+<h3>题意</h3>
+<p>给出一个括号序列，求出最长合法子串和它的数量。 合法的定义：这个序列中左右括号匹配。</p>
+<h3>题解</h3>
+<p>首先对于括号序列常用的一种括号匹配方法为：设&#39;(&#39;=1，&#39;)&#39;=-1，维护一个前缀和，相邻的前缀和相等的位置的括号匹配。因此此题基本思路由此而来。我们记录每个前缀和值上一次出现的位置，如果遇到相等的即更新答案。</p>
+<p>但如何保证中间的括号合法（即不会出现刑如”)(())(“的子串）？</p>
+<p>我们形象画图理解，以位置为x轴，前缀和为y轴，描点做出折线图，发现类似一种山峰状图形，当我们截取的左端点在”下坡“上（左端点为&#39;)&#39;）或右端点在”上坡“上（右端点为&#39;(&#39;）一定不合法。还有若左端点及右端点间有低于左右端点的点也不合法（前缀和做差得到子串的前缀和，其中有的项&lt;0）。</p>
+<h3>代码</h3>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+using namespace std;
+const int N=1000020;
+char str[N];
+int ans,cnt=1,s[N],lstt[N*2];
+int *lst=&amp;lstt[N];
+int main()
+{
+    scanf(&quot;%s&quot;,str+1);
+    int n=strlen(str+1);
+    for(int i=-n;i&lt;=n;i++)lst[i]=INFINITY;
+    for(int i=1;i&lt;=n;i++)
+    {
+        s[i]=s[i-1]+(str[i]==&#39;(&#39;?1:-1);
+        if(s[i]&gt;s[i-1])lst[s[i]]=min(i,lst[s[i]]);
+        else
+        {
+            if(ans&lt;(i-lst[s[i]+1]+1))ans=i-lst[s[i]+1]+1,cnt=1;
+            else if(ans==i-lst[s[i]+1]+1)cnt++;
+            lst[s[i]+2]=INFINITY;
+        }
+    }
+    printf(&quot;%d %d&quot;,ans,cnt);
+}
+</code></pre>
+<h2><a href='https://www.luogu.org/problemnew/show/CF8C'>CF8C Looking for Order</a></h2>
+<p>一道老题，但也是一道好题。</p>
+<h3>题意</h3>
+<p>太长了，略。洛谷上有翻译，点上面标题就是了。</p>
+<h3> 题解</h3>
+<p>乍看觉得需要<code>dp[S][i][0/1]</code>表示当前状态为S，当前选择的是i，包里还有0/1个空位，但这样不好写。</p>
+<p>遂抄题解，发现题没看全。。。结合题面分析，每一趟若捡拾i、j花费为$dist_{0,i}+dist_{i,j}+dist_{j,0}$，若只捡了i花费为$dist_{0,i}+dist_{i,0}=dist_{0,i}+dist_{i,i}+dist_{i,0}$，这样我们发现捡1件物品和捡2件物品的花费其实是有通式的，因此可以全部当做捡2件物品来进行处理。</p>
+<p>所以用<code>dp[S]</code>表示当前捡物品集合为S的最小花费，每次枚举两件未捡拾的物品（两物品可相同，捡未捡拾的物品一定比重复经过已经捡了的更优，因为两点之间线段最短不可能比两件物品相同更优），转移至<code>dp[S|s1|s2]</code>，最后答案即为<code>dp[U]</code>（U为全集符号）。</p>
+<p>细节上，初始化dp数组为较大值，<code>dp[0]=0</code>，从<code>0</code>状态开始枚举（因为是顺推下一个状态转移，逆推上一个状态转移需要枚举子集，复杂度大了）。</p>
+<p>最后复杂度为$O(2^n)$。</p>
+<h3>代码</h3>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+#define pow(x) ((x)*(x))
+using namespace std;
+int n,x[30],y[30],dis[30][30],dp[1&lt;&lt;24],pre[1&lt;&lt;24],ans[2];
+int dist(int a,int b)
+{
+    return dis[a][b]?dis[a][b]:(dis[a][b]=pow(x[a]-x[b])+pow(y[a]-y[b]));
+}
+int main()
+{
+    memset(dp,0x3f,sizeof(dp));
+    scanf(&quot;%d%d%d&quot;,&amp;x[0],&amp;y[0],&amp;n);
+    int S=(1&lt;&lt;n)-1;
+    for(int i=1;i&lt;=n;i++)
+    {
+        scanf(&quot;%d%d&quot;,&amp;x[i],&amp;y[i]);
+    }
+    dp[0]=0;
+    for(int i=0;i&lt;=S;i++)
+    {
+        if(dp[i]&gt;=0x3f3f3f3f)continue;
+        for(int j=1;j&lt;=n;j++)
+        {
+            if(i&amp;(1&lt;&lt;(j-1)))continue;
+            for(int k=j,now,nowval;k&lt;=n;k++)
+            {
+                if(i&amp;(1&lt;&lt;(k-1)))continue;
+                now=(1&lt;&lt;(j-1))|(1&lt;&lt;(k-1)),nowval=dp[i]+dist(j,0)+dist(k,0)+dist(j,k);
+                if(dp[i|now]&gt;nowval)
+                {
+                    dp[i|now]=nowval,pre[i|now]=i;
+                }
+            }
+            break;
+        }
+    }
+    printf(&quot;%d\n&quot;,dp[S]);
+    for(int i=S;i;i=pre[i])
+    {
+        int k=i^pre[i],pos=1,cnt=-1;
+        while(k)
+        {
+            if(k&amp;1)ans[++cnt]=pos;
+            pos++,k&gt;&gt;=1;
+        }
+        if(!cnt)printf(&quot;%d %d &quot;,0,ans[0]);
+        else printf(&quot;%d %d %d &quot;,0,ans[0],ans[1]);
+    }
+    putchar(&#39;0&#39;);
+}
+</code></pre>
+<p>&nbsp;</p>
+</main>
+<iframe src="footer.html" id="footer" frameborder="0"></iframe>
+<div id="to-top"><img id="to-top-symbol"/></div>
+<script>
+		Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+<script src="js/animation.js"></script>
+</body>
+</html>
