@@ -1,0 +1,196 @@
+<head>
+<title>ZhYic-即将退役选手的复习计划</title><link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta http-equiv="x-dns-prefetch-control" content="on">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-transform"/>
+<meta http-equiv="Cache-Control" content="no-siteapp"/>
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css"/>
+<script src="js/velocity.js"></script>
+<link rel="stylesheet" href="css/styles/solarized-light.css"/>
+<script src="js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {inlineMath: [['$','$'],['\\(','\\)']]}
+});
+</script>
+</head>
+<body>    
+    <script src="js/loading.js"></script>
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
+            <img id="menu-symbol"/>
+        </span>
+        <div id="header-context"><h1>即将退役选手的复习计划</h1><!--here--></div>
+        <span id="theme-button">
+            <img id="theme-symbol"/>
+        </span>
+    </div>
+    </div>
+    <div id="menu-container"></div>
+    <script>
+        Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
+    </script>
+    <main><h1>各类模板</h1>
+<h2>树状数组</h2>
+<h3>1.基本构型</h3>
+<p>树状数组是一种支持$O(logn)$修改查询的维护数列前缀和的数据结构。核心在于tree数组和位运算的结合。所有树状数组维护前缀和的部分基本都是一样的：</p>
+<pre><code class='language-c++' lang='c++'>struct BIT
+{
+	long long t[N&lt;&lt;2];
+	inline int lowbit(int &amp;x){return x&amp;(-x);}
+	void add(int x,long long v)
+	{
+		while(x&lt;=n)t[x]+=v,x+=lowbit(x);
+	}
+	long long sum(int x)
+	{
+		long long rt=0;
+		while(x)
+			rt+=t[x],x-=lowbit(x);
+		return rt;
+	}
+};
+</code></pre>
+<h3>2.维护区间修改+单点查询</h3>
+<p>我们从差分数组的角度观察，发现整个数列满足以下特点：$arr_i=\sum\limits_{j=1}^{j\le i} diff_j$，可以使用树状数组维护差分数组的前缀和，而区间修改操作在差分数组上就是$diff_l+=v,diff_{r+1}-=v$，因此每次修改左右端点的差分前缀和即可。单点查询只需要查pos处前缀和即可。</p>
+<h3>3.维护区间修改+区间查询</h3>
+<p><a href='https://www.luogu.org/problemnew/show/P3372'>模板题</a></p>
+<p>继续上面维护区间修改的思路，列出整个数列的前缀和表达式：$$\sum\limits_{i=1}^{i\le x}a_i=\sum\limits_{i=1}^{i\le x}\sum\limits_{j=1}^{j\le i}diff_j=\sum\limits_{i=1}^{i\le x}diff_j\cdot (x-i+1)$$</p>
+<p>（好吧，其实我不会复杂和式的运算，只是方便表示，具体如何变形自己展开一下就知道了）</p>
+<p>然后我们进一步变形为$$x\cdot\sum\limits_{i=1}^{i\le x}diff_j-\sum\limits_{i=1}^{i\le x}diff_j\cdot(i-1)$$</p>
+<p>这样就方便使用树状数组维护了。对于前面一项延续上面区间改的方法维护差分数组前缀和，对于后面一项，我们同样使用前缀和进行维护。我们发现更改$diff_i$对整体前缀和的影响是$v\cdot(i-1)$的，因此每次更改时乘上只与位置相关的(i-1)即可。</p>
+<p>具体说，就是将x后的元素整体加v的操作分为一下两步：</p>
+<ol>
+<li>将维护式子中前一项的树状数组x后整体加$v$（对应模板写法为<code>add(x,v)</code>）。</li>
+<li>将维护式子中后一项的树状数组x后整体加$v\cdot(x-1)$（对应模板写法为<code>add(x,v*(x-1))</code>）。</li>
+
+</ol>
+<p>查询操作参考上式，查询1到x元素和的操作对应改变为：</p>
+<ol>
+<li>在维护前一项的树状数组中查询x的前缀和，记为sum0。</li>
+<li>在维护后一项的树状数组中查询x的前缀和，记为sum1。</li>
+<li>原数列前缀和即为sum=sum0*x-sum1。</li>
+
+</ol>
+<p>当然，为了方便，我们可以进行适当的移项变换。最后写成的模板为：</p>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+using namespace std;
+const int N=100020;
+int n,m;
+struct BIT
+{
+	long long t[N&lt;&lt;2];
+	inline int lowbit(int &amp;x){return x&amp;(-x);}
+	void add(int x,long long v)
+	{
+		while(x&lt;=n)t[x]+=v,x+=lowbit(x);
+	}
+	long long sum(int x)
+	{
+		long long rt=0;
+		while(x)
+			rt+=t[x],x-=lowbit(x);
+		return rt;
+	}
+}T1,T2;
+void update(int l,int r,long long v)
+{
+	T1.add(l,v),T1.add(r+1,-v);
+	T2.add(l,v*(l-1)),T2.add(r+1,-v*r);
+}
+long long query(int l,int r)
+{
+	return (T1.sum(r)*r-T1.sum(l-1)*(l-1))-(T2.sum(r)-T2.sum(l-1));
+}
+int main()
+{
+	scanf(&quot;%d%d&quot;,&amp;n,&amp;m);
+	long long ai,ki;
+	for(int i=1;i&lt;=n;i++)
+		scanf(&quot;%lld&quot;,&amp;ai),update(i,i,ai);
+	for(int i=1,op,xi,yi;i&lt;=m;i++)
+	{
+		scanf(&quot;%d%d%d&quot;,&amp;op,&amp;xi,&amp;yi);
+		if(op==1)
+		{
+			scanf(&quot;%lld&quot;,&amp;ki);
+			update(xi,yi,ki);
+		}
+		else if(op==2)
+		{
+			printf(&quot;%lld\n&quot;,query(xi,yi));
+		}
+	}
+}
+</code></pre>
+<p>虽然线段树也能实现相同功能，但树状数组常数很小，跑<a href='https://www.luogu.org/problemnew/show/P4211'>[LNOI2014]LCA</a>快2倍多。</p>
+<h2>割点</h2>
+<p><a href='https://www.luogu.org/problemnew/show/P3388'>模板题</a></p>
+<blockquote><p>给出一个nn个点，mm条边的无向图，求图的割点。</p>
+</blockquote>
+<h3>定义</h3>
+<p>（我连割点的定义都不记得了）</p>
+<blockquote><p>在无向连通图中，如果将其中一个点以及所有连接该点的边去掉，图就不再连通，那么这个点就叫做割点（cut vertex / articulation point）。</p>
+</blockquote>
+<h3>求法</h3>
+<p>割点的求法同样是Tarjan大神发明的。</p>
+<p>核心在于，从联通块中任意一个点出发dfs遍历全图，然后对于当前点分两类考虑（自己可以结合图形想想）：</p>
+<p>若当前点是遍历的出发点，且当前点有两棵或以上的子树，则当前点是割点，因为去掉当前点子树间无法相互到达。进一步的，判断当前点子树个数的方法为：若某子节点未到达过则子树数量加1。</p>
+<p>若当前点不是遍历的出发点，且当前点是环与链的交点（去掉环链不连通，low[x]==low[v]）或在至少1条链上（去掉链的两部分不连通，low[x]&lt;low[v]）是则当前点是割点。进一步的，判断方法为比较low值。</p>
+<p>例如下图3种情况中x皆为割点：</p>
+<p><img src='' alt='picture/template_cut_vertex.png' referrerPolicy='no-referrer' /></p>
+<p>low值的更新细节要注意。模板如下：</p>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+#define Side(x) for(int i=p[x];i;i=nt[i])
+using namespace std;
+const int N=20020,M=200020;
+int tot,e[M],nt[M],p[N],start;
+void _add(int x,int y){e[++tot]=y,nt[tot]=p[x],p[x]=tot;}
+inline void add(int x,int y){_add(x,y),_add(y,x);}
+int n,m,clc,low[N],dfn[N],anss,ans[N];
+void Tarjan(int x)
+{
+    dfn[x]=low[x]=++clc;
+    int cnt=0;
+    Side(x)
+    {
+        if(!dfn[e[i]])
+        {
+            Tarjan(e[i]),low[x]=min(low[x],low[e[i]]),cnt++;
+            if(low[e[i]]&gt;=dfn[x]&amp;&amp;x!=start)ans[++anss]=x;
+        }
+        low[x]=min(low[x],dfn[e[i]]);
+    }
+    if(cnt&gt;1&amp;&amp;x==start)ans[++anss]=x;
+}
+int main()
+{
+    scanf(&quot;%d%d&quot;,&amp;n,&amp;m);
+    for(int i=1,xi,yi;i&lt;=m;i++)
+        scanf(&quot;%d%d&quot;,&amp;xi,&amp;yi),add(xi,yi);
+    for(int i=1;i&lt;=n;i++)
+        if(!dfn[i])start=i,Tarjan(i);
+    sort(ans+1,ans+1+anss);
+    anss=unique(ans+1,ans+1+anss)-ans-1;
+    printf(&quot;%d\n&quot;,anss);
+    for(int i=1;i&lt;=anss;i++)
+        printf(&quot;%d &quot;,ans[i]);
+    return 0;
+}
+</code></pre>
+</main>
+<iframe src="footer.html" id="footer" frameborder="0"></iframe>
+<div id="to-top"><img id="to-top-symbol"/></div>
+<script>
+		Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+<script src="js/animation.js"></script>
+</body>
+</html>
