@@ -49,7 +49,8 @@ MathJax.Hub.Config({
 <h3>题解</h3>
 <p>具体怎么想到的我记不清了（我怕不是阿尔茨海默症了）。</p>
 <p>首先我们可以想到以<code>dp[i][j]</code>来表示数列的前i个位置中选择了j个子区间且以i为第j个子区间结尾的最大子区间和，容易列出转移方程为：</p>
-<p><code>dp[i][j]=max(dp[i][j],dp[k][j-1]+sum[i-l+1][i])</code>($k\in [1,i-l]$)，</p>然后最终答案为<code>dp[n][m]</code>，复杂度为$O(n^3)$。</p>
+<p><code>dp[i][j]=max(dp[i][j],dp[k][j-1]+sum[i-l+1][i])</code>($k\in [1,i-l]$)，</p>
+<p>然后最终答案为<code>dp[n][m]</code>，复杂度为$O(n^3)$。</p>
 <p>然后思考如何优化dp。我们首先发现sum数组只需要用前缀和维护以下就好了，然后对于dp转移的过程，我们移项发现其实就是找一个区间最大值（<code>dp[i][j]=max(dp[k][j-1])+sum</code>就是找到1～i-l内最大dp值转移过来），所以思考一下可以怎么维护区间最大值。</p>
 <p>由于n，m都很小，我们可以直接使用数组记录：<code>mx[i][j]</code>表示形成j了个子区间的最大子区间和。</p>
 <p>其实是个假的，我们只需要一个一维mx数组即可，每次扫到一个新的i时用i-l的dp值更新mx数组（i-l及之前的dp都可转移过来），然后对每个<code>dp[i][j]</code>$O(1)$转移即可。总复杂度$O(n^2)$。</p>
@@ -85,7 +86,7 @@ int main()
 <p>首先可以想到用<code>dp[i]</code>表示一个节点i的子树内最大的子树点集，然后会发现这样DP不能转移，我们还需要中间状态（非局部最优）。考虑加一维变成<code>dp[i][j]</code>表示节点i的子树内花费为j时最大子树点集，看上去可以转移了，但看数据范围，j会很大，时空复杂度不满足。考虑换个状态，发现我们可以计算i的子树中选j个点时的最小花费即最大收益，这样就是一个树形背包DP，并且如果dp值非负则此状态可以达到。即<code>dp[i][j]</code>表示i的子树中选j个点的最大收益，最后check所有<code>dp[1][i]</code>值中大于等于0的最大的i，即为答案。</p>
 <p>此题巧妙之处在于转换状态，通过合法性确定最优答案。存在合法性条件的dp很多都是此类做法。</p>
 <h4>时间复杂度问题</h4>
-<p>之前某大佬@<a href='https://www.vixbob-lwc.pw' target="_blank">  </a>打了个假的$O(n^2)$dp，他的dfs是这么个结构：</p>
+<p>之前某大佬@<a href='www.vixbob-lwc.pw'><br/></a>打了个假的$O(n^2)$dp，他的dfs是这么个结构：</p>
 <pre><code class='language-c++' lang='c++'>void dfs(int now) {
     size[now]=1;
     for(edges) {
@@ -190,7 +191,7 @@ int main()
 <p>一道老题，但也是一道好题。</p>
 <h3>题意</h3>
 <p>太长了，略。洛谷上有翻译，点上面标题就是了。</p>
-<h3> 题解</h3>
+<h3>题解</h3>
 <p>乍看觉得需要<code>dp[S][i][0/1]</code>表示当前状态为S，当前选择的是i，包里还有0/1个空位，但这样不好写。</p>
 <p>遂抄题解，发现题没看全。。。结合题面分析，每一趟若捡拾i、j花费为$dist_{0,i}+dist_{i,j}+dist_{j,0}$，若只捡了i花费为$dist_{0,i}+dist_{i,0}=dist_{0,i}+dist_{i,i}+dist_{i,0}$，这样我们发现捡1件物品和捡2件物品的花费其实是有通式的，因此可以全部当做捡2件物品来进行处理。</p>
 <p>所以用<code>dp[S]</code>表示当前捡物品集合为S的最小花费，每次枚举两件未捡拾的物品（两物品可相同，捡未捡拾的物品一定比重复经过已经捡了的更优，因为两点之间线段最短不可能比两件物品相同更优），转移至<code>dp[S|s1|s2]</code>，最后答案即为<code>dp[U]</code>（U为全集符号）。</p>
@@ -248,7 +249,54 @@ int main()
     putchar(&#39;0&#39;);
 }
 </code></pre>
-<p>&nbsp;</p>
+<h2><a href='https://www.luogu.org/problemnew/show/P4345'>[SHOI2015]超能粒子炮·改</a></h2>
+<h3>题解</h3>
+<p>$$\sum\limits_{i=0}^{i\le k}\binom{n}{i}\pmod{233}=\sum\limits_{i=0}^{i\le k}\binom{n\%p}{i\%p}\binom{n/p}{i/p}=\sum\limits_{i=0}^{i\le p-1}\binom{n\%p}{i}\cdot \sum\limits_{i=0}^{i\le \lfloor k/p\rfloor -1}\binom{n/p}{i}+\binom{n/p}{k/p}\cdot\sum\limits_{i=0}^{i\le k\%p}\binom{n\%p}{i}$$</p>
+<p>（抄ViXbob.jpg）</p>
+<p>然后我们定义$f_{k,n}=\sum\limits_{i=0}^{i\le k}C^i_n\pmod{233}$，则上式可以变形为：$$f_{k,n}=f_{p-1,~n\%p}\cdot f_{\lfloor k/p\rfloor-1,~n/p}+\binom{n/p}{k/p}\cdot f_{k\%p,~n\%p}$$</p>
+<p>根据Lucas定理<del>简单地递推计算即可</del>经过复杂计算即可。（递推部分不太懂，问大佬之后再更）</p>
+<h3>代码</h3>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+using namespace std;
+const int N=2336;
+const long long p=2333;
+int cmod[N][N],f[N][N];
+long long Lucas(long long n,long long m)
+{
+    return !m?1:((long long)cmod[n%p][m%p]*Lucas(n/p,m/p))%p;
+}
+int F(long long n,long long k)
+{
+    if(k&lt;0)return 0;
+    if(k&lt;p&amp;&amp;n&lt;p)return f[n][k];
+    return ((long long)F(n/p,k/p-1)*f[n%p][p-1]%p+(long long)f[n%p][k%p]*Lucas(n/p,k/p)%p)%p;
+}
+int main()
+{
+    int T;
+    long long n,k;
+    scanf(&quot;%d&quot;,&amp;T);
+    cmod[0][0]=1;
+    for(int i=1;i&lt;=p;i++)
+    {
+        cmod[i][0]=1;
+        for(int j=1;j&lt;=i;j++)
+            cmod[i][j]=(cmod[i-1][j]+cmod[i-1][j-1])%p;
+    }
+    f[0][0]=1;
+    for(int i=0;i&lt;=p;i++)
+    {
+        f[i][0]=1;
+        for(int j=1;j&lt;=p;j++)
+            f[i][j]=(f[i][j-1]+cmod[i][j])%p;
+    }
+    while(T--)
+    {
+        scanf(&quot;%lld%lld&quot;,&amp;n,&amp;k);
+        printf(&quot;%d\n&quot;,F(n,k));
+    }
+}
+</code></pre>
 </main>
 <iframe src="footer.html" id="footer" frameborder="0"></iframe>
 <div id="to-top"><img id="to-top-symbol"/></div>

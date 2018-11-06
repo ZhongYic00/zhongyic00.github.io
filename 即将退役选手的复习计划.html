@@ -146,7 +146,7 @@ int main()
 <p>若当前点是遍历的出发点，且当前点有两棵或以上的子树，则当前点是割点，因为去掉当前点子树间无法相互到达。进一步的，判断当前点子树个数的方法为：若某子节点未到达过则子树数量加1。</p>
 <p>若当前点不是遍历的出发点，且当前点是环与链的交点（去掉环链不连通，low[x]==low[v]）或在至少1条链上（去掉链的两部分不连通，low[x]&lt;low[v]）是则当前点是割点。进一步的，判断方法为比较low值。</p>
 <p>例如下图3种情况中x皆为割点：</p>
-<p><img src='' alt='picture/template_cut_vertex.png' referrerPolicy='no-referrer' /></p>
+<p><img src='picture/template_cut_vertex.png' alt='cut_vertex_cases' referrerPolicy='no-referrer' /></p>
 <p>low值的更新细节要注意。模板如下：</p>
 <pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
 #define Side(x) for(int i=p[x];i;i=nt[i])
