@@ -68,13 +68,13 @@ MathJax.Hub.Config({
 <p>然后我们进一步变形为$$x\cdot\sum\limits_{i=1}^{i\le x}diff_j-\sum\limits_{i=1}^{i\le x}diff_j\cdot(i-1)$$</p>
 <p>这样就方便使用树状数组维护了。对于前面一项延续上面区间改的方法维护差分数组前缀和，对于后面一项，我们同样使用前缀和进行维护。我们发现更改$diff_i$对整体前缀和的影响是$v\cdot(i-1)$的，因此每次更改时乘上只与位置相关的(i-1)即可。</p>
 <p>具体说，就是将x后的元素整体加v的操作分为一下两步：</p>
-<ol>
+<ol start='' >
 <li>将维护式子中前一项的树状数组x后整体加$v$（对应模板写法为<code>add(x,v)</code>）。</li>
 <li>将维护式子中后一项的树状数组x后整体加$v\cdot(x-1)$（对应模板写法为<code>add(x,v*(x-1))</code>）。</li>
 
 </ol>
 <p>查询操作参考上式，查询1到x元素和的操作对应改变为：</p>
-<ol>
+<ol start='' >
 <li>在维护前一项的树状数组中查询x的前缀和，记为sum0。</li>
 <li>在维护后一项的树状数组中查询x的前缀和，记为sum1。</li>
 <li>原数列前缀和即为sum=sum0*x-sum1。</li>
@@ -186,6 +186,64 @@ int main()
     return 0;
 }
 </code></pre>
+<h2>缩点（强连通分量）</h2>
+<h3>定义</h3>
+<blockquote><p><strong>强连通分量</strong>（<a href='https://zh.wikipedia.org/wiki/%E8%8B%B1%E8%AA%9E'>英语</a>：Strongly connected component）是图论中的概念。图论中，强连通图指每一个<a href='https://zh.wikipedia.org/wiki/%E9%A0%82%E9%BB%9E'>顶点</a>皆可以经由该图上的边抵达其他的每一个点的<a href='https://zh.wikipedia.org/wiki/%E6%9C%89%E5%90%91%E5%9B%BE'>有向图</a>。意即对于此图上每一个点对(Va,Vb)，皆存在路径Va→Vb以及Vb→Va。<strong>强连通分量</strong>则是指一张有向图G的极大强连通<a href='https://zh.wikipedia.org/wiki/%E5%9B%BE'>子图</a>G&#39;。如果将每一个强连通分量缩成一个点，则原图G将会变成一张<a href='https://zh.wikipedia.org/wiki/%E6%9C%89%E5%90%91%E6%97%A0%E7%8E%AF%E5%9B%BE'>有向无环图</a>。一张图被称为有向无环图当且仅当此图不具有点集合数量大于一的强连通分量，因为有向环即是一个强连通分量，而且任何的强连通分量皆具有至少一个有向环。</p>
+</blockquote>
+<h3>做法</h3>
+<p>做法见代码。先找强连通分量，将一个强连通分量中的点集作为一个新图中的点（权值相加），新图中的边集为原图中强连通分量间的边。然后topsort时dp一下就好了。</p>
+<h3>注意点</h3>
+<p>Tarjan的模板中我经常性忘记维护instack标记，需要注意。</p>
+<ul>
+<li  ><input type='checkbox' disabled='disabled' /><p>明天或后天重打，要求一次通过</p>
+</li>
+
+</ul>
+<h2>乘法逆元</h2>
+<h3>定义</h3>
+<p>存在一个$inv_a$满足$$a\cdot inv_a\equiv1\pmod{p}$$则称$inv_a$为$a$在模$p$意义下的逆元。</p>
+<h3>求法</h3>
+<ol>
+<li><p>扩展欧几里得法</p>
+</li>
+<li><p>费马小定理法</p>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+using namespace std;
+int n,p;
+int qpow(long long x,int k)
+{
+	long long rt=1;
+	while(k)
+	{
+		if(k&amp;1)rt=(rt*x)%p;
+		x=(x*x)%p,k&gt;&gt;=1;
+	}
+	return (int)rt;
+}
+int main()
+{
+	scanf(&quot;%d%d&quot;,&amp;n,&amp;p);
+	for(int i=1;i&lt;=n;i++)
+		printf(&quot;%d\n&quot;,qpow(i,p-2));
+}
+</code></pre>
+</li>
+<li><p>递推法</p>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+using namespace std;
+const int N=3000020;
+int n,p,inv[N];
+int main()
+{
+    scanf(&quot;%d%d&quot;,&amp;n,&amp;p);
+    inv[1]=1;putchar(&#39;1&#39;);
+    for(int i=2;i&lt;=n;i++)
+        printf(&quot;\n%d&quot;,inv[i]=(int)((long long)(p-p/i)*inv[p%i]%p));
+}
+</code></pre>
+</li>
+
+</ol>
 </main>
 <iframe src="footer.html" id="footer" frameborder="0"></iframe>
 <div id="to-top"><img id="to-top-symbol"/></div>
