@@ -74,7 +74,7 @@ main,iframe.PageMain{
 main{box-shadow:rgba(0,0,0,.2) 0 0 1px 1px;border-radius: 3px;}
 main.pc{
     transition: box-shadow 0.5s ease 0s;
-    width:60%;margin:15%;margin-top:8%;margin-bottom:0;padding:5%;
+    width:60%;margin:0 auto;margin-top:8%;margin-bottom:0;padding:5%;
 }
 main.pc:hover{box-shadow:
     rgba(0,0,0,.2) 0px 0px 1px 0px,

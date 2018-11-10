@@ -5,3 +5,13 @@
 .day{font-size: 2em;}
 .year,.day{font-family:'comfortaa';font-weight: bold;}
 .year,.month,.day,.item{text-align: center;}
+.page-list{
+    max-width:50%;
+    margin:0 auto;
+    font-size:1.6rem;
+    line-height: 3rem;
+}
+.center{
+    text-align:center;
+}
+.big{font-size:3.5rem;}
