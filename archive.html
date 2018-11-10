@@ -2,25 +2,38 @@
 <html>
 <head>
 <title>ZhYic-Archive</title> <link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
-<link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/>
-<link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
 <meta http-equiv="x-dns-prefetch-control" content="on">
-<link rel="dns-prefetch" href="//cdn.bootcss.com" />
-<link rel="dns-prefetch" href="//secure.gravatar.com" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-<meta name="blog-name" content="ZhYic">
-<meta charset="UTF-16">
-<link rel="stylesheet"type="text/css" href="css/archive.css" />
-<link rel="stylesheet"type="text/css" href="css/home.css" />
 <meta name="renderer" content="webkit">
 <meta http-equiv="Cache-Control" content="no-transform"/>
 <meta http-equiv="Cache-Control" content="no-siteapp"/>
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
+<link rel="stylesheet" type="text/css" href="css/mobile/archive-ext.css">
+<script src="js/velocity.js"></script>
 </head>
-<body id="base">
-<h1>Pages</h1><br>
-<div class="no-opacity" style="width:50%;padding:1%">
-<list>
+<body>
+
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
+            <img id="menu-symbol"/>
+        </span>
+        <div id="header-context"><h1>Archive</h1><!--here--></div>
+        <span id="theme-button">
+            <img id="theme-symbol"/>
+        </span>
+    </div>
+    </div>
+    <div id="menu-container"></div>
+    <script>
+        Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
+    </script>
+    <main>
+<h1 class="center big">Pages</h1>
+<ul class="page-list">
+<li><a href="index-mobile.html">新版Home测试页面</a></li>
 <li><a href="混题记录2.html">混题记录2</a></li>
 <li><a href="即将退役选手的复习计划.html">即将退役选手的复习计划</a></li>
 <li><a href="单调队列整理.html">单调队列整理</a></li>
@@ -40,14 +53,13 @@
 <!--<li><a href="Spfa单源最短路 - ZhYic - 洛谷博客.html">SPFA</a>-->
 <li><a href="FibonacciJs.html">Fibonacci Javascript</a></li>
 <li><a href="media-VanGogh.html">Videotest</a></li>
-</list>
+</ul>
 <br />
-<a href="index.html" style="font-size:16px;">Return To Home</a>
-</div>
-<script src="js/test.js"></script>
+</main>
+<iframe src="footer.html" id="footer" frameborder="0"></iframe>
+<div id="to-top"><img id="to-top-symbol"/></div>
 <script>
-    background_load([106,90,205],[193,205,205]);
-    window.onscroll=return_top_tag();
-</script>
+        Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+<script src="js/animation.js"></script>
 </body>
 </html>

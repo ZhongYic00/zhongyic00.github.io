@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+.<!DOCTYPE HTML>
 <head>
 <title>ZhYic-Home</title> <link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -10,25 +10,28 @@
 <meta http-equiv="Cache-Control" content="no-siteapp"/>
 <link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
 <script src="js/velocity.js"></script>
+<link rel="stylesheet" type="text/css" href="css/mobile/index-ext.css">
 </head>
-<body>
-    <script>
-        Velocity(document.getElementsByTagName("body"),{backgroundColor:'#E8E8E8'},{duration:1200,easing:"ease-in-out"});
-        Velocity(document.getElementsByTagName("main"),{opacity:1});
-    </script>
-    <div id="header" style="top:-3%;">
-        <div id="menu-button">
-            <canvas id="menu-symbol"></canvas>
-        </div>
-        <div id="theme-button">
-            <canvas id="theme-symbol"></canvas>
-        </div>
-        <div id="header-context"><div><h1>Hello</h1></div></div>
+<body>    
+    <script src="js/loading.js"></script>
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
+            <img id="menu-symbol"/>
+        </span>
+        <div id="header-context"><h1>ZhYic's Blog</h1><!--here--></div>
+        <span id="theme-button">
+            <img id="theme-symbol"/>
+        </span>
     </div>
-    <script>Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});</script>
-    <main>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
+    </div>
+    <div id="menu-container"></div>
+    <main>
+    <div><p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     我我我我我我我我我我我我我我我我我我我我我我我我我我我<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br></p></div>
+    <div><p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
@@ -77,6 +80,7 @@
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br></p></div><div><p>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
@@ -111,6 +115,7 @@
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br></p></div><div><p>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
@@ -139,12 +144,19 @@
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
-    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br></main>
-    
-    <div id="to-top"><img id="to-top-symbol"/></div>
-    <script src="js/animation.js"></script>
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br></p></div>
+    <table id="page-turn">
+        <tr>
+            <td><a href="index-mobile.html">1</a></td>
+            <td><a href="index-mobile.html">2</a></td>
+            <td><a href="index-mobile.html">3</a></td>
+        </tr>
+    </table>
+</main>
+<iframe src="footer.html" id="footer" frameborder="0"></iframe>
+<div id="to-top"><img id="to-top-symbol"/></div>
+<script>
+        Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+<script src="js/animation.js"></script>
 </body>
+</html>
