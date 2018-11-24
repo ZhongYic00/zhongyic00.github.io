@@ -14,19 +14,51 @@
 </head>
 <body>    
     <script src="js/loading.js"></script>
-    <div id="header-container">
-    <div id="header">
-        <span id="menu-button">
-            <img id="menu-symbol"/>
-        </span>
-        <div id="header-context"><h1>ZhYic's Blog</h1><!--here--></div>
-        <span id="theme-button">
-            <img id="theme-symbol"/>
-        </span>
+    <div id="front-page">
+        <h1>This is ZhYic</h1>
+        <div id="front-page-skip" onclick="scrollTag(main)">
+        </div>
     </div>
+    <div id="sidebar" class="float-shadow">
+        <div id="selfintro">
+            <a href="https://zhongyic00.github.io">
+            <img src="picture/ZhYiclogo_v2.svg" style="width:50%;float:left;"></a>
+            <h2>ZhYic</h2>
+            <p class="center small dgrey">An "Vegetable" OIer<br>and<br>HTML Enthusiast</p>
+        </div>
+        <!--div id="overview">
+            <div>
+                <span>posts</span>
+                <a href="archive.html">18</a>
+            </div>
+            <div>
+                <span>version</span>
+                2
+            </div>
+            <div>
+                <span>tags</span>
+                0
+            </div>
+        </div-->
+        <table id="overview">
+            <tr>
+                <td>
+                    <p>posts</p><p><a href="archive.html">18</a></p>
+                </td>
+                <td>
+                    <p>version</p><p>2</p>
+                </td>
+                <td>
+                    <p>tags</p><p>0</p>
+                </td>
+            </tr>
+        </table>
     </div>
-    <div id="menu-container"></div>
     <main>
+    <div>
+        <p>各类模板 树状数组 1.基本构型 树状数组是一种支持O(logn)修改查询的维护数列前缀和的数据结构。核心在于tree数组和位运算的结合。所有...
+            割点 缩点（强连通分量）乘法逆元的三种求法...</p>
+    </div>
     <div><p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     我我我我我我我我我我我我我我我我我我我我我我我我我我我<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
@@ -145,18 +177,18 @@
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br>
     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa<br></p></div>
-    <table id="page-turn">
+    <nav><table id="page-turn">
         <tr>
             <td><a href="index-mobile.html">1</a></td>
             <td><a href="index-mobile.html">2</a></td>
             <td><a href="index-mobile.html">3</a></td>
         </tr>
-    </table>
+    </table></nav>
 </main>
 <iframe src="footer.html" id="footer" frameborder="0"></iframe>
 <div id="to-top"><img id="to-top-symbol"/></div>
-<script>
-        Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+<script>Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
 <script src="js/animation.js"></script>
+<script src="js/index-ext.js"></script>
 </body>
 </html>

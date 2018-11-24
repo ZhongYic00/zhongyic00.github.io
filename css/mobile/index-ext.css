@@ -1,6 +1,6 @@
 main{padding:0 0 1% 0 !important;}
 main>div{
-    margin:0;text-align:center;cursor: pointer;
+    margin:0;text-align:center;cursor: pointer;overflow: hidden;
     border-bottom:1px solid rgba(0,0,0,.1);
     transition:box-shadow 0.3s ease-out 0.1s,
     background 0.2s linear 0s;
@@ -14,6 +14,7 @@ main>div:hover{
     background:rgb(255, 255, 249);
 }
 main>div:active{
+    box-shadow:0px 0px 8px 0px rgba(0,0,0,.6) inset;
     background:rgb(235, 235, 203);
 }
 #page-turn{
@@ -32,10 +33,31 @@ main>div:active{
     min-width:2.5rem;
     padding:0 0.2rem;
     background:rgb(216, 216, 216);
+    border:2px solid rgba(0,0,0,0);
 }
 #page-turn a:hover{
     background:rgb(202, 202, 202);
+    text-shadow:none;
+    border-top-color:black;
+    border-bottom-color:darkgray;
 }
 #page-turn a:active{
     background:rgb(167, 167, 167);
+}
+#sidebar{
+    position:fixed;top:22%;left:3%;width:16%;padding:1% 0;
+    background:rgb(255, 255, 240);
+}
+.full{width:100%}
+#selfintro{position: relative;top:0;bottom:0;text-align:center;margin:auto;}
+#overview{clear:both;text-align:center;vertical-align: middle;width:100%;}
+#overview p{margin:0.3rem 0 0 0;}
+#front-page{
+    height:80%;
+    text-align:center;
+}
+#front-page h1{font-size:12rem;}
+#front-page-skip{
+    background:url('/picture/ZhYiclogo_v2.svg');
+    height:40%;
 }

@@ -39,22 +39,24 @@ function init(f) {
     c = (document.documentElement.clientWidth || document.body.clientWidth),
     lineH = b/16, fontH=b/18;
     Draw(TopSvg,'top_sym');
-    Draw(MenuSvg,'menu_sym');
-    if(!nightshift)Draw_sun();
-    else Draw_moon();
-    while(Menulist.hasChildNodes())Menulist.removeChild(Menulist.firstChild);
-    for(var i=0;i<3;i++){
-        var Menuli=document.createElement("li"),Menuop=document.createElement("a");
-        Menuop.style.fontSize=fontH+"px",Menuop.style.lineHeight=lineH+"px";
-        var tmp=document.createTextNode(Menucontext[i]);
-        Menuop.href=Menucontext[i]+".html",Menuop.appendChild(tmp);
-        Menuli.appendChild(Menuop),Menulist.appendChild(Menuli);
+    if(MenuDiv) {
+        Draw(MenuSvg,'menu_sym');
+        if(!nightshift)Draw_sun();
+        else Draw_moon();
+        while(Menulist.hasChildNodes())Menulist.removeChild(Menulist.firstChild);
+        for(var i=0;i<3;i++){
+            var Menuli=document.createElement("li"),Menuop=document.createElement("a");
+            Menuop.style.fontSize=fontH+"px",Menuop.style.lineHeight=lineH+"px";
+            var tmp=document.createTextNode(Menucontext[i]);
+            Menuop.href=Menucontext[i]+".html",Menuop.appendChild(tmp);
+            Menuli.appendChild(Menuop),Menulist.appendChild(Menuli);
+        }
+        //console.log(lineH);
+        Menubox.appendChild(Menulist);MenuContainer.appendChild(Menubox);
     }
-    //console.log(lineH);
-    Menubox.appendChild(Menulist);MenuContainer.appendChild(Menubox);
     if(!nightshift)Velocity(Body,{backgroundColor:LGREY},{duration:1200,easing:"ease-in-out"});
     else Velocity(Body,{backgroundColor:LYELLOW2},{duration:1200,easing:"ease-in-out"});
-    if(b*2>c){
+    if(b*2>c) {
             platform="mobile";
             if(Main.classList.contains('pc'))Main.classList.remove('pc');
             if(!nightshift)Main.style.backgroundColor=LGREY,Velocity(Main,{opacity:1},{duration:"normal",delay:500,easing:"ease-out"});
@@ -118,14 +120,14 @@ TopDiv.onclick = function return_to_top() {
     //Velocity(TopButton,{display:"none"},{opacity:0},{duration:"fast"});
     //Topflag=true;
 }
-MenuDiv.onclick = function show_menu() {
+!MenuDiv?0:MenuDiv.onclick = function show_menu() {
     if(!Menuflag)Velocity(MenuButton,{rotateZ:"45deg"},{duration:"fast",easing:"ease-out"}),
         Velocity(MenuContainer,{height:'6rem'},{duration:"fast"});
     else Velocity(MenuButton,"reverse",{duration:"fast",easing:"ease-out"}),
         Velocity(MenuContainer,{height:'0rem'},{duration:"fast"});
     Menuflag=!Menuflag;
 }
-ThemeDiv.onclick = function change(){
+!ThemeDiv?0:ThemeDiv.onclick = function change(){
     if(!nightshift){
         Draw_moon();
         if(platform=="PC")Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW1,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
