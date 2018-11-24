@@ -5,7 +5,3 @@
 cover.appendChild(welcomeInfo);
 setInterval
 */
-function scrollTag(tagName)
-{
-	Velocity(document.getELementsByTagName(tagName)[0],"scroll",{duration:"normal",easing:"ease-out"});
-}
