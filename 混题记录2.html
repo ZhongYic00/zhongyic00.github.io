@@ -86,7 +86,7 @@ int main()
 <p>首先可以想到用<code>dp[i]</code>表示一个节点i的子树内最大的子树点集，然后会发现这样DP不能转移，我们还需要中间状态（非局部最优）。考虑加一维变成<code>dp[i][j]</code>表示节点i的子树内花费为j时最大子树点集，看上去可以转移了，但看数据范围，j会很大，时空复杂度不满足。考虑换个状态，发现我们可以计算i的子树中选j个点时的最小花费即最大收益，这样就是一个树形背包DP，并且如果dp值非负则此状态可以达到。即<code>dp[i][j]</code>表示i的子树中选j个点的最大收益，最后check所有<code>dp[1][i]</code>值中大于等于0的最大的i，即为答案。</p>
 <p>此题巧妙之处在于转换状态，通过合法性确定最优答案。存在合法性条件的dp很多都是此类做法。</p>
 <h4>时间复杂度问题</h4>
-<p>之前某大佬@<a href='www.vixbob-lwc.pw'><br/></a>打了个假的$O(n^2)$dp，他的dfs是这么个结构：</p>
+<p>之前某大佬@<a href='http://www.vixbob-lwc.pw' target="__blank">BoBvix<br/></a>打了个假的$O(n^2)$dp，他的dfs是这么个结构：</p>
 <pre><code class='language-c++' lang='c++'>void dfs(int now) {
     size[now]=1;
     for(edges) {
@@ -253,8 +253,9 @@ int main()
 <h3>题解</h3>
 <p>$$\sum\limits_{i=0}^{i\le k}\binom{n}{i}\pmod{233}=\sum\limits_{i=0}^{i\le k}\binom{n\%p}{i\%p}\binom{n/p}{i/p}=\sum\limits_{i=0}^{i\le p-1}\binom{n\%p}{i}\cdot \sum\limits_{i=0}^{i\le \lfloor k/p\rfloor -1}\binom{n/p}{i}+\binom{n/p}{k/p}\cdot\sum\limits_{i=0}^{i\le k\%p}\binom{n\%p}{i}$$</p>
 <p>（抄ViXbob.jpg）</p>
-<p>然后我们定义$f_{k,n}=\sum\limits_{i=0}^{i\le k}C^i_n\pmod{233}$，则上式可以变形为：$$f_{k,n}=f_{p-1,~n\%p}\cdot f_{\lfloor k/p\rfloor-1,~n/p}+\binom{n/p}{k/p}\cdot f_{k\%p,~n\%p}$$</p>
-<p>根据Lucas定理<del>简单地递推计算即可</del>经过复杂计算即可。（递推部分不太懂，问大佬之后再更）</p>
+<p>然后我们定义$f_{k,n}=\sum\limits_{i=0}^{i\le k}C^i_n\pmod{2333}$，则上式可以变形为：$$f_{k,n}=f_{p-1,~n\%p}\cdot f_{\lfloor k/p\rfloor-1,~n/p}+\binom{n/p}{k/p}\cdot f_{k\%p,~n\%p}$$</p>
+<p>根据Lucas定理<del>简单地递推计算即可</del>经过复杂计算即可。</p>
+<p>前面i,j小于p的部分直接暴力计算，后面的利用上面推出的式子递归处理即可。</p>
 <h3>代码</h3>
 <pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
 using namespace std;
@@ -294,6 +295,131 @@ int main()
     {
         scanf(&quot;%lld%lld&quot;,&amp;n,&amp;k);
         printf(&quot;%d\n&quot;,F(n,k));
+    }
+}
+</code></pre>
+<h2><a href='https://www.luogu.org/problemnew/show/P2467'>[SDOI2010]地精部落</a></h2>
+<h3>题意</h3>
+<p>求值域为[1,n]每个元素只出现一次的摇摆序列方案数（即每连续三个数中，相邻两数变化趋势相反）。</p>
+<h3>题解</h3>
+<p>不完全懂，待填坑</p>
+<h3>代码</h3>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+#include&lt;algorithm&gt;
+using namespace std;
+const int N=4520;
+int n,p,dp[2][N][2],ans;//dp[i][j][0] -&gt; down dp[i][j][1] -&gt;up
+long long pls(int x,int y){return (int)((long long)x+y)%p;}
+int main()
+{
+    scanf(&quot;%d%d&quot;,&amp;n,&amp;p);
+    //p=1e9;
+    //for(int i=1;i&lt;=n;i++)dp[0][i][1]=1,dp[0][i][0]=1;
+    //dp[0][0][0] = dp[0][0][1] = 1;
+    dp[1][1][0] = dp[1][1][1] = 1;
+    for(int i=2;i&lt;=n;i++)
+    {
+        int t = i &amp; 1, t0 = t ^ 1;
+        memset(dp[t], 0, sizeof(dp[t]));
+        /*for(int j=1;j&lt;=i;j++)
+        {
+            dp[i][j][1]=pls(dp[i][j-1][1],dp[i-1][j-1][0]);
+        }
+        for(int j=i;j;j--)
+        {
+            dp[i][j][0]=pls(dp[i][j+1][0],dp[i-1][j+1][1]);
+        }*/
+
+        /*for(register int j = 1; j &lt;= i; j++)
+            for(register int k = 1; k &lt; j; k++)
+              f[t][j] = pls(f[t][j], f[t0][i - k]);
+                                     g[t0][k]
+                                     f[i][j] = g[i][i + 1 - k];
+                                     */
+
+        for(register int j = 1; j &lt;= i; j++) {
+            //for(register int k = 1; k &lt; j; k++)
+                dp[t][j][1] = pls(dp[t][j - 1][1], dp[t0][j - 1][0]);
+        }
+        for(register int j = 1; j &lt;= i; j++) {
+            dp[t][j][0] = dp[t][i + 1 - j][1];
+        }
+    }
+    for(int i=1;i&lt;=n;i++)
+        ans=pls(ans,dp[n &amp; 1][i][0]),ans=pls(ans,dp[n &amp; 1][i][1]);
+    cout&lt;&lt;ans;
+}
+</code></pre>
+<h2><a href='https://www.luogu.org/problemnew/show/P2157'>[SDOI2009]学校食堂</a></h2>
+<h3>题解</h3>
+<p>暴力的dp很好想到，直接状压表示所有人的吃饭状态，然后每次check状态合法性转移。</p>
+<p>但，，，好吧出题人给了大概30？还是很良心的。</p>
+<p>正解其实就是一种<em>”trick of the trade“</em>，由于存在Bi的限制，对于一个合法的状态，它的二进制表示必然是一段连续的1和一段长度不超过2×Bi的01序列，形如<code>111...1110110001</code>。这时我们会发现这个状态有一些特殊，我们发现转移时只会用到最后几位01交错的序列，而与前面许多连续1无关。于是<strong>考虑直接将前面的连续1用一维代替掉</strong>，计算一下复杂度，单点大约是$O(n\cdot2^{2Bi})$级别的，也许可以过？</p>
+<p>再<strong>考虑状态表示细节</strong>，我们每次由当前状态转移到下一个状态需要知道的是当前状态谁最后吃的，下一个状态该谁吃（因为这个dp是顺序相关的），所以还得再加一维记录每个状态最后进餐的人。因为最后进餐的人的可能位置只有Bi个，所以只需要表示出最后进餐人的相对位置就可以。最后得到的dp状态表示为<code>dp[前面连续的已经用餐的人数i][从第i个人起2×Bi个人的用餐状态][当前用餐人员分布状态下最后一个用餐的人的相对(第i个人)位置]</code>。</p>
+<p><em>解释一下第三维为什么是2×Bi：因为可能当前状态为111...1100...0，这时候的状态可能是由111...10111110...0转移而来的，即上一个状态的用餐者的相对位置为负值。</em></p>
+<p>我们再考虑一个<strong>转移细节</strong>（这题细节真的多）。当前状态向下一个状态转移时有个双层循环枚举当前和下一个用餐者的过程，下一个用餐者不仅受到当前用餐者的限制，也受到中间的人的限制（中间的人也不允许后面某一距离外的人先进餐），因此我们需要在枚举下一个用餐者的过程中动态更新枚举范围，具体到代码上就是</p>
+<pre><code class='language-c++' lang='c++'>for(k:-8...7)
+	lim=7;
+	for(j:0...lim)
+	{
+        if(not eaten)
+        {
+            dp[i][next state][j]=chkmin(dp[i][state now][k]+cal(...),...);
+            lim=min(lim,j+B[i+j]);
+        }
+	}
+</code></pre>
+<p>所以最后时间复杂度为$O(n\cdot 2^{2Bi}\cdot Bi^2)$，空间复杂度为$O(n\cdot2^{Bi}\cdot 2Bi)$。</p>
+<h3>代码</h3>
+<pre><code class='language-c++' lang='c++'>#include&lt;bits/stdc++.h&gt;
+#define pls(x,y) ((x)+(y)+P)%P
+const int N=1020,P=12345678;
+using namespace std;
+int n,a[N],b[N],dp[N][1&lt;&lt;8][16];
+int cal(int x,int y)
+{
+    return x&lt;=0?0:(a[x]^a[y]);
+}
+int main()
+{
+    int T;
+    scanf(&quot;%d&quot;,&amp;T);
+    while(T--)
+    {
+        scanf(&quot;%d&quot;,&amp;n);
+        for(int i=1;i&lt;=n;i++)
+            scanf(&quot;%d%d&quot;,&amp;a[i],&amp;b[i]),b[i]=min(b[i],n-i);
+        // dp[ status compress][status detail][cur eat]
+        int U=(1&lt;&lt;8)-1;
+        memset(dp,0x3f,sizeof(dp));
+        dp[1][0][7]=0;
+        for(int i=1;i&lt;=n;i++)// status 1...i-1 1
+        {
+            for(int s=0;s&lt;=U;s++)
+            {
+                for(int k=-8;k&lt;=7;k++)
+                {
+                    if(dp[i][s][k+8]&gt;1e9)continue;// status illegal
+                    if(s&amp;1)// can directly compress status
+                    {
+                        int &amp;t=dp[i+1][s&gt;&gt;1][k+7];
+                        t=min(t,dp[i][s][k+8]);
+                    }
+                    else for(int j=0,lim=7;j&lt;=lim;j++)
+                    {
+                        if(!(s&amp;(1&lt;&lt;j)))
+                        {
+                            int &amp;t=dp[i][s|(1&lt;&lt;j)][j+8];
+                            t=min(t,dp[i][s][k+8]+cal(i+k,i+j));
+                        lim=min(lim,j+b[i+j]);// ?
+                        }
+                    }
+                }
+            }
+        }
+        int ans=INFINITY;
+        for(int i=0;i&lt;=7;i++)ans=min(ans,dp[n+1][0][i]);
+        printf(&quot;%d\n&quot;,ans);
     }
 }
 </code></pre>

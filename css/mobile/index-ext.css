@@ -78,9 +78,9 @@ main>div:active{
 }
 #front-page-skip:hover #path854{stroke:#1baae2 !important}
 #front-page-skip:hover #path823{stroke: #1baae2 !important;fill: #1baae2 !important}
-nav{display:block;width:60%;margin:0 auto;text-align:center;background:whitesmoke;height:3rem;padding-left:2%;}
-nav ul{display:inline;font-size:2rem;list-style:none;width:100%}
-nav ul li{float:left;width:19.2%;}
+nav{display:block;width:60%;margin:0 auto;text-align:center;background:whitesmoke;height:3rem;}
+nav ul{display:inline;font-size:2rem;list-style:none;width:100%;padding:0;}
+nav ul li{float:left;width:20%;}
 li a{
     display:block;height:100%;line-height:3rem;color:black !important;font-weight: 600;
     transition: background 0.2s ease-out 0s;
