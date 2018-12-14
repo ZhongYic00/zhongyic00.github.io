@@ -13,6 +13,8 @@ a:hover{text-shadow:none;}
         else clipboardData.setData('Text',url);
     }
 </script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script src="js/loading.js"></script>
 </head>
 <body>
     <div class="footer-container">
@@ -25,7 +27,9 @@ a:hover{text-shadow:none;}
                 <li><a href="about.html" target="_top">about</a></li>
             </ul>
         </div>
-
+    <div style="width:100%;color:white" class="center">Choose Math render Engine:
+    <button onclick="setCookie('ZhYicMathEngine','mathjax');window.parent.location.reload()">mathjax</button>
+    <button onclick="setCookie('ZhYicMathEngine','Katex');window.parent.location.reload()">Katex</button></div>
     <div class="footer-copyright">© 2018 ZhongYic00</div>>
     </div>
 </body>

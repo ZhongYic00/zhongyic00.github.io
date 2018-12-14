@@ -21,7 +21,7 @@ const ClassAttach=(ori,nw,type)=>{
         if(type==-1)a[i].classList.remove(nw);
         else a[i].classList.add(nw);
 }
-function CodeHideProcess(){{
+function CodeHideProcess(){
     var codes=document.getElementsByTagName("pre");
     var CodeSymbol=document.createElement('span'),CodeSymbolPic=document.createElement('img'),CodeSymbolText=document.createTextNode('click to view code');
     var codes=document.getElementsByTagName("pre");var CodeSymbol=document.createElement('span'),CodeSymbolPic=document.createElement('img'),CodeSymbolText=document.createTextNode('click to view code');CodeSymbolPic.src='picture/code-hidden-sym.svg',CodeSymbol.classList.add('code-hidden'),CodeSymbol.appendChild(CodeSymbolPic),CodeSymbol.appendChild(CodeSymbolText);
@@ -32,7 +32,10 @@ function CodeHideProcess(){{
         now.id='code'+i+'sym',now.onclick=showCode;
         codes[i].parentNode.insertBefore(now,codes[i]);
     }
-}}
+}
+function DfnHideProcess(){
+	
+}
 function init(f) {
     a = document.documentElement.scrollTop || document.body.scrollTop,
     b = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
@@ -68,7 +71,7 @@ function init(f) {
             if(!nightshift)Velocity(Main,{backgroundColor:'#FFFFF0',opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
             else Velocity(Main,{backgroundColor:LYELLOW1,opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
     }
-    if(f)CodeHideProcess();
+    if(f)CodeHideProcess(),DfnHideProcess();
     set_theme(platform);
 }
 function sleep(d){
