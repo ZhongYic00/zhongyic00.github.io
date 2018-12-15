@@ -175,3 +175,9 @@ body,code,pre{font-family: 'comfortaa'}
 .small{font-size:0.8rem}
 .dgrey{color:rgb(94, 94, 94)}
 .center{text-align:center}
+.mathengine{
+    background:rgb(255,255,255);color:black;font-size:1.2rem;
+    border:none;border-radius:0.2rem 0.2rem;
+    transition: all 0.3s ease 0s;
+}
+.mathengine:hover{background:rgb(0, 140, 186);color:white}

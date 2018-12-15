@@ -1,8 +1,9 @@
-function setCookie(cname,cvalue)
+function setCookie(cname,cvalue,exdays=0)
 {
   var d = new Date();
   //console.log(d.getTime()+(exdays*24*60*60*1000));
   var nxt=d.getTime()+24*3600000*30;
+  if(exdays)nxt=d.getTime()+24*3600000*exdays;
   d.setTime(nxt);
   var expires = "expires="+d.toUTCString();
   var str = cname + "=" + cvalue + "; " + expires + ";path=/;";

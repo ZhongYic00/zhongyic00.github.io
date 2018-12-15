@@ -36,44 +36,6 @@ function CodeHideProcess(){
 function DfnHideProcess(){
 	
 }
-function init(f) {
-    a = document.documentElement.scrollTop || document.body.scrollTop,
-    b = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
-    c = (document.documentElement.clientWidth || document.body.clientWidth),
-    lineH = b/16, fontH=b/18;
-    Draw(TopSvg,'top_sym');
-    if(MenuDiv) {
-        Draw(MenuSvg,'menu_sym');
-        if(!nightshift)Draw_sun();
-        else Draw_moon();
-        while(Menulist.hasChildNodes())Menulist.removeChild(Menulist.firstChild);
-        for(var i=0;i<3;i++){
-            var Menuli=document.createElement("li"),Menuop=document.createElement("a");
-            Menuop.style.fontSize=fontH+"px",Menuop.style.lineHeight=lineH+"px";
-            var tmp=document.createTextNode(Menucontext[i]);
-            Menuop.href=Menucontext[i]+".html",Menuop.appendChild(tmp);
-            Menuli.appendChild(Menuop),Menulist.appendChild(Menuli);
-        }
-        //console.log(lineH);
-        Menubox.appendChild(Menulist);MenuContainer.appendChild(Menubox);
-    }
-    if(!nightshift)Velocity(Body,{backgroundColor:LGREY},{duration:1200,easing:"ease-in-out"});
-    else Velocity(Body,{backgroundColor:LYELLOW2},{duration:1200,easing:"ease-in-out"});
-    if(b*2>c) {
-            platform="mobile";
-            if(Main.classList.contains('pc'))Main.classList.remove('pc');
-            if(!nightshift)Main.style.backgroundColor=LGREY,Velocity(Main,{opacity:1},{duration:"normal",delay:500,easing:"ease-out"});
-            else Main.style.backgroundColor=LYELLOW2,Velocity(Main,{opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
-    }
-    else {
-            platform="PC";
-            Main.classList.add('pc');
-            if(!nightshift)Velocity(Main,{backgroundColor:'#FFFFF0',opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
-            else Velocity(Main,{backgroundColor:LYELLOW1,opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
-    }
-    if(f)CodeHideProcess(),DfnHideProcess();
-    set_theme(platform);
-}
 function sleep(d){
     var cur=new Date().getTime(), now = cur;
     while(now - cur <= d)now=new Date().getTime();
@@ -82,7 +44,6 @@ function sleep(d){
 function clear(obj,cxt){
     //cxt.clearRect(0,0,obj.width,obj.height);
 }
-window.onload = init(1);
 window.onresize = function(){
     init(0);
     //console.log("+1");
@@ -130,27 +91,86 @@ TopDiv.onclick = function return_to_top() {
         Velocity(MenuContainer,{height:'0rem'},{duration:"fast"});
     Menuflag=!Menuflag;
 }
-!ThemeDiv?0:ThemeDiv.onclick = function change(){
-    if(!nightshift){
-        Draw_moon();
-        if(platform=="PC")Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW1,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
-        else Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW2,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
-        ClassAttach('code-hidden','code-hidden-dark',1);
-        ClassAttach('hljs','code-dark',1);
-        for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.add('a-lighter');
+var changeToLighttheme=()=>{
+    Draw_sun();
+    if(platform=="PC")Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:"#FFFFF0",color:BLACK},{duration:"normal",easing:"ease-in-out"});
+    else Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:LGREY,color:BLACK},{duration:"normal",easing:"ease-in-out"});
+    ClassAttach('code-hidden','code-hidden-dark',-1);
+    ClassAttach('hljs','code-dark',-1);
+    for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.remove('a-lighter');
+}
+var changeToDarktheme=()=>{
+    Draw_moon();
+    if(platform=="PC")Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW1,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
+    else Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW2,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
+    ClassAttach('code-hidden','code-hidden-dark',1);
+    ClassAttach('hljs','code-dark',1);
+    for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.add('a-lighter');
+}
+const setDarktheme=()=>{
+    Body.style.background=LYELLOW2,Main.style.background=LYELLOW1,Main.style.color='#FFFFFF';
+    Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW1,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
+    ClassAttach('code-hidden','code-hidden-dark',1);
+    ClassAttach('hljs','code-dark',1);
+    for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.add('a-lighter');
+    Draw_moon();
+}
+function init(f) {
+    a = document.documentElement.scrollTop || document.body.scrollTop,
+    b = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
+    c = (document.documentElement.clientWidth || document.body.clientWidth),
+    lineH = b/16, fontH=b/18;
+    Draw(TopSvg,'top_sym');
+    if(MenuDiv) {
+        Draw(MenuSvg,'menu_sym');
+        while(Menulist.hasChildNodes())Menulist.removeChild(Menulist.firstChild);
+        for(var i=0;i<3;i++){
+            var Menuli=document.createElement("li"),Menuop=document.createElement("a");
+            Menuop.style.fontSize=fontH+"px",Menuop.style.lineHeight=lineH+"px";
+            var tmp=document.createTextNode(Menucontext[i]);
+            Menuop.href=Menucontext[i]+".html",Menuop.appendChild(tmp);
+            Menuli.appendChild(Menuop),Menulist.appendChild(Menuli);
+        }
+        //console.log(lineH);
+        Menubox.appendChild(Menulist);MenuContainer.appendChild(Menubox);
+    }
+    //if(!nightshift)Velocity(Body,{backgroundColor:LGREY},{duration:1200,easing:"ease-in-out"});
+    //else Velocity(Body,{backgroundColor:LYELLOW2},{duration:1200,easing:"ease-in-out"});
+    if(b*2>c) {
+            platform="mobile";
+            if(Main.classList.contains('pc'))Main.classList.remove('pc');
+            if(!nightshift)Main.style.backgroundColor=LGREY,Velocity(Main,{opacity:1},{duration:"normal",delay:500,easing:"ease-out"});
+            else Main.style.backgroundColor=LYELLOW2,Velocity(Main,{opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
     }
     else {
-        Draw_sun();
-        if(platform=="PC")Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:"#FFFFF0",color:BLACK},{duration:"normal",easing:"ease-in-out"});
-        else Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:LGREY,color:BLACK},{duration:"normal",easing:"ease-in-out"});
-        ClassAttach('code-hidden','code-hidden-dark',-1);
-        ClassAttach('hljs','code-dark',-1);
-        for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.remove('a-lighter');
+            platform="PC";
+            Main.classList.add('pc');
     }
+    if(f)CodeHideProcess(),DfnHideProcess();
+    set_theme(platform);
+}
+!ThemeDiv?0:ThemeDiv.onclick = function change(){
+    if(!nightshift)changeToDarktheme();
+    else changeToLighttheme();
     nightshift=!nightshift;
+    setCookie('ZhYicTheme',nightshift?'night':'day',0.1);
 }
 function showCode()
 {
     var str=new String(this.id).replace(/sym/g,'main');
     document.getElementById(str).style.display='block',this.style.display='none';
 }
+function main(){
+    //cookie operation need loading.js
+    if(getCookie('ZhYicTheme')=='night')nightshift=true;
+    else if(!getCookie('ZhYicTheme').length){
+        var now=new Date();
+        if(now.getHours()>17)nightshift=true;
+        else nightshift=false;
+        setCookie('ZhYicTheme',nightshift?'night':'day',0.1);
+    }
+    init(1);
+    if(nightshift)setDarktheme();
+    else changeToLighttheme();
+}
+window.onload=main();
