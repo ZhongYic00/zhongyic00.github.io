@@ -1,5 +1,6 @@
-function setCookie(cname,cvalue,exdays=0)
+function setCookie(cname,cvalue,exdays)
 {
+  exdays=exdays||0;
   var d = new Date();
   //console.log(d.getTime()+(exdays*24*60*60*1000));
   var nxt=d.getTime()+24*3600000*30;

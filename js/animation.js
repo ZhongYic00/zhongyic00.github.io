@@ -1,13 +1,14 @@
 const BLACK='#000',LYELLOW1='#3c3c3c',LYELLOW2='#2c2c2c',LGREY='#E8E8E8';
 var cnt = 0, flag = false, hideflag = false, Topflag = false, Menuflag=false, nightshift = false;
-var a, b, c, last, lineH, fontH, platform;
+var a, currentHeight, currentWidth, last, lineH, fontH, platform,codeHidden=false,lastH,lastW,firstInit=true;
 var Bodys=document.getElementsByTagName("body"),Mains=document.getElementsByTagName("main");
 var Body=Bodys[0],Main=Mains[0];
 var TopSvg = document.getElementById("to-top-symbol"), TopDiv = document.getElementById("to-top"), TopButton = new Array(),MenuDiv=document.getElementById("menu-button"),MenuSvg=document.getElementById("menu-symbol"),MenuButton=new Array(),ThemeDiv=document.getElementById("theme-button"),ThemeSvg=document.getElementById("theme-symbol"),MenuContainer=document.getElementById('menu-container'),Header=[document.getElementById("header-container"),MenuContainer];
 TopButton[0] = TopSvg, TopButton[1] = TopDiv,MenuButton[0]=MenuSvg,MenuButton[1]=MenuDiv;
 var Menubox=document.createElement("div"),Menulist=document.createElement("ul"),Menucontext=['home','archive','Friends'],ThemeSvg;
 Menubox.className="menu",Menulist.className="menu";
-function Draw(obj,picName,ext=''){
+function Draw(obj,picName,ext){
+    ext=ext||'';
     if(obj)obj.src='picture/'+picName+'.'+(ext.length>0?ext:'svg');
 }
 const Draw_moon=()=>{Draw(ThemeSvg,'theme_dark_sym');};
@@ -54,14 +55,14 @@ if (a > 100) {
     Velocity(TopButton, { opacity: 1 }, { display: "block" }, { duration: "fast" });
 }
 else Velocity(TopButton, { opacity: 0 }, { display: "none" }, { duration: "fast" });
-if (a > b) {
+if (a > currentHeight) {
     hideflag = true, Velocity(Header, { opacity: 0 }, { display: "none" }, { duration: "slow" });
 }
 window.onscroll = function navibar() {
     last=a,
     a = document.documentElement.scrollTop || document.body.scrollTop,
-    b = (document.documentElement.clientHeight || document.body.clientHeight) / 2;
-    //console.log(cnt++, a, b, last, flag, hideflag);
+    currentHeight = (document.documentElement.clientHeight || document.body.clientHeight) / 2;
+    //console.log(cnt++, a, currentHeight, last, flag, hideflag);
     if (a > 100 && flag == false) {
         flag = true, Velocity(Header, { opacity: 0.8 }, { duration: "fast" });
         Velocity(TopButton, { opacity: 1 }, { display: "block" }, { duration: "fast", easing: "ease-in" });
@@ -72,10 +73,10 @@ window.onscroll = function navibar() {
         Velocity(TopButton, { opacity: 0 }, { display: "none" }, { duration: "fast", easing: "ease-in" });
         //console.log("hidebutton");
     }
-    if (a > b && last < a && hideflag == false && !Menuflag) {
+    if (a > currentHeight && last < a && hideflag == false && !Menuflag) {
         hideflag = true, Velocity(Header, { opacity: 0 }, { display: "none" }, { duration: "slow" });
     }
-    if ((a < b || last-a>b*0.4) && hideflag == true) {
+    if ((a < currentHeight || last-a>currentHeight*0.4) && hideflag == true) {
         hideflag = false, Velocity(Header, { opacity: 0.8 }, { display: "block" }, { duration: "slow" });
     }
 }
@@ -108,25 +109,31 @@ var changeToDarktheme=()=>{
     for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.add('a-lighter');
 }
 const setDarktheme=()=>{
-    Body.style.background=LYELLOW2,Main.style.background=LYELLOW1,Main.style.color='#FFFFFF';
-    Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW1,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
+    //ClassAttach('body','darkInit',1);
+    //ClassAttach('main','darkInit',1);
+    Body.style.background=LYELLOW2;
+    Main.style.background=LYELLOW1,Main.style.color='#FFFFFF';
+    Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW1,color:'#FFFFFF'},{duration:"normal",easing:"ease-in-out"});
     ClassAttach('code-hidden','code-hidden-dark',1);
     ClassAttach('hljs','code-dark',1);
     for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.add('a-lighter');
     Draw_moon();
+    //ClassAttach('body','darkInit',-1);
+    //ClassAttach('main','darkInit',-1);
 }
-function init(f) {
-    a = document.documentElement.scrollTop || document.body.scrollTop,
-    b = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
-    c = (document.documentElement.clientWidth || document.body.clientWidth),
-    lineH = b/16, fontH=b/18;
+function init() {
+    //alert('init start');
+    currentHeight = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
+    currentWidth = (document.documentElement.clientWidth || document.body.clientWidth);
+    lineH = currentHeight/16, fontH=currentHeight/18;
     Draw(TopSvg,'top_sym');
-    if(MenuDiv) {
+    if(MenuDiv&&firstInit) {
+        firstInit=false;
         Draw(MenuSvg,'menu_sym');
         while(Menulist.hasChildNodes())Menulist.removeChild(Menulist.firstChild);
         for(var i=0;i<3;i++){
             var Menuli=document.createElement("li"),Menuop=document.createElement("a");
-            Menuop.style.fontSize=fontH+"px",Menuop.style.lineHeight=lineH+"px";
+            //Menuop.style.fontSize=fontH+"px",Menuop.style.lineHeight=lineH+"px";
             var tmp=document.createTextNode(Menucontext[i]);
             Menuop.href=Menucontext[i]+".html",Menuop.appendChild(tmp);
             Menuli.appendChild(Menuop),Menulist.appendChild(Menuli);
@@ -136,18 +143,19 @@ function init(f) {
     }
     //if(!nightshift)Velocity(Body,{backgroundColor:LGREY},{duration:1200,easing:"ease-in-out"});
     //else Velocity(Body,{backgroundColor:LYELLOW2},{duration:1200,easing:"ease-in-out"});
-    if(b*2>c) {
+    if(currentHeight*2>currentWidth) {
             platform="mobile";
             if(Main.classList.contains('pc'))Main.classList.remove('pc');
             if(!nightshift)Main.style.backgroundColor=LGREY,Velocity(Main,{opacity:1},{duration:"normal",delay:500,easing:"ease-out"});
-            else Main.style.backgroundColor=LYELLOW2,Velocity(Main,{opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
+            else Main.style.backgroundColor=LYELLOW1,Velocity(Main,{opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
     }
     else {
             platform="PC";
             Main.classList.add('pc');
     }
-    if(f)CodeHideProcess(),DfnHideProcess();
+    if(!codeHidden)CodeHideProcess(),DfnHideProcess(),codeHidden=true;
     set_theme(platform);
+    //alert('init complete');
 }
 !ThemeDiv?0:ThemeDiv.onclick = function change(){
     if(!nightshift)changeToDarktheme();
@@ -162,14 +170,24 @@ function showCode()
 }
 function main(){
     //cookie operation need loading.js
-    if(getCookie('ZhYicTheme')=='night')nightshift=true;
-    else if(!getCookie('ZhYicTheme').length){
-        var now=new Date();
-        if(now.getHours()>17)nightshift=true;
-        else nightshift=false;
-        setCookie('ZhYicTheme',nightshift?'night':'day',0.1);
+    currentHeight = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
+    currentWidth = (document.documentElement.clientWidth || document.body.clientWidth);
+    if(currentHeight!=lastH||currentWidth!=lastW)
+    {
+        lastH=currentHeight,lastW=currentWidth;
     }
-    init(1);
+    else return ;
+    //alert('start rendering');
+    getCookie('ZhYicTheme');
+    //if(getCookie('ZhYicTheme')=='night')nightshift=true;
+    //else if(!getCookie('ZhYicTheme').length){
+        var now=new Date();
+        if(now.getHours()>17||now.getHours()<5)nightshift=true;
+        else nightshift=false;
+        //setCookie('ZhYicTheme',nightshift?'night':'day',0.1);
+        //alert('cookie set');
+    //}
+    init();
     if(nightshift)setDarktheme();
     else changeToLighttheme();
 }
