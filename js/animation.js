@@ -3,7 +3,7 @@ var cnt = 0, flag = false, hideflag = false, Topflag = false, Menuflag=false, ni
 var a, currentHeight, currentWidth, last, lineH, fontH, platform,codeHidden=false,lastH,lastW,firstInit=true;
 var Bodys=document.getElementsByTagName("body"),Mains=document.getElementsByTagName("main");
 var Body=Bodys[0],Main=Mains[0];
-var TopSvg = document.getElementById("to-top-symbol"), TopDiv = document.getElementById("to-top"), TopButton = new Array(),MenuDiv=document.getElementById("menu-button"),MenuSvg=document.getElementById("menu-symbol"),MenuButton=new Array(),ThemeDiv=document.getElementById("theme-button"),ThemeSvg=document.getElementById("theme-symbol"),MenuContainer=document.getElementById('menu-container'),Header=[document.getElementById("header-container"),MenuContainer];
+var TopSvg = document.getElementById("to-top-symbol"), TopDiv = document.getElementById("to-top"), TopButton = new Array(),MenuDiv=document.getElementById("menu-button"),MenuSvg=document.getElementById("menu-symbol"),MenuButton=new Array(),ThemeDiv=document.getElementById("theme-button"),ThemeSvg=document.getElementById("theme-symbol"),MenuContainer=document.getElementById('menu-container'),SettingDiv=document.getElementById('setting-button'),settingIframe=document.getElementById('setting-iframe'),Header=[document.getElementById("header-container"),MenuContainer];
 TopButton[0] = TopSvg, TopButton[1] = TopDiv,MenuButton[0]=MenuSvg,MenuButton[1]=MenuDiv;
 var Menubox=document.createElement("div"),Menulist=document.createElement("ul"),Menucontext=['home','archive','Friends'],ThemeSvg;
 Menubox.className="menu",Menulist.className="menu";
@@ -163,6 +163,12 @@ function init() {
     nightshift=!nightshift;
     setCookie('ZhYicTheme',nightshift?'night':'day',0.1);
 }
+!SettingDiv?0:SettingDiv.onclick = function jumpToSetting(){
+    console.log('clicked');
+    if(!settingIframe)return;
+    if(settingIframe.style.display!='block')settingIframe.style.display='block';
+    else settingIframe.style.display='none';
+}
 function showCode()
 {
     var str=new String(this.id).replace(/sym/g,'main');
@@ -179,14 +185,14 @@ function main(){
     else return ;
     //alert('start rendering');
     getCookie('ZhYicTheme');
-    //if(getCookie('ZhYicTheme')=='night')nightshift=true;
-    //else if(!getCookie('ZhYicTheme').length){
+    if(getCookie('ZhYicTheme')=='night')nightshift=true;
+    else if(!getCookie('ZhYicTheme').length){
         var now=new Date();
         if(now.getHours()>17||now.getHours()<5)nightshift=true;
         else nightshift=false;
-        //setCookie('ZhYicTheme',nightshift?'night':'day',0.1);
+        setCookie('ZhYicTheme',nightshift?'night':'day',0.1);
         //alert('cookie set');
-    //}
+    }
     init();
     if(nightshift)setDarktheme();
     else changeToLighttheme();
