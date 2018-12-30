@@ -29,6 +29,7 @@
     <div id="menu-container"></div>    <script>
         Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
     </script>
+    <nav id="article-index" class="float-shadow"></nav>
     <main>
     <p>这道题已经有一位巨神发了汤普森积分的解法了，而且我的解法并不是最优的，仅供参考。</p>
     <p>首先，计算几何中一种非常常用的算法是<a class="center-to-head" href="https://www.cnblogs.com/dongzhiwu/p/8349954.html">扫描线算法（这是一篇比较全面的博文）</a>，但是与<a class="center-to-head" href="http://acm.hdu.edu.cn/showproblem.php?pid=1542">矩形中的扫描线算法</a>不同，三角形因为边不是都与坐标轴平行，故不能采用矩形面积计算中常用的<a class="center-to-head" href="https://blog.csdn.net/tomorrowtodie/article/details/52048323">差分+线段树维护</a>。<br>
@@ -178,5 +179,6 @@ sort(shape+1,shape+1+n,cmp1);//按y排序
 <script>
         Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
 <script src="js/animation.js"></script>
+    <script src="js/document.js"></script>
 </body>
 </html>

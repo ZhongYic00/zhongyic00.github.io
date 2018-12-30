@@ -37,6 +37,7 @@
     <div id="menu-container"></div>    <script>
         Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
     </script>
+    <nav id="article-index" class="float-shadow"></nav>
     <main><h1>什么是单调队列</h1>
 <p>单调队列是一种通过某些数据单调性来优化时间复杂度的方法，其时间复杂度为$O(n)$。</p>
 <p>单调队列一般将较优解置于队首，保证“优秀度”从队首到队尾递减，且保证队列中元素在原序列中的对应位置递增，通过弹去队首维护合法性、弹去队尾维护优秀性、插入队尾来保证有解。</p>
@@ -265,5 +266,6 @@ int main()
     <script>
             Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
     <script src="js/animation.js"></script>
+    <script src="js/document.js"></script>
 </body>
 </html>

@@ -37,6 +37,7 @@
     <div id="menu-container"></div>    <script>
         Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
     </script>
+    <nav id="article-index" class="float-shadow"></nav>
     <main><h1>什么是莫比乌斯反演？</h1>
 <p>如果存在两个<dfn title="数论函数亦称算术函数，一类重要的函数，指定义在正整数集上的实值或复值函数，更一般地，也可把数论函数看做是某一整数集上定义的函数"><a href='https://baike.baidu.com/item/%E6%95%B0%E8%AE%BA%E5%87%BD%E6%95%B0/8555075?fr=aladdin'>数论函数</a></dfn>$f(x),g(x)$满足$$f(n)=\sum_{d|n}g(d)$$则有$$g(n)=\sum_{d|n}\mu(d)\cdot f(\frac{n}{d})$$</p>
 <h1>前置知识</h1>
@@ -90,5 +91,6 @@
 <script>
 		Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
 <script src="js/animation.js"></script>
+    <script src="js/document.js"></script>
 </body>
 </html>
