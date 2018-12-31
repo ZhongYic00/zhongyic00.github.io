@@ -176,15 +176,7 @@ function showCode()
     var str=new String(this.id).replace(/sym/g,'main');
     document.getElementById(str).style.display='block',this.style.display='none';
 }
-function specificTheme(type)
-{
-    if(type=='dark')
-        setDarktheme();
-    else
-        changeToLighttheme();
-    DisableautoTheme=true;
-}
-function main(){
+function main(type){
     //cookie operation need loading.js
     currentHeight = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
     currentWidth = (document.documentElement.clientWidth || document.body.clientWidth);
@@ -194,17 +186,25 @@ function main(){
     }
     else return ;
     //alert('start rendering');
-    getCookie('ZhYicTheme');
-    if(getCookie('ZhYicTheme')=='night')nightshift=true;
-    else if(!getCookie('ZhYicTheme').length){
-        var now=new Date();
-        if(now.getHours()>17||now.getHours()<5)nightshift=true;
+    if(type)
+    {
+        if(type=='dark')
+            nightshift=true;
         else nightshift=false;
-        setCookie('ZhYicTheme',nightshift?'night':'day',0.1);
-        //alert('cookie set');
+    }
+    else
+    {
+        getCookie('ZhYicTheme');
+        if(getCookie('ZhYicTheme')=='night')nightshift=true;
+        else if(!getCookie('ZhYicTheme').length){
+            var now=new Date();
+            if(now.getHours()>17||now.getHours()<5)nightshift=true;
+            else nightshift=false;
+            setCookie('ZhYicTheme',nightshift?'night':'day',0.1);
+            //alert('cookie set');
+        }
     }
     init();
-    if(DisableautoTheme)return;
     if(nightshift)setDarktheme();
     else changeToLighttheme();
 }
