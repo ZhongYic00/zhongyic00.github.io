@@ -1,5 +1,5 @@
 const BLACK='#000',LYELLOW1='#3c3c3c',LYELLOW2='#2c2c2c',LGREY='#E8E8E8';
-var cnt = 0, flag = false, hideflag = false, Topflag = false, Menuflag=false, nightshift = false;
+var cnt = 0, flag = false, hideflag = false, Topflag = false, Menuflag=false, nightshift = false, DisableautoTheme=false;
 var a, currentHeight, currentWidth, last, lineH, fontH,codeHidden=false,lastH,lastW,firstInit=true;
 var Bodys=document.getElementsByTagName("body"),Mains=document.getElementsByTagName("main");
 var Body=Bodys[0],Main=Mains[0];
@@ -182,6 +182,7 @@ function specificTheme(type)
         setDarktheme();
     else
         changeToLighttheme();
+    DisableautoTheme=true;
 }
 function main(){
     //cookie operation need loading.js
@@ -203,6 +204,7 @@ function main(){
         //alert('cookie set');
     }
     init();
+    if(DisableautoTheme)return;
     if(nightshift)setDarktheme();
     else changeToLighttheme();
 }
