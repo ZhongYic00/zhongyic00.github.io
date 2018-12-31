@@ -176,6 +176,13 @@ function showCode()
     var str=new String(this.id).replace(/sym/g,'main');
     document.getElementById(str).style.display='block',this.style.display='none';
 }
+function specificTheme(type)
+{
+    if(type=='dark')
+        setDarktheme();
+    else
+        changeToLighttheme();
+}
 function main(){
     //cookie operation need loading.js
     currentHeight = (document.documentElement.clientHeight || document.body.clientHeight) / 2,
