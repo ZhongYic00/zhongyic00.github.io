@@ -1,6 +1,6 @@
 const BLACK='#000',LYELLOW1='#3c3c3c',LYELLOW2='#2c2c2c',LGREY='#E8E8E8';
 var cnt = 0, flag = false, hideflag = false, Topflag = false, Menuflag=false, nightshift = false;
-var a, currentHeight, currentWidth, last, lineH, fontH, platform,codeHidden=false,lastH,lastW,firstInit=true;
+var a, currentHeight, currentWidth, last, lineH, fontH,codeHidden=false,lastH,lastW,firstInit=true;
 var Bodys=document.getElementsByTagName("body"),Mains=document.getElementsByTagName("main");
 var Body=Bodys[0],Main=Mains[0];
 var TopSvg = document.getElementById("to-top-symbol"), TopDiv = document.getElementById("to-top"), TopButton = new Array(),MenuDiv=document.getElementById("menu-button"),MenuSvg=document.getElementById("menu-symbol"),MenuButton=new Array(),ThemeDiv=document.getElementById("theme-button"),ThemeSvg=document.getElementById("theme-symbol"),MenuContainer=document.getElementById('menu-container'),SettingDiv=document.getElementById('setting-button'),settingIframe=document.getElementById('setting-iframe'),Header=[document.getElementById("header-container"),MenuContainer];
@@ -13,8 +13,10 @@ function Draw(obj,picName,ext){
 }
 const Draw_moon=()=>{Draw(ThemeSvg,'theme_dark_sym');};
 const Draw_sun=()=>{Draw(ThemeSvg,'theme_light_sym');};
+const getPlatform=()=>{return getCookie('ZhYicPlatform');}
+const SetPlatform=(PlatformName)=>{setCookie('ZhYicPlatform',PlatformName);}
 function set_theme(type) {
-    if(type=='mobile'){if(Main.classList.contains('pc'))Main.classList.remove('pc');}
+    if(getPlatform()=='mobile'){if(Main.classList.contains('pc'))Main.classList.remove('pc');}
     else if(!Main.classList.contains('pc'))Main.classList.add('pc');
 }
 const ClassAttach=(ori,nw,type)=>{
@@ -45,10 +47,6 @@ function sleep(d){
 function clear(obj,cxt){
     //cxt.clearRect(0,0,obj.width,obj.height);
 }
-window.onresize = function(){
-    init(0);
-    //console.log("+1");
-};
 //  TopButton.addEventListener("onclick",return_to_top);
 if (a > 100) {
     flag = true, Velocity(Header, { opacity: 0.8 }, { duration: "fast" });
@@ -94,7 +92,7 @@ TopDiv.onclick = function return_to_top() {
 }
 var changeToLighttheme=()=>{
     Draw_sun();
-    if(platform=="PC")Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:"#FFFFF0",color:BLACK},{duration:"normal",easing:"ease-in-out"});
+    if(getPlatform()=="PC")Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:"#FFFFF0",color:BLACK},{duration:"normal",easing:"ease-in-out"});
     else Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:LGREY,color:BLACK},{duration:"normal",easing:"ease-in-out"});
     ClassAttach('code-hidden','code-hidden-dark',-1);
     ClassAttach('hljs','code-dark',-1);
@@ -102,7 +100,7 @@ var changeToLighttheme=()=>{
 }
 var changeToDarktheme=()=>{
     Draw_moon();
-    if(platform=="PC")Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW1,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
+    if(getPlatform()=="PC")Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW1,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
     else Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW2,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
     ClassAttach('code-hidden','code-hidden-dark',1);
     ClassAttach('hljs','code-dark',1);
@@ -144,17 +142,21 @@ function init() {
     //if(!nightshift)Velocity(Body,{backgroundColor:LGREY},{duration:1200,easing:"ease-in-out"});
     //else Velocity(Body,{backgroundColor:LYELLOW2},{duration:1200,easing:"ease-in-out"});
     if(currentHeight*2>currentWidth) {
-            platform="mobile";
+            SetPlatform('mobile');
             if(Main.classList.contains('pc'))Main.classList.remove('pc');
             if(!nightshift)Main.style.backgroundColor=LGREY,Velocity(Main,{opacity:1},{duration:"normal",delay:500,easing:"ease-out"});
             else Main.style.backgroundColor=LYELLOW1,Velocity(Main,{opacity:1},{duration:"normal",delay:200,easing:"ease-out"});
     }
     else {
-            platform="PC";
+            SetPlatform('PC');
             Main.classList.add('pc');
     }
+    console.log(getPlatform());
     if(!codeHidden)CodeHideProcess(),DfnHideProcess(),codeHidden=true;
-    set_theme(platform);
+    set_theme(getPlatform());
+    if(getPlatform()=='mobile'&&document.getElementById('article-index'))
+        Velocity(document.getElementById('article-index'),{opacity:0},{display:'none'});
+    else Velocity(document.getElementById('article-index'),{opacity:1},{display:'block'});
     //alert('init complete');
 }
 !ThemeDiv?0:ThemeDiv.onclick = function change(){
@@ -198,3 +200,7 @@ function main(){
     else changeToLighttheme();
 }
 window.onload=main();
+window.onresize = function(){
+    init();
+    //console.log("+1");
+};

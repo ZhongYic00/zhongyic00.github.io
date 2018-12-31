@@ -64,6 +64,7 @@ main,iframe.PageMain{
     right:0;left:0;
     word-break:break-all;
 }
+main{margin-top:3.5rem;}
 main.pc,.float-shadow{box-shadow:rgba(0,0,0,.2) 0 0 1px 1px;border-radius: 3px;transition: box-shadow 0.5s ease 0s;}
 main.pc{width:60%;margin:0 auto;margin-top:8%;margin-bottom:0;padding:5%;}
 main.pc:hover,.float-shadow:hover{box-shadow:
