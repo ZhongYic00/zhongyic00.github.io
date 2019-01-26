@@ -24,7 +24,7 @@ const ClassAttach=(ori,nw,type)=>{
         if(type==-1)a[i].classList.remove(nw);
         else a[i].classList.add(nw);
 }
-const IdAttach=(ori,nw,type)=>{type==1?document.getElementById(ori).classList.add(nw):document.getElementById(ori).classList.remove(nw);};
+const IdAttach=(ori,nw,type)=>{if(!document.getElementById(ori))return ;type==1?document.getElementById(ori).classList.add(nw):document.getElementById(ori).classList.remove(nw);};
 function CodeHideProcess(){
     var codes=document.getElementsByTagName("pre");
     var CodeSymbol=document.createElement('span'),CodeSymbolPic=document.createElement('img'),CodeSymbolText=document.createTextNode('click to view code');
