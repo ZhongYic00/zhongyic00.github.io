@@ -189,3 +189,6 @@ h6.article-index-text{font-size:0.5rem;}
 .article-index-node{margin:0.1rem;margin-left:1rem;}
 .article-index-text{margin:0.05rem;cursor:pointer;}
 .article-index-text:hover{color:rgb(116, 59, 13);text-decoration:underline;}
+.article-index-dark{color:rgb(229, 188, 149);background:rgb(18, 18, 18) !important;}
+.article-index-dark::-webkit-scrollbar{background:rgba(83, 83, 83, 0.12);padding:1px;}
+.article-index-dark::-webkit-scrollbar-thumb{background:rgba(136, 136, 136, 0.5);}

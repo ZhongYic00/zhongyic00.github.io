@@ -24,6 +24,7 @@ const ClassAttach=(ori,nw,type)=>{
         if(type==-1)a[i].classList.remove(nw);
         else a[i].classList.add(nw);
 }
+const IdAttach=(ori,nw,type)=>{type==1?document.getElementById(ori).classList.add(nw):document.getElementById(ori).classList.remove(nw);};
 function CodeHideProcess(){
     var codes=document.getElementsByTagName("pre");
     var CodeSymbol=document.createElement('span'),CodeSymbolPic=document.createElement('img'),CodeSymbolText=document.createTextNode('click to view code');
@@ -96,6 +97,7 @@ var changeToLighttheme=()=>{
     else Velocity(Body,{backgroundColor:LGREY},{duration:"normal"}),Velocity(Main,{backgroundColor:LGREY,color:BLACK},{duration:"normal",easing:"ease-in-out"});
     ClassAttach('code-hidden','code-hidden-dark',-1);
     ClassAttach('hljs','code-dark',-1);
+    IdAttach('article-index','article-index-dark',-1);
     for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.remove('a-lighter');
 }
 var changeToDarktheme=()=>{
@@ -104,6 +106,7 @@ var changeToDarktheme=()=>{
     else Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW2,color:"#FFFFFF"},{duration:"normal",easing:"ease-in-out"});
     ClassAttach('code-hidden','code-hidden-dark',1);
     ClassAttach('hljs','code-dark',1);
+    IdAttach('article-index','article-index-dark',1);
     for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.add('a-lighter');
 }
 const setDarktheme=()=>{
@@ -114,6 +117,7 @@ const setDarktheme=()=>{
     Velocity(Body,{ backgroundColor:LYELLOW2},{duration:"normal", easing:"ease-in-out"}),Velocity(Main,{backgroundColor:LYELLOW1,color:'#FFFFFF'},{duration:"normal",easing:"ease-in-out"});
     ClassAttach('code-hidden','code-hidden-dark',1);
     ClassAttach('hljs','code-dark',1);
+    IdAttach('article-index','article-index-dark',1);
     for(var a=document.getElementsByTagName('a'),i=0;i<a.length;i++)a[i].classList.add('a-lighter');
     Draw_moon();
     //ClassAttach('body','darkInit',-1);
