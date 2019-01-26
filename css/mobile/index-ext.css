@@ -14,9 +14,14 @@ main>div:hover{
     box-shadow:0px 0px 5px 0px rgba(0,0,0,.5) inset;
     background:rgb(255, 255, 249);
 }
+main.home-main-dark>div:hover{box-shadow:0px 0px 5px 0px rgba(166,166,166,.2);background:rgba(0,0,0,.1)}
 main>div:active{
     box-shadow:0px 0px 8px 0px rgba(0,0,0,.6) inset;
     background:rgb(235, 235, 203);
+}
+main.home-main-dark>div:active{
+    box-shadow:0px 0px 8px 0px rgba(0,0,0,.6) inset;
+    background:rgba(0, 0, 0, 0.6);
 }
 #page-turn{
     margin:3% auto;
@@ -79,6 +84,7 @@ main>div:active{
 #front-page-skip:hover #path854{stroke:#1baae2 !important}
 #front-page-skip:hover #path823{stroke: #1baae2 !important;fill: #1baae2 !important}
 nav{display:block;width:60%;margin:0 auto;text-align:center;background:whitesmoke;height:3rem;}
+.home-main-dark>nav{background:rgba(0,0,0,0)}
 nav ul{display:inline;font-size:2rem;list-style:none;width:100%;padding:0;}
 nav ul li{float:left;width:20%;}
 li a{
