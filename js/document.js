@@ -23,21 +23,23 @@ function newTitleNode(ori)
     }
     return rt;
 }
-function generateIndex(titles,st)
+function generateIndex(titles,st,ed)
 {
+    ed=ed||titles.length;
     var Nodenow=IndexNodeTemplate.cloneNode(0),i;
-    for(i=st;i<titles.length&&titles[i].nodeName>=titles[st].nodeName;i++)
+    //for(i=st;i<titles.length&&titles[i].nodeName>=titles[st].nodeName;i++)
+    for(i=st;i<titles.length&&i<ed;i++)
     {
-        if(titles[i].nodeName!=titles[st].nodeName)
-        {
-            var now=i;
-            Nodenow.appendChild(generateIndex(titles,i));
-            while(i<titles.length&&titles[i].nodeName>=titles[now].nodeName)i++;//rubbish O(n^2)!!!
-            i--;
-        }
-        else if(titles[i].nodeName==titles[st].nodeName)
+        if(titles[i].nodeName==titles[st].nodeName||(i>0&&titles[i].nodeName<titles[i-1].nodeName))
         {
             Nodenow.appendChild(newTitleNode(titles[i]));
+        }
+        else
+        {
+            var now=i;
+            while(i<titles.length&&titles[i].nodeName>=titles[now].nodeName)i++;
+            Nodenow.appendChild(generateIndex(titles,now,i));//rubbish O(n^2)!!!
+            i--;
         }
     }
     return Nodenow;
