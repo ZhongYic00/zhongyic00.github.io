@@ -44,4 +44,4 @@ function generateIndex(titles,st,ed)
     }
     return Nodenow;
 }
-document.getElementById('article-index').appendChild(generateIndex(getDocumentStructure(),0));
+document.getElementById('article-index')?document.getElementById('article-index').appendChild(generateIndex(getDocumentStructure(),0)):0;
