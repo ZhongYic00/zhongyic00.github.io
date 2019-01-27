@@ -43,7 +43,7 @@
 <h2>例题2</h2>
 <p>给定n个值（$n 1e5，a_i \pm 1e9$），可任意改变值的正负，求最少逆序对。</p>
 <h3>解法</h3>
-<p>按照绝对值分类讨论，对于$\left|a_j\right|\ge\left|a_i\right|$，无论怎么改变正负都不对逆序对数产生影响；对于$\left|a_j\right|\ge\left|a_i\right|$，若$a_i$取负则增加$\sum[j<i,\left|a_j\right|>\left|a_i\right|]$，否则增加$\sum[j>i,\left|a_j\right|>\left|a_i\right|]$。</p>
+<p>按照绝对值分类讨论，对于$\left|a_j\right|\ge\left|a_i\right|$，无论怎么改变正负都不对逆序对数产生影响；对于$\left|a_j\right|\ge\left|a_i\right|$，若$a_i$取负则增加$\sum[j&lt;i,\left|a_j\right|&gt;\left|a_i\right|]$，否则增加$\sum[j&gt;i,\left|a_j\right|&gt;\left|a_i\right|]$。</p>
 <h1>线段树</h1>
 <h2>基础</h2>
 <p>略</p>
@@ -67,10 +67,10 @@
 <h2>启发式合并</h2>
 <p>有脑子地暴力就好（小的往大的上面暴力合并）。</p>
 <h2>例题1</h2>
-<p>给定三个长n（$n \le 5e6$）的排列ABC，统计有多少对(i,j)满足$A_i<A_j,B_i<B_j,C_i<C_j$</p>
+<p>给定三个长n（$n \le 5e6$）的排列ABC，统计有多少对(i,j)满足$A_i&lt;A_j,B_i&lt;B_j,C_i&lt;C_j$</p>
 <h3>解法</h3>
 <p>和三位偏序有一些区别，并且数据范围非常大。正解是使用<mark>容斥</mark>。</p>
-<p>设$F(i,j)=[A_i<A_j,B_i<B_j],G(i,j)=[B..,C..],H(i,j)=[C..,A..]$，观察发现若一对$i,j$同时满足F、G则一定也满足H，因此若计算$\sum F,\sum G,\sum H$，则一对合法的$i,j$产生的贡献为3，不合法的$i,j$产生的贡献一定为1。</p>
+<p>设$F(i,j)=[A_i&lt;A_j,B_i&lt;B_j],G(i,j)=[B..,C..],H(i,j)=[C..,A..]$，观察发现若一对$i,j$同时满足F、G则一定也满足H，因此若计算$\sum F,\sum G,\sum H$，则一对合法的$i,j$产生的贡献为3，不合法的$i,j$产生的贡献一定为1。</p>
 <p>因此设答案为$Ans$，有$\sum F+\sum G+\sum H=Ans\cdot3+\sum[illegal]$，且有$Ans=\binom{n}{2}-\sum[illegal]$。变形得到$Ans=\frac{1}{2}(\sum F+\sum G+\sum H-\binom{n}{2})$，即可在$O(nlogn)$复杂度内求解。</p>
 </main>
 <iframe src="footer.html" id="footer" frameborder="0"></iframe>
