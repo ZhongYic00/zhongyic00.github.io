@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<head>
+<title>ZhYic-2019清北学堂集训day1上午学习笔记</title> <link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta http-equiv="x-dns-prefetch-control" content="on">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-transform"/>
+<meta http-equiv="Cache-Control" content="no-siteapp"/>
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
+<script src="js/velocity.js"></script>
+<link rel="stylesheet" href="css/styles/solarized-light.css">
+<script src="js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script src="js/loading.js"></script>
+</head>
+<body>
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
+            <img id="menu-symbol"/>
+        </span>
+        <div id="header-context"><h1>2019清北学堂集训day1上午学习笔记</h1><!--here--></div>
+        <span id="setting-area">
+        <span class="setting-option" id="theme-button">
+            <img id="theme-symbol"/>
+        </span>
+        <span class="setting-option" id="setting-button">
+            <img id="setting-symbol" src="picture/setting_sym.svg">
+        </span>
+</span>
+    </div>
+    <iframe id="setting-iframe" src="settings.html" frameborder=0></iframe>\    </div>
+    <div id="menu-container"></div>    <nav id="article-index" class="float-shadow"></nav>
+    <main><h1>树状数组</h1>
+<h2>基础</h2>
+<p>略</p>
+<h2>例题1</h2>
+<p>给定n个点（n 1e5)，求矩形范围内的点的个数。可离线。</p>
+<h3>解法</h3>
+<p>二维偏序板子题，将询问加入序列，先按一维排序，树状数组维护偏序。</p>
+<h2>例题2</h2>
+<p>给定n个值（$n 1e5，a_i \pm 1e9$），可任意改变值的正负，求最少逆序对。</p>
+<h3>解法</h3>
+<p>按照绝对值分类讨论，对于$\left|a_j\right|\ge\left|a_i\right|$，无论怎么改变正负都不对逆序对数产生影响；对于$\left|a_j\right|\ge\left|a_i\right|$，若$a_i$取负则增加$\sum[j<i,\left|a_j\right|>\left|a_i\right|]$，否则增加$\sum[j>i,\left|a_j\right|>\left|a_i\right|]$。</p>
+<h1>线段树</h1>
+<h2>基础</h2>
+<p>略</p>
+<h2>例题1</h2>
+<p>给定一个长为n（$n 1e5$）的环形序列A，有q次修改操作，求连续最大子段和。</p>
+<h3>解法</h3>
+<p>容易考虑到拆环为链，但不容易保证截取出的链长$\le n$，所以转换为总和-中间连续最小子段和和连续最大子段和取max</p>
+<h2>例题2</h2>
+<p>[SDOI2016]游戏</p>
+<p><mark>李超线段树</mark></p>
+<h3>解法</h3>
+<p>考虑到直线交点只会出现在[左/右]一个区间，修改时若整个区间内无交点直接抛弃较劣的一条，否则分别下放标记，若交点在左子区间将较优的直接赋给该区间，较劣的下传给左子区间，依次类推。</p>
+<h1>可并堆&amp;线段树合并</h1>
+<h2>例题</h2>
+<p>[APIO2012]派遣</p>
+<h3>解法1</h3>
+<p>用可并堆。已经做过了，略。</p>
+<h3>解法2</h3>
+<p>用线段树合并。复杂度$\Omega(nlogn)$</p>
+<h1>平衡树</h1>
+<h2>启发式合并</h2>
+<p>有脑子地暴力就好（小的往大的上面暴力合并）。</p>
+<h2>例题1</h2>
+<p>给定三个长n（$n \le 5e6$）的排列ABC，统计有多少对(i,j)满足$A_i<A_j,B_i<B_j,C_i<C_j$</p>
+<h3>解法</h3>
+<p>和三位偏序有一些区别，并且数据范围非常大。正解是使用<mark>容斥</mark>。</p>
+<p>设$F(i,j)=[A_i<A_j,B_i<B_j],G(i,j)=[B..,C..],H(i,j)=[C..,A..]$，观察发现若一对$i,j$同时满足F、G则一定也满足H，因此若计算$\sum F,\sum G,\sum H$，则一对合法的$i,j$产生的贡献为3，不合法的$i,j$产生的贡献一定为1。</p>
+<p>因此设答案为$Ans$，有$\sum F+\sum G+\sum H=Ans\cdot3+\sum[illegal]$，且有$Ans=\binom{n}{2}-\sum[illegal]$。变形得到$Ans=\frac{1}{2}(\sum F+\sum G+\sum H-\binom{n}{2})$，即可在$O(nlogn)$复杂度内求解。</p>
+</main>
+<iframe src="footer.html" id="footer" frameborder="0"></iframe>
+<div id="to-top"><img id="to-top-symbol"/></div>
+    <script>
+            Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+    <script src="js/animation.js"></script>
+    <script src="js/document.js"></script>
+</body>
