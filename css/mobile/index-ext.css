@@ -99,5 +99,6 @@ li a:hover{text-shadow:1px 1px white;background:rgb(53, 53, 53)}
 .base-box-dark li a:hover{text-shadow:1px 1px rgb(64, 106, 109)}
 .front-page-dark{color:rgb(135, 221, 168);text-shadow:0rem 0rem 0.3rem rgb(100, 100, 100)}
 #setting-iframe{width:30rem;top:0;bottom:0;right:0;left:0;margin:auto;}
-#setting-iframe:before{content:"";position:fixed;z-index:975;top:0;bottom:0;left:0;right:0;background:rgba(0,0,0,.2)}
-#setting-button{}
+#setting-iframe:before{content:" ";display:block;position:fixed;z-index:975;top:0;bottom:0;left:0;right:0;background:rgba(0,0,0,.2)}
+#setting-button{position:fixed;bottom:0;right:0;transition:background 0.2s ease-out 0s;}
+#setting-button:hover{background:rgba(0,0,0,.2)}
