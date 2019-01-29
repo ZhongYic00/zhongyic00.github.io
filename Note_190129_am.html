@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<head>
+<title>ZhYic-2019清北学堂集训day3上午学习笔记</title> <link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta http-equiv="x-dns-prefetch-control" content="on">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-transform"/>
+<meta http-equiv="Cache-Control" content="no-siteapp"/>
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
+<script src="js/velocity.js"></script>
+<link rel="stylesheet" href="css/styles/solarized-light.css">
+<script src="js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script src="js/loading.js"></script>
+</head>
+<body>
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
+            <img id="menu-symbol"/>
+        </span>
+        <div id="header-context"><h1>2019清北学堂集训day3上午学习笔记</h1><!--here--></div>
+        <span id="setting-area">
+        <span class="setting-option" id="theme-button">
+            <img id="theme-symbol"/>
+        </span>
+        <span class="setting-option" id="setting-button">
+            <img id="setting-symbol" src="picture/setting_sym.svg">
+        </span>
+</span>
+    </div>
+    <iframe id="setting-iframe" src="settings.html" frameborder=0></iframe>    </div>
+    <div id="menu-container"></div>    <nav id="article-index" class="float-shadow"></nav>
+    <main><h1>强连通分量</h1>
+<ul>
+<li>针对有向图</li>
+<li>每个点属于且仅属于一个强连通分量</li>
+<li>A,B属于一个强连通分量且B,C属于一个强连通分量$\Rightarrow$A,C属于一个强连通分量</li>
+
+</ul>
+<h2>求法</h2>
+<p>Tarjan 和 Kosaraju 算法</p>
+<h3>Tarjan</h3>
+<p>维护low值注意：</p>
+<ul>
+<li>low[x]表示x能到达的点的最小dfn</li>
+<li>若v未访问，low[x]对low[v]取min</li>
+<li>否则，若v在栈中low[x]对dfn[v]取min</li>
+<li>当low[x]=dfn[x]，x不属于比自己”靠上“的点组成的强连通分量，弹栈</li>
+
+</ul>
+<h3>例题</h3>
+<ul>
+<li><p>[HAOI2006]受欢迎的牛</p>
+</li>
+<li><p>[BZOJ2140]稳定婚姻</p>
+<ul>
+<li>夫妻关系从左向右建边，情人关系从右至左建边</li>
+<li>在一个环上则不稳定</li>
+
+</ul>
+</li>
+
+</ul>
+<h1>双联通分量</h1>
+<h2>割点和桥</h2>
+<ul>
+<li>去掉点V后连通分量个数增加则V为割点。</li>
+<li>去掉边E后连通分量个数增加则E为桥。</li>
+
+</ul>
+<h2>边双连通分量和点双连通分量</h2>
+<ul>
+<li>边双连通分量中任意两点间有两条边不想交的路径。</li>
+<li>点双连通分量中任意两点间有两条点不相交的路径。</li>
+
+</ul>
+<h2>求法</h2>
+<ul>
+<li>求割点时若low[x]=dfn[x]则x为割点，起始点除外，起始点须有两个子连通分量才为割点。</li>
+<li>求解点双连通分量时，由于割点可能在多个点双连通分量中，因此压入栈中的是边，最后剩下的边连接的就是割点。</li>
+
+</ul>
+<h2>例题</h2>
+<h3>[USACO]Redundant Paths</h3>
+<ul>
+<li>边双连通分量缩点之后形成一棵树</li>
+<li>在树的叶子节点之间贪心连边即可</li>
+
+</ul>
+<h1>二分图</h1>
+<h2>完美匹配</h2>
+<p>若一个匹配中图中每个顶点都和匹配中的某条边关联则称之为完美匹配。</p>
+<h2>Hall定理</h2>
+<p>二分图$G=(V,E)$，其中$V$划分为$A,B$，$C$是$A$的子集且$\left|C\right|=k$。</p>
+<p>存在一个匹配M使得$C$中每个点都存在于匹配中（存在C的完美匹配），当且仅当$1\le i\le k$，$C$中任意i个点都至少和$B$中i个点相连。</p>
+<h2>点覆盖</h2>
+<p>选出一个点集使得对于任意一条边都至少与一个黑点相连。</p>
+<ul>
+<li>二分图最小点覆盖=二分图最大匹配</li>
+
+</ul>
+<h2>独立集</h2>
+<ul>
+<li>二分图最大独立集=总点数-二分图最大匹配</li>
+
+</ul>
+<h2>例题</h2>
+<ul>
+<li><p>小行星</p>
+</li>
+<li><p>泥泞的牧场</p>
+<ul>
+<li>对于每个部分建点（按照横竖划分拓展到最长）</li>
+<li>有相交的部分连边</li>
+
+</ul>
+</li>
+
+</ul>
+<h1>2-SAT</h1>
+<p>SAT是指给出一些条件（元素根据逻辑运算的结果），问是否存在合法方案使得满足所有条件。</p>
+<blockquote><p>SAT 是适定性（Satisfiability）问题的简称。一般形式为 k - 适定性问题，简称 $k-SAT$。而当$k\ge2$时该问题为 NP 完全的。所以我们只研究$k=2$的情况。</p>
+</blockquote>
+<ul>
+<li><p>将每个元素分真假建点</p>
+</li>
+<li><p>例如</p>
+<ul>
+<li>$x\&y=1$，x假连x真，y假连y真。</li>
+<li>$x|y=1$，x假连y真，y假连x真。</li>
+<li>$x\or y=1$，x假连y真，x真连y假，y假连x真，y真连x假。</li>
+<li>对于特殊的限制条件，例如$A=1(A\&B=1)$，我们可以构建“若A取0则A必须取1”这样的限制条件</li>
+
+</ul>
+</li>
+<li><p>建图后缩点，若任意一个元素的真假都不在一个强连通分量里则有解，否则无解。</p>
+</li>
+<li><p>构造可行解</p>
+<ul>
+<li>选定一个强连通分量，将其中条件置为真，与其相反的点所属的连通分量及通向这些连通分量的点都置为假。</li>
+
+</ul>
+</li>
+
+</ul>
+<h2>例题</h2>
+<h3>[NOI2017]游戏</h3>
+<p>对于x的情况，观察到最多只有8个x，所以可以枚举地图为x的场次选择情况。</p>
+<p>但这样复杂度乘上$O(3^n)$，只有95分。</p>
+<p>转换思路枚举没选哪个，只需枚举前两个即可涵盖所有情况（不选1=选2/3，不选2=选1/3，选1/2/3都枚举到了）。这样复杂度降为$O(2^n)$。</p>
+<h1>综合例题</h1>
+<h2>[BZOJ1135|POI2009]Lyz</h2>
+<p>根据Hall定理进行判定。</p>
+<p>由Hall定理，设$a_i$表示选择i号鞋的人数，只要每个区间$[l,r]$满足$$\sum\limits_{i=l}^ra_i\le(r+d-l+1)\cdot k$$即足够（有可行匹配方案）。</p>
+<p>变形得$$\sum\limits_{i=l}^r(a_i-k)\le k\cdot d$$</p>
+<p>于是变为了最大子段和问题，线段树维护即可。</p>
+<h2>[BZOJ2725]故乡的梦</h2>
+<ul>
+<li>如果删去的边不在最短路上无影响。</li>
+<li>考虑一条必须经过(u,v)的最短路。</li>
+<li>S-u-v-T的最短路中，S-u的部分和S-T的最短路会有一部分交，v-T的部分和S-T的最短路也有一部分交。</li>
+<li>设S-u与S-T的最后一个公共点为a，v-T与S-T的第一个公共点为b。</li>
+<li>则可以用S-u-v-T替代删去a-b中某一段的最短路。</li>
+<li>预处理S到任意点、T到任意点的最短路，枚举边，线段树维护最短路上的答案。</li>
+
+</ul>
+</main>
+<iframe src="footer.html" id="footer" frameborder="0"></iframe>
+<div id="to-top"><img id="to-top-symbol"/></div>
+    <script>
+            Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+    <script src="js/animation.js"></script>
+    <script src="js/document.js"></script>
+</body>
