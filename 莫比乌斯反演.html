@@ -62,7 +62,7 @@
 <figure><table>
 <thead>
 <tr><th>$\varphi(n)$</th><th><a href='http://baike.baidu.com/view/107769.htm'>欧拉函数</a>，计算与n互质的正整数之数目</th></tr></thead>
-<tbody><tr><td>$\mu(n)$</td><td><a href='http://baike.baidu.com/view/1596364.htm'>莫比乌斯函数</a>，关于非平方数的质因子数目</td></tr><tr><td>$gcd(n,k)$</td><td>最大公因子，当k固定的情况</td></tr><tr><td>$d(n) $</td><td>n的正因子数目</td></tr><tr><td>$\sigma(n)$</td><td>约数和函数。表示$n$ 的各个约数之和，即$\sigma(n)=\sum\limits_{d|n}d$</td></tr><tr><td>$I(n)$</td><td>不变的函数，定义为$I(n)=1$（完全积性）</td></tr><tr><td>$N(n)$</td><td>单位函数，定义为$N(n) = n$（完全积性）</td></tr><tr><td>$\epsilon(n)$</td><td>元函数，定义为：若$n = 1,\epsilon(n)=1$；若$n>1,\epsilon(n)=0$。别称为“对于狄利克雷卷积的乘法单位”（完全积性）</td></tr></tbody>
+<tbody><tr><td>$\mu(n)$</td><td><a href='http://baike.baidu.com/view/1596364.htm'>莫比乌斯函数</a>，关于非平方数的质因子数目</td></tr><tr><td>$gcd(n,k)$</td><td>最大公因子，当k固定的情况</td></tr><tr><td>$d(n) $</td><td>n的正因子数目</td></tr><tr><td>$\sigma(n)$</td><td>约数和函数。表示$n$ 的各个约数之和，即$\sigma(n)=\sum\limits_{d|n}d$</td></tr><tr><td>$I(n)$</td><td>不变的函数，定义为$I(n)=1$（完全积性）</td></tr><tr><td>$N(n)$</td><td>单位函数，定义为$N(n) = n$（完全积性）</td></tr><tr><td>$\epsilon(n)$</td><td>元函数，定义为：若$n = 1,\epsilon(n)=1$；若$n>1,\epsilon(n)=0$。别称为“对于狄利克雷卷积的乘法单位”（完全积性）</td></tr></tbody>
 </table></figure>
 <h3>什么是狄利克雷卷积</h3>
 <p>我们定义$f,g$两个函数的狄利克雷卷积$(*)$运算为$$(f*g)(n) = \sum \limits_{d|n} {f(d)g(\frac{n}{d})}$$（读作$f$卷$g$）。</p>
@@ -72,7 +72,7 @@
 <blockquote><p>如果$f$和$g$均为积性函数，那么$f*g$一定也为积性函数。</p>
 </blockquote>
 <p>证明：</p>
-<p>$$h=f*g=\sum\limits_{d|n}f(d)g(\frac{n}{d})=\sum\limits_{i_1=0}^{k_1}\sum\limits_{i_2=0}^{k_2}f(p_1^{i_1})f(p_2^{i_2})g(p_1^{k_1-i_1})g(p_2^{k_2-i_2})=\left[\sum\limits_{i_1=0}^{k_1}f(p_1^{i_1})g(p_1^{k_1-i_1})\right]\cdot\left[\sum\limits_{i_2=0}^{k_2}f(p_2^{i_2})g(p_2^{k_2-i_2})\right]=h(p_1^{k_1})h(p_2^{k_2})=h(n)$$</p>
+<p>$$h=f*g=\sum\limits_{d|n}f(d)g(\frac{n}{d})=\sum\limits_{i_1=0}^{k_1}\sum\limits_{i_2=0}^{k_2}f(p_1^{i_1})f(p_2^{i_2})g(p_1^{k_1-i_1})g(p_2^{k_2-i_2})\\=\left[\sum\limits_{i_1=0}^{k_1}f(p_1^{i_1})g(p_1^{k_1-i_1})\right]\cdot\left[\sum\limits_{i_2=0}^{k_2}f(p_2^{i_2})g(p_2^{k_2-i_2})\right]=h(p_1^{k_1})h(p_2^{k_2})=h(n)$$</p>
 <h3>应用</h3>
 <p>关于莫比乌斯函数有一个重要等式：由莫比乌斯函数的性质一$\sum\limits_{d | n} \mu(d) = [n = 1]$转化为狄利克雷卷积的形式可以写作$\mu * I = \epsilon$，接下来我们可以凭此证明莫比乌斯反演。</p>
 <p>由于积性函数的性质，证明积性函数$f_x$只需证明$f_p(p为素数)$</p>
