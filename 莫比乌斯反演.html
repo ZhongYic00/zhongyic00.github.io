@@ -1,6 +1,6 @@
 <!DOCTYPE HTML>
 <head>
-<title>ZhYic-莫比乌斯反演学习笔记</title><link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
+<title>ZhYic-莫比乌斯反演学习笔记</title> <link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta charset="UTF-8">
 <meta http-equiv="x-dns-prefetch-control" content="on">
@@ -8,16 +8,14 @@
 <meta name="renderer" content="webkit">
 <meta http-equiv="Cache-Control" content="no-transform"/>
 <meta http-equiv="Cache-Control" content="no-siteapp"/>
-<link rel="stylesheet" type="text/css" href="css/mobile/modern.css"/>
+<link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
 <script src="js/velocity.js"></script>
-<link rel="stylesheet" href="css/styles/solarized-light.css"/>
-<script src="js/highlight.pack.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
+<link rel="stylesheet" href="css/styles/solarized-light.css">
+<script src="js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
 <script src="js/loading.js"></script>
 </head>
-<body>    
-
+<body>
     <div id="header-container">
     <div id="header">
         <span id="menu-button">
@@ -34,17 +32,14 @@
 </span>
     </div>
     <iframe id="setting-iframe" src="settings.html" frameborder=0></iframe>    </div>
-    <div id="menu-container"></div>    <script>
-        Velocity(document.getElementById("header"),{top:0},{duration:"slow",easing:"spring"});
-    </script>
-    <nav id="article-index" class="float-shadow"></nav>
+    <div id="menu-container"></div>    <nav id="article-index" class="float-shadow"></nav>
     <main><h1>什么是莫比乌斯反演？</h1>
 <p>如果存在两个<dfn title="数论函数亦称算术函数，一类重要的函数，指定义在正整数集上的实值或复值函数，更一般地，也可把数论函数看做是某一整数集上定义的函数"><a href='https://baike.baidu.com/item/%E6%95%B0%E8%AE%BA%E5%87%BD%E6%95%B0/8555075?fr=aladdin'>数论函数</a></dfn>$f(x),g(x)$满足$$f(n)=\sum_{d|n}g(d)$$则有$$g(n)=\sum_{d|n}\mu(d)\cdot f(\frac{n}{d})$$</p>
 <h1>前置知识</h1>
 <h2><dfn title="莫比乌斯函数，数论函数，由德国数学家和天文学家莫比乌斯(August Ferdinand M&ouml;bius ,1790–1868)提出"><a href='https://baike.baidu.com/item/%E8%8E%AB%E6%AF%94%E4%B9%8C%E6%96%AF%E5%87%BD%E6%95%B0/2567473'>莫比乌斯函数</a></dfn></h2>
 <p>莫比乌斯函数的定义为$$\mu(n) = \begin{cases}1&n=1\\(-1)^{k}&n=\prod p_i&p_i\in{prime}~\&~p_i\ne p_j\\0&otherwise\end{cases}$$</p>
 <h3>性质</h3>
-<ol>
+<ol start='' >
 <li><p>$$\sum\limits_{d | n} \mu(d) = [n = 1]$$</p>
 <p>若n=1，显然成立。</p>
 <p>若n&gt;1，因为$n=\prod\limits_{i=0}^kp_i^{a_i}$，其中若$\mu(d)\ne0$则$d=\prod\limits_{i=0}^{k'}p'_i(p'\subset p)$，即d由若干不重复素因子组成。此时考虑d可分解为的素因子个数r，可分解为r个素因子的因数共有$\binom{k}{r}$个，因此上式可化为$$\sum\limits_i^k\binom{k}{i}(-1)^i$$</p>
@@ -62,12 +57,12 @@
 <h2><dfn title="亦称狄利克雷卷积、卷积，是数论函数的重要运算之一"><a href='https://baike.baidu.com/item/%E7%8B%84%E5%88%A9%E5%85%8B%E9%9B%B7%E4%B9%98%E7%A7%AF'>狄利克雷卷积</a></dfn></h2>
 <h3>积性函数</h3>
 <p>对于数论函数$f$，若$f(a)\cdot f(b)=f(ab)~~\forall a, b~gcd(a,b)=1$则$f$为积性函数。</p>
-<p>若$f(a)\cdot f(b)=f(ab)~~\forall a,b\in N^+$则$f$为完全积性函数。</p>
+<p>若$f(a)\cdot f(b)=f(ab)~~\forall a,b\in\N^+$则$f$为完全积性函数。</p>
 <h5>常见积性函数表</h5>
 <figure><table>
 <thead>
-<tr><th> $\varphi(n)$</th><th> <a href='http://baike.baidu.com/view/107769.htm'>欧拉函数</a>，计算与n互质的正整数之数目</th></tr></thead>
-<tbody><tr><td>$\mu(n)$</td><td><a href='http://baike.baidu.com/view/1596364.htm'>莫比乌斯函数</a>，关于非平方数的质因子数目</td></tr><tr><td>$gcd(n,k)$</td><td>最大公因子，当k固定的情况</td></tr><tr><td>$d(n) $</td><td>n的正因子数目</td></tr><tr><td>$\sigma(n)$</td><td> 约数和函数。表示$n$ 的各个约数之和，即$\sigma(n)=\sum\limits_{d|n}d$</td></tr><tr><td>$I(n)$</td><td>不变的函数，定义为$I(n)=1$（完全积性）</td></tr><tr><td>$N(n)$</td><td>单位函数，定义为$N(n) = n$（完全积性）</td></tr><tr><td> $\epsilon(n)$</td><td>元函数，定义为：若$n = 1,\epsilon(n)=1$；若$n>1,\epsilon(n)=0$。别称为“对于狄利克雷卷积的乘法单位”（完全积性）</td></tr></tbody>
+<tr><th>$\varphi(n)$</th><th><a href='http://baike.baidu.com/view/107769.htm'>欧拉函数</a>，计算与n互质的正整数之数目</th></tr></thead>
+<tbody><tr><td>$\mu(n)$</td><td><a href='http://baike.baidu.com/view/1596364.htm'>莫比乌斯函数</a>，关于非平方数的质因子数目</td></tr><tr><td>$gcd(n,k)$</td><td>最大公因子，当k固定的情况</td></tr><tr><td>$d(n) $</td><td>n的正因子数目</td></tr><tr><td>$\sigma(n)$</td><td>约数和函数。表示$n$ 的各个约数之和，即$\sigma(n)=\sum\limits_{d|n}d$</td></tr><tr><td>$I(n)$</td><td>不变的函数，定义为$I(n)=1$（完全积性）</td></tr><tr><td>$N(n)$</td><td>单位函数，定义为$N(n) = n$（完全积性）</td></tr><tr><td>$\epsilon(n)$</td><td>元函数，定义为：若$n = 1,\epsilon(n)=1$；若$n>1,\epsilon(n)=0$。别称为“对于狄利克雷卷积的乘法单位”（完全积性）</td></tr></tbody>
 </table></figure>
 <h3>什么是狄利克雷卷积</h3>
 <p>我们定义$f,g$两个函数的狄利克雷卷积$(*)$运算为$$(f*g)(n) = \sum \limits_{d|n} {f(d)g(\frac{n}{d})}$$（读作$f$卷$g$）。</p>
@@ -76,10 +71,22 @@
 <p>然后，狄利克雷卷积有一个非常重要的性质：</p>
 <blockquote><p>如果$f$和$g$均为积性函数，那么$f*g$一定也为积性函数。</p>
 </blockquote>
+<p>证明：</p>
+<p>$$h=f*g=\sum\limits_{d|n}f(d)g(\frac{n}{d})=\sum\limits_{i_1=0}^{k_1}\sum\limits_{i_2=0}^{k_2}f(p_1^{i_1})f(p_2^{i_2})g(p_1^{k_1-i_1})g(p_2^{k_2-i_2})=\left[\sum\limits_{i_1=0}^{k_1}f(p_1^{i_1})g(p_1^{k_1-i_1})\right]\cdot\left[\sum\limits_{i_2=0}^{k_2}f(p_2^{i_2})g(p_2^{k_2-i_2})\right]=h(p_1^{k_1})h(p_2^{k_2})=h(n)$$</p>
 <h3>应用</h3>
 <p>关于莫比乌斯函数有一个重要等式：由莫比乌斯函数的性质一$\sum\limits_{d | n} \mu(d) = [n = 1]$转化为狄利克雷卷积的形式可以写作$\mu * I = \epsilon$，接下来我们可以凭此证明莫比乌斯反演。</p>
+<p>由于积性函数的性质，证明积性函数$f_x$只需证明$f_p(p为素数)$</p>
 <h1>莫比乌斯反演</h1>
 <p>待填坑</p>
+<p>&nbsp;</p>
+<h1>前缀和</h1>
+<h2>线性筛</h2>
+<h2>杜教筛</h2>
+<h1>题目列表</h1>
+<ul>
+<li>洛谷试炼场莫比乌斯反演版块</li>
+
+</ul>
 <h1>参考资料</h1>
 <p>@DimensionTripper的<a href='https://dimensiontripper.github.io/2018/10/29/Mobius_Inversion/'>莫比乌斯反演学习笔记</a></p>
 <p>@ViXbob的<a href='http://www.vixbob-lwc.pw/2018/12/01/Mobius/'>「莫比乌斯反演」学习笔记</a></p>
@@ -88,9 +95,8 @@
 </main>
 <iframe src="footer.html" id="footer" frameborder="0"></iframe>
 <div id="to-top"><img id="to-top-symbol"/></div>
-<script>
-		Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
-<script src="js/animation.js"></script>
+    <script>
+            Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+    <script src="js/animation.js"></script>
     <script src="js/document.js"></script>
 </body>
-</html>
