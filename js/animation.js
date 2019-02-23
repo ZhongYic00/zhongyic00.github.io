@@ -161,12 +161,14 @@ function init() {
             SetPlatform('PC');
             Main.classList.add('pc');
     }
-    console.log(getPlatform());
     if(!codeHidden)CodeHideProcess(),DfnHideProcess(),codeHidden=true;
     set_theme(getPlatform());
-    if(getPlatform()=='mobile'&&document.getElementById('article-index'))
-        Velocity(document.getElementById('article-index'),{opacity:0},{display:'none'});
-    else Velocity(document.getElementById('article-index'),{opacity:1},{display:'block'});
+    if(document.getElementById('article-index'))
+    {
+        if(getPlatform()=='mobile')
+            Velocity(document.getElementById('article-index'),{opacity:0},{display:'none'});
+        else Velocity(document.getElementById('article-index'),{opacity:1},{display:'block'});
+    }
     //alert('init complete');
 }
 !ThemeDiv?0:ThemeDiv.onclick = function change(){
