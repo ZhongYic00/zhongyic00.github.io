@@ -1,4 +1,4 @@
-var xmlhttp=new XMLHttpRequest(),imgbox=document.getElementById('image-box'),imgdisplay=document.getElementById('image-main'),imagelist=new Array(),prevbutton=document.getElementById('previous'),nextbutton=document.getElementById('next'),imageinfo=document.getElementById('description'),fullscreenbutton=document.getElementById('fullscreen'),fullscreenbox=document.getElementById('fullscreen-box'),fullscreendisplay=document.getElementById('fullscreen-main');
+var xmlhttp=new XMLHttpRequest(),imgbox=document.getElementById('image-box'),imgdisplay=document.getElementById('image-main'),imagelist=new Array(),prevbutton=document.getElementById('previous'),nextbutton=document.getElementById('next'),imageinfo=document.getElementById('description'),zoominbutton=document.getElementById('zoom-in'),zoomoutbutton=document.getElementById('zoom-out'),fullscreenbox=document.getElementById('fullscreen-box'),fullscreendisplay=document.getElementById('fullscreen-main');
 var nowdisplayed=-1,fullscreenstate=0;
 xmlhttp.open("get","/resources/json/gallery.json",true);
 xmlhttp.send();
@@ -40,7 +40,8 @@ xmlhttp.onreadystatechange=function()
 }
 nextbutton.addEventListener('click',()=>{displayChange(1)});
 prevbutton.addEventListener('click',()=>{displayChange(-1)});
-fullscreenbutton.addEventListener('click',()=>{fullscreenChange();})
+zoominbutton.addEventListener('click',()=>{fullscreenChange();})
+zoomoutbutton.addEventListener('click',()=>{fullscreenChange();})
 document.addEventListener('keydown',(event)=>{
     switch(event.keyCode){
         case 27:fullscreenChange();break;
