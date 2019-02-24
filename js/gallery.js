@@ -1,4 +1,5 @@
-var xmlhttp=new XMLHttpRequest(),imgbox=document.getElementById('image-box'),imgdisplay=document.getElementById('image-main'),imagelist=new Array(),prevbutton=document.getElementById('previous'),nextbutton=document.getElementById('next'),nowdisplayed=-1,imageinfo=document.getElementById('description');
+var xmlhttp=new XMLHttpRequest(),imgbox=document.getElementById('image-box'),imgdisplay=document.getElementById('image-main'),imagelist=new Array(),prevbutton=document.getElementById('previous'),nextbutton=document.getElementById('next'),imageinfo=document.getElementById('description'),fullscreenbutton=document.getElementById('fullscreen'),fullscreenbox=document.getElementById('fullscreen-box'),fullscreendisplay=document.getElementById('fullscreen-main');
+var nowdisplayed=-1,fullscreenstate=0;
 xmlhttp.open("get","/resources/json/gallery.json",true);
 xmlhttp.send();
 const mediumSize=(url)=>{
@@ -19,6 +20,11 @@ const displayChange=(direction)=>{
     }
     imgdisplay.src=mediumSize(imagelist[nowdisplayed].url),imageinfo.innerText=imagelist[nowdisplayed].alt;
 }
+const fullscreenChange=()=>{
+    fullscreenstate^=1;
+    if(fullscreenstate)fullscreendisplay.src=imagelist[nowdisplayed].url,fullscreenbox.style.visibility='visible';
+    else fullscreenbox.style.visibility='hidden';
+}
 xmlhttp.onreadystatechange=function()
 {
     if(xmlhttp.readyState==4)
@@ -34,8 +40,10 @@ xmlhttp.onreadystatechange=function()
 }
 nextbutton.addEventListener('click',()=>{displayChange(1)});
 prevbutton.addEventListener('click',()=>{displayChange(-1)});
+fullscreenbutton.addEventListener('click',()=>{fullscreenChange();})
 document.addEventListener('keydown',(event)=>{
     switch(event.keyCode){
+        case 27:fullscreenChange();break;
         case 37:;
         case 38:displayChange(-1);break;
         case 39:;
