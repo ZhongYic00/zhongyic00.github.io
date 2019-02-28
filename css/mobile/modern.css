@@ -1,3 +1,7 @@
+@import url('http://fonts.font.im/css?family=Comfortaa');
+@import url('http://fonts.font.im/css?family=Combo');
+/*@import url('https://fonts.googleapis.com/css?family=ZCOOL+QingKe+HuangYou&subset=chinese-simplified');
+@import url('https://fonts.googleapis.com/css?family=ZCOOL+XiaoWei&subset=chinese-simplified');*/
 html{height:100%;}
 body{
     height:100%;transform:none;width:100%;margin:0;
@@ -148,8 +152,7 @@ iframe.fullscreen{width: 100%;}
 }
 .footer-copyright{text-align:center;color:white;font-size:0.6rem;font-family: serif;display: block;}
 .footer-copyright span{margin:0.2rem;}
-@font-face{font-family: 'comfortaa';src:url('../../resources/fonts/Comfortaa-Regular.ttf')}
-body,code,pre{font-family: 'comfortaa'}
+body{font-family:/*'ZCOOL XiaoWei',*/'Comfortaa'}
 .code-hidden{background: antiquewhite;text-align:center;display:block;}
 .code-hidden img{float: left;max-height:16px;}
 @keyframes boxAnimation {

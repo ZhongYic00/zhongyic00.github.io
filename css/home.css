@@ -1,8 +1,8 @@
-@font-face{font-family: 'comfortaa';src:url('../resources/fonts/Comfortaa-Light.ttf')}
+@import url(http://fonts.font.im/css?family=Comfortaa:300);
 body {
     margin:0;
 	padding:0;
-    font-family: 'comfortaa',Tahoma, Verdana, Arial, sans-serif;
+    font-family: 'Comfortaa',Tahoma, Verdana, Arial, sans-serif;
     text-align:center;
     background-repeat:no-repeat;
     background-position:center;
