@@ -1,40 +1,69 @@
-var xmlhttp=new XMLHttpRequest(),imgbox=document.getElementById('image-box'),imgdisplay=document.getElementById('image-main'),imagelist=new Array(),prevbutton=document.getElementById('previous'),nextbutton=document.getElementById('next'),imageinfo=document.getElementById('description'),zoominbutton=document.getElementById('zoom-in'),zoomoutbutton=document.getElementById('zoom-out'),fullscreenbox=document.getElementById('fullscreen-box'),fullscreendisplay=document.getElementById('fullscreen-main');
+var imglistAjax=new XMLHttpRequest(),imgbinAjax=new XMLHttpRequest(),imgbox=document.getElementById('image-box'),imgdisplay=document.getElementById('image-main'),imglist=new Array(),prevbutton=document.getElementById('previous'),nextbutton=document.getElementById('next'),imgloading=document.getElementById('loading'),imageinfo=document.getElementById('description'),zoominbutton=document.getElementById('zoom-in'),zoomoutbutton=document.getElementById('zoom-out'),fullscreenbox=document.getElementById('fullscreen-box'),fullscreendisplay=document.getElementById('fullscreen-main');
 var nowdisplayed=-1,fullscreenstate=0;
-xmlhttp.open("get","/resources/json/gallery.json",true);
-xmlhttp.send();
+imglistAjax.open("get","/resources/json/gallery.json",true);
+imglistAjax.send();
 const mediumSize=(url)=>{
-    var tmp=String(url);
-    //if(tmp.lastIndexOf('md')!=-1)return tmp;
-    return tmp.replace('jpg','md.jpg');
+    return String(url).replace('jpg','md.jpg');
+}
+const ajaxLoadImage=(obj,url,callback)=>{
+    imgbinAjax.open("post",url,true);
+    imgbinAjax.setRequestHeader("Content-type","image/jpeg");
+    imgbinAjax.responseType='blob';
+    imgbinAjax.send();
+    imgbinAjax.onreadystatechange=()=>{
+        if(imgbinAjax.readyState==4&&imgbinAjax.status==200){
+            obj.src=window.URL.createObjectURL(imgbinAjax.response);
+            callback();
+        }
+        else{
+            obj.src=url;
+            if(callback)obj.onload=callback();
+        }
+    }
+}
+const imageLoad=(image,partly)=>{
+    if(fullscreenstate) {
+        ajaxLoadImage(fullscreendisplay,image.url);
+    }
+    if(partly)return;
+    imgloading.style.opacity=1;
+    imgdisplay.style.opacity=0;
+    ajaxLoadImage(
+        imgdisplay,mediumSize(imglist[nowdisplayed].url),()=>{
+            setTimeout(()=>{imgloading.style.opacity=0,imgdisplay.style.opacity=1;},500);
+        }
+    );
+    imageinfo.textContent=imglist[nowdisplayed].alt;
 }
 const displayChange=(direction)=>{
-    //console.log(nowdisplayed+direction,imagelist.length);
-    if(nowdisplayed+direction<imagelist.length&&nowdisplayed+direction>=0)
-    {
+    //console.log(nowdisplayed+direction,imglist.length);
+    if(nowdisplayed+direction<imglist.length&&nowdisplayed+direction>=0){
         nowdisplayed+=direction,setCookie('ZhYicImagedisplayed',nowdisplayed);
-        if(nowdisplayed==imagelist.length-1)
+        if(nowdisplayed==imglist.length-1)
             nextbutton.style.cursor='not-allowed';
         else if(nowdisplayed==0)
             prevbutton.style.cursor='not-allowed';
         else nextbutton.style.cursor=prevbutton.style.cursor='pointer';
     }
-    imgdisplay.src=mediumSize(imagelist[nowdisplayed].url),imageinfo.innerText=imagelist[nowdisplayed].alt;
+    imageLoad(imglist[nowdisplayed]);
 }
 const fullscreenChange=()=>{
     fullscreenstate^=1;
-    if(fullscreenstate)fullscreendisplay.src=imagelist[nowdisplayed].url,fullscreenbox.style.visibility='visible';
-    else fullscreenbox.style.visibility='hidden';
+    if(fullscreenstate)
+        imageLoad(imglist[nowdisplayed],true),fullscreenbox.style.visibility='visible';
+    else
+        fullscreenbox.style.visibility='hidden';
 }
-xmlhttp.onreadystatechange=function()
+imglistAjax.onreadystatechange=function()
 {
-    if(xmlhttp.readyState==4)
-    {
-        var jsontmp=JSON.parse(xmlhttp.responseText);
+    if(imglistAjax.readyState==4){
+        var jsontmp=JSON.parse(imglistAjax.responseText);
         //console.log(jsontmp);
         for(var i=0;i<jsontmp.pictures.length;i++)
-            imagelist[i]=jsontmp.pictures[i];
-        imgdisplay.src=mediumSize(imagelist[nowdisplayed=(parseInt(getCookie('ZhYicImagedisplayed')||0))].url),imageinfo.innerText=imagelist[0].alt;
+            imglist[i]=jsontmp.pictures[i];
+        imageLoad(imglist[nowdisplayed=(parseInt(getCookie('ZhYicImagedisplayed')||0))]);
         if(nowdisplayed==0)prevbutton.style.cursor='not-allowed';
+        else if(nowdisplayed==imglist.length-1)nextbutton.style.cursor="not-allowed";
         //console.log(getCookie('ZhYicImagedisplayed')||0);
     }
 }
