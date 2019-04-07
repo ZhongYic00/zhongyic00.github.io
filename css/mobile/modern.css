@@ -67,6 +67,7 @@ main,iframe.PageMain{
     position: relative;
     background-color:#FFFFF0;
     padding-bottom:3%;
+    padding:3%;
     right:0;left:0;
     min-height:68% !important;
     word-break:break-all;
