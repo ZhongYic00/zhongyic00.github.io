@@ -26,19 +26,21 @@ main.pc{width:75% !important}
 #previous>img,#next>img{width:100%;position:relative;top:50%;transform:translateY(-50%);}
 #previous>img{transform:rotate(-90deg)}
 #next>img{transform:rotate(90deg)}
-#zoom-in,#zoom-out{position:absolute;right:0;top:0;z-index:200;opacity:0;cursor:zoom-in;font-weight:700;background:rgba(0,0,0,.6);color:white;font-size:2rem;}
-#zoom-in:hover,#zoom-out{opacity:1;}
-#zoom-out{cursor:zoom-out}
-#fullscreen-box{visibility:hidden;background:rgba(0,0,0,.6);position:fixed;top:0;left:0;z-index:999;width:100%;height:100%;}
-#fullscreen-main{width:100%;max-height:100%;max-width:100%;}
-#loading{position:absolute;left:0;top:0;width:100%;height:100%;z-index:100;background:rgba(0,0,0,.5);transition:opacity 0.5s ease-out 0s;}
+#zoom-in,#zoom-out{position:absolute;right:0;top:0;z-index:200;opacity:0;font-weight:700;background:rgba(0,0,0,.6);color:white;font-size:2rem;}
+#zoom-in{cursor:zoom-in;}
+#zoom-out{cursor:zoom-out;}
+#zoom-in:hover,#zoom-out:hover{opacity:1}
+#fullscreen-box{visibility:hidden;background:rgba(0,0,0,.8);position:fixed;text-align:center;top:0;left:0;z-index:995;width:100%;height:100%;}
+#image-full{width:auto;height:auto;max-height:100%;max-width:100%;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+#loading,#loading-full{position:absolute;left:0;top:0;width:100%;height:100%;z-index:100;background:rgba(0,0,0,.5);transition:opacity 0.5s ease-out 0s;}
 .loader{width:5rem;height:5rem;float:left;display:-webkit-flex;/*safari弹性布局*/justify-content:center;display:flex;align-items:center;margin:auto;position:relative;top:50%;transform:translateY(-50%);left:50%;transform:translateX(-50%);}
-@-webkit-keyframes loader33{
-	0%{-webkit-transform:rotate(0deg);}
-	100%{-webkit-transform:rotate(360deg);}
+@keyframes loader33{
+	0%{transform:rotate(0deg);}
+	100%{transform:rotate(360deg);}
 }
-.loader-33{width:80%;height:80%;border:2px solid #fff;border-radius:50%;border-right-color:transparent;border-top-color:transparent;-webkit-animation:loader33 1s infinite;}
+.loader-33{width:80%;height:80%;border:2px solid #fff;border-radius:50%;border-right-color:transparent;border-top-color:transparent;animation:loader33 1s infinite;}
 .loader-33 div{height:70%;width:70%;border-radius:50%;margin-top:16%;margin-left:16%;background:#007750;}
+.ban{cursor:not-allowed !important}
 </style>
 </head>
 <body>
@@ -83,7 +85,14 @@ main.pc{width:75% !important}
             </div>
         </div>
         <div id="fullscreen-box">
-            <img id="fullscreen-main"/>
+            <div id="loading-full">
+                <div class="loader33 loader">
+                    <div class="loader-33">
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+            <img id="image-full"/>
             <div id="zoom-out"><i class="material-icons">fullscreen_exit</i></div>
         </div>
     </main>

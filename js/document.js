@@ -45,3 +45,4 @@ function generateIndex(titles,st,ed)
     return Nodenow;
 }
 document.getElementById('article-index')?document.getElementById('article-index').appendChild(generateIndex(getDocumentStructure(),0)):0;
+if(document.getElementById('article-index').childElementCount==0)document.getElementById('article-index').style.display='none';

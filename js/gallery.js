@@ -1,83 +1,90 @@
-var imglistAjax=new XMLHttpRequest(),imgbinAjax=new XMLHttpRequest(),imgbox=document.getElementById('image-box'),imgdisplay=document.getElementById('image-main'),imglist=new Array(),prevbutton=document.getElementById('previous'),nextbutton=document.getElementById('next'),imgloading=document.getElementById('loading'),imageinfo=document.getElementById('description'),zoominbutton=document.getElementById('zoom-in'),zoomoutbutton=document.getElementById('zoom-out'),fullscreenbox=document.getElementById('fullscreen-box'),fullscreendisplay=document.getElementById('fullscreen-main');
-var nowdisplayed=-1,fullscreenstate=0;
-imglistAjax.open("get","/resources/json/gallery.json",true);
-imglistAjax.send();
-const mediumSize=(url)=>{
-    return String(url).replace('jpg','md.jpg');
+const toMediumSize=(url)=>{
+	return String(url).replace('jpg','md.jpg');
+};
+function ajaxGet(url){
+	return new Promise(function(resolve){
+		var rt=new XMLHttpRequest();
+		rt.open("get",url,true);
+		rt.send();
+		rt.onreadystatechange=function(){
+			if(rt.readyState==4)resolve(rt.responseText);
+		}
+	});
 }
-const ajaxLoadImage=(obj,url,callback)=>{
-    imgbinAjax.open("post",url,true);
-    imgbinAjax.setRequestHeader("Content-type","image/jpeg");
-    imgbinAjax.responseType='blob';
-    imgbinAjax.send();
-    imgbinAjax.onreadystatechange=()=>{
-        if(imgbinAjax.readyState==4&&imgbinAjax.status==200){
-            obj.src=window.URL.createObjectURL(imgbinAjax.response);
-            callback();
-        }
-        else{
-            obj.src=url;
-            if(callback)obj.onload=callback();
-        }
-    }
-}
-const imageLoad=(image,partly)=>{
-    if(fullscreenstate) {
-        ajaxLoadImage(fullscreendisplay,image.url);
-    }
-    if(partly)return;
-    imgloading.style.opacity=1;
-    imgdisplay.style.opacity=0;
-    ajaxLoadImage(
-        imgdisplay,mediumSize(imglist[nowdisplayed].url),()=>{
-            setTimeout(()=>{imgloading.style.opacity=0,imgdisplay.style.opacity=1;},500);
-        }
+function loadImage(img,url,callback){
+    img.src=url;
+    var timer=setInterval(
+        function(){
+            if(img.complete){
+                if(callback)callback();
+                clearInterval(timer);
+            }
+        },
+        100
     );
-    imageinfo.textContent=imglist[nowdisplayed].alt;
 }
-const displayChange=(direction)=>{
-    //console.log(nowdisplayed+direction,imglist.length);
-    if(nowdisplayed+direction<imglist.length&&nowdisplayed+direction>=0){
-        nowdisplayed+=direction,setCookie('ZhYicImagedisplayed',nowdisplayed);
-        if(nowdisplayed==imglist.length-1)
-            nextbutton.style.cursor='not-allowed';
-        else if(nowdisplayed==0)
-            prevbutton.style.cursor='not-allowed';
-        else nextbutton.style.cursor=prevbutton.style.cursor='pointer';
-    }
-    imageLoad(imglist[nowdisplayed]);
-}
-const fullscreenChange=()=>{
-    fullscreenstate^=1;
-    if(fullscreenstate)
-        imageLoad(imglist[nowdisplayed],true),fullscreenbox.style.visibility='visible';
-    else
-        fullscreenbox.style.visibility='hidden';
-}
-imglistAjax.onreadystatechange=function()
 {
-    if(imglistAjax.readyState==4){
-        var jsontmp=JSON.parse(imglistAjax.responseText);
-        //console.log(jsontmp);
-        for(var i=0;i<jsontmp.pictures.length;i++)
-            imglist[i]=jsontmp.pictures[i];
-        imageLoad(imglist[nowdisplayed=(parseInt(getCookie('ZhYicImagedisplayed')||0))]);
-        if(nowdisplayed==0)prevbutton.style.cursor='not-allowed';
-        else if(nowdisplayed==imglist.length-1)nextbutton.style.cursor="not-allowed";
-        //console.log(getCookie('ZhYicImagedisplayed')||0);
-    }
+async function getImages(){
+	console.log('async function()');
+	return undefined;
 }
-nextbutton.addEventListener('click',()=>{displayChange(1)});
-prevbutton.addEventListener('click',()=>{displayChange(-1)});
-zoominbutton.addEventListener('click',()=>{fullscreenChange();})
-zoomoutbutton.addEventListener('click',()=>{fullscreenChange();})
+window.onload=async function(){
+	var jsonText=await ajaxGet('/resources/json/gallery.json');
+	images=new Array();
+	var tmp=JSON.parse(jsonText);
+	for(i in tmp.pictures){
+		images.push(tmp.pictures[i]);
+	}
+	idnow=-1;
+	changeButtons[0].addEventListener('click',function(){changePicture(-1)}),changeButtons[1].addEventListener('click',function(){changePicture(1)});
+	changePicture(1);
+	zoomButtons[0].addEventListener('click',function(){zoomIn()}),zoomButtons[1].addEventListener('click',function(){zoomOut()});
+	zoomed=false;
+};
+var images,zoomed=false,idnow=0;
+let container=document.getElementById('image-container'),
+	fullcontainer=document.getElementById('fullscreen-box'),
+	imageSmall=document.getElementById('image-main'),
+	imageBig=document.getElementById('image-full'),
+	cover=[document.getElementById('loading'),document.getElementById('loading-full')],
+	info=document.getElementById('description'),
+	changeButtons=[document.getElementById('previous'),document.getElementById('next')],
+	zoomButtons=[document.getElementById('zoom-in'),document.getElementById('zoom-out')];
+var zoomIn=()=>{
+		if(zoomed)return ;
+		zoomed=true,
+		loadImage(imageBig,images[idnow].url,function(){cover[1].style.visibility='hidden'}),fullcontainer.style.visibility='visible';
+	},
+	zoomOut=()=>{
+		if(!zoomed)return ;
+		zoomed=false,
+		fullcontainer.style.visibility='hidden';
+	},
+	changePicture=(d)=>{
+//		console.log('changePicture(',d,')');
+        if(!imageSmall.complete||!imageBig.complete)return ;
+		if(idnow==images.length-1&&d>0)return alert("This is the last picture!");
+        if(idnow==0&&d<0)return alert("This is the first picture!");
+        cover[0].style.visibility='visible';
+        if(zoomed)cover[1].style.visibility='visible';
+		loadImage(imageSmall,toMediumSize(images[idnow+=d].url),function(){cover[0].style.visibility='hidden'});
+        if(zoomed)loadImage(imageBig,images[idnow].url,function(){cover[1].style.visibility='hidden'});
+        info.innerText=images[idnow].alt;
+		if(idnow==images.length-1)changeButtons[1].classList.add('ban');
+		else changeButtons[1].classList.remove('ban');
+		if(idnow==0)changeButtons[0].classList.add('ban');
+        else changeButtons[0].classList.remove('ban');
+	}
+}
 document.addEventListener('keydown',(event)=>{
-    switch(event.keyCode){
-        case 27:fullscreenChange();break;
-        case 37:;
-        case 38:displayChange(-1);break;
-        case 39:;
-        case 40:displayChange(1);break;
-    }
+	switch(event.keyCode){
+        case 27:zoomOut();break;
+        case 35:idnow=images.length,changePicture(-1);break;
+        case 36:idnow=-1,changePicture(1);break;
+		case 37:;
+		case 38:changePicture(-1);break;
+		case 39:;
+		case 40:changePicture(1);break;
+	}
 }
 );
