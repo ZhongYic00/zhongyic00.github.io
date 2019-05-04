@@ -1,3 +1,5 @@
+import { Slider } from "./modules/touch.mjs";
+
 const toMediumSize=(url)=>{
 	return String(url).replace('jpg','md.jpg');
 };
@@ -23,26 +25,28 @@ function loadImage(img,url,callback){
         100
     );
 }
-{
 async function getImages(){
 	console.log('async function()');
 	return undefined;
 }
+{
+let screenDirection=()=>{return window.innerHeight<window.innerWidth*0.75;}
 window.onload=async function(){
 	var jsonText=await ajaxGet('/resources/json/gallery.json');
 	images=new Array();
 	var tmp=JSON.parse(jsonText);
-	for(i in tmp.pictures){
+	for(var i in tmp.pictures){
 		images.push(tmp.pictures[i]);
 	}
 	idnow=-1;
 	changeButtons[0].addEventListener('click',function(){changePicture(-1)}),changeButtons[1].addEventListener('click',function(){changePicture(1)});
 	changePicture(1);
 	zoomButtons[0].addEventListener('click',function(){zoomIn()}),zoomButtons[1].addEventListener('click',function(){zoomOut()});
+	if(!screenDirection())zoomButtons[0].classList.add('show'),zoomButtons[1].classList.add('show');
 	zoomed=false;
 };
-var images,zoomed=false,idnow=0;
-let container=document.getElementById('image-container'),
+var images,zoomed=false,idnow=0,
+	container=document.getElementById('image-container'),
 	fullcontainer=document.getElementById('fullscreen-box'),
 	imageSmall=document.getElementById('image-main'),
 	imageBig=document.getElementById('image-full'),
@@ -53,7 +57,7 @@ let container=document.getElementById('image-container'),
 var zoomIn=()=>{
 		if(zoomed)return ;
 		zoomed=true,
-		loadImage(imageBig,images[idnow].url,function(){cover[1].style.visibility='hidden'}),fullcontainer.style.visibility='visible';
+		loadImage(imageBig,screenDirection()?images[idnow].url:toMediumSize(images[idnow].url),function(){cover[1].style.visibility='hidden'}),fullcontainer.style.visibility='visible';
 	},
 	zoomOut=()=>{
 		if(!zoomed)return ;
@@ -68,7 +72,7 @@ var zoomIn=()=>{
         cover[0].style.visibility='visible';
         if(zoomed)cover[1].style.visibility='visible';
 		loadImage(imageSmall,toMediumSize(images[idnow+=d].url),function(){cover[0].style.visibility='hidden'});
-        if(zoomed)loadImage(imageBig,images[idnow].url,function(){cover[1].style.visibility='hidden'});
+        if(zoomed)loadImage(imageBig,screenDirection()?images[idnow].url:toMediumSize(images[idnow].url),function(){cover[1].style.visibility='hidden'});
         info.innerText=images[idnow].alt;
 		if(idnow==images.length-1)changeButtons[1].classList.add('ban');
 		else changeButtons[1].classList.remove('ban');
@@ -88,3 +92,15 @@ document.addEventListener('keydown',(event)=>{
 	}
 }
 );
+var sliderSmall=new Slider(document.getElementById('image-main'));
+var sliderBig=new Slider(document.getElementById('image-full'));
+sliderSmall.horizonalEndCallback=(d)=>{
+	if(d.x<-window.innerWidth*0.15)changePicture(1);
+	else if(d.x>window.innerWidth*0.15)changePicture(-1);
+}
+sliderSmall.init();
+sliderBig.horizonalEndCallback=(d)=>{
+	if(d.x<-window.innerWidth*0.2)changePicture(1);
+	else if(d.x>window.innerWidth*0.2)changePicture(-1);
+}
+sliderBig.init();

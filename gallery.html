@@ -29,6 +29,7 @@ main.pc{width:75% !important}
 #zoom-in,#zoom-out{position:absolute;right:0;top:0;z-index:200;opacity:0;font-weight:700;background:rgba(0,0,0,.6);color:white;font-size:2rem;}
 #zoom-in{cursor:zoom-in;}
 #zoom-out{cursor:zoom-out;}
+#zoom-in.show,#zoom-out.show{opacity:1}
 #zoom-in:hover,#zoom-out:hover{opacity:1}
 #fullscreen-box{visibility:hidden;background:rgba(0,0,0,.8);position:fixed;text-align:center;top:0;left:0;z-index:995;width:100%;height:100%;}
 #image-full{width:auto;height:auto;max-height:100%;max-width:100%;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
@@ -101,6 +102,7 @@ main.pc{width:75% !important}
 <script>
         Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
 <script src="js/animation.js"></script>
-<script src="js/gallery.js"></script>
+<!--script type="module">import {Slider} from './js/modules/touch.mjs'</script-->
+<script type="module" src="js/gallery.js"></script>
 </body>
 </html>
