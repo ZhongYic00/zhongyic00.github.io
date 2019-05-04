@@ -1,5 +1,4 @@
-{
-let IndexNodeTemplate=document.createElement('div');
+var IndexNodeTemplate=document.createElement('div');
 IndexNodeTemplate.classList.add('article-index-node');
 function getDocumentStructure()
 {
@@ -44,6 +43,6 @@ function generateIndex(titles,st,ed)
     }
     return Nodenow;
 }
+export function articleIndex(){
+    return generateIndex(getDocumentStructure(),0);
 }
-document.getElementById('article-index')?document.getElementById('article-index').appendChild(generateIndex(getDocumentStructure(),0)):0;
-if(document.getElementById('article-index').childElementCount==0)document.getElementById('article-index').style.display='none';

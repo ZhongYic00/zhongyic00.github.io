@@ -219,6 +219,12 @@ function main(type){
     init();
     if(nightshift)setDarktheme();
     else changeToLighttheme();
+    if(document.getElementById('article-index'))(
+        async()=>{
+            const {articleIndex}= await import('./modules/article-index.mjs');
+            document.getElementById('article-index').appendChild(new articleIndex());
+        }
+    )();
 }
 window.onload=main();
 window.onresize = function(){
