@@ -66,7 +66,7 @@ var zoomIn=()=>{
 	},
 	changePicture=(d)=>{
 //		console.log('changePicture(',d,')');
-        if(!imageSmall.complete||!imageBig.complete)return ;
+        if(!imageSmall.complete||!imageBig.complete&&zoomed)return ;
 		if(idnow==images.length-1&&d>0)return alert("This is the last picture!");
         if(idnow==0&&d<0)return alert("This is the first picture!");
         cover[0].style.visibility='visible';
