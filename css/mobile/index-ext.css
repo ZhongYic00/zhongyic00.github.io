@@ -68,7 +68,7 @@ main.base-box-dark>div:active{
     height:100%;
     text-align:center;
 }
-#front-page h1{font-size:12rem;}
+#front-page h1{font-size:8rem;}
 #front-page h2{font-size:3rem;font-style:italic}
 #front-page-bg{
     position:absolute;
