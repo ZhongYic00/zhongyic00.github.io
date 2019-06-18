@@ -20,3 +20,10 @@ function scrollByTag(tagName)
 {
 	Velocity(document.getElementsByTagName(tagName)[0],"scroll",{duration:"slow",easing:"ease-out"});
 }
+    var pageLinks=document.getElementsByTagName('main')[0].getElementsByTagName('div');
+const f=(url)=>{window.location.assign(url);};
+    for(var i=0;i<pageLinks.length;i++){
+        pageLinks[i].addEventListener('click',function(){
+            f(this.dataset.url);
+        });
+    };

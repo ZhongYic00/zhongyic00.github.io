@@ -1,4 +1,5 @@
 main{padding:0 0 1% 0 !important;}
+p:before{content:""}
 .base-box-dark{background:rgb(63, 63, 63)!important;color:white;}
 main>div{
     margin:0;text-align:center;cursor: pointer;overflow: hidden;
@@ -6,6 +7,10 @@ main>div{
     border-bottom:1px solid rgba(0,0,0,.1);
     transition:box-shadow 0.3s ease-out 0.1s,
     background 0.2s linear 0s;
+}
+main>div:hover{
+    box-shadow:0px 0px 5px 0px rgba(0,0,0,.5) inset;
+    background:rgb(255, 255, 249);
 }
 main>div>p{
     /*display:inline-block;*/
@@ -15,10 +20,7 @@ main>div>p{
     -webkit-line-clamp: 6;
     -webkit-box-orient: vertical;
 }
-main>div:hover{
-    box-shadow:0px 0px 5px 0px rgba(0,0,0,.5) inset;
-    background:rgb(255, 255, 249);
-}
+main>div h1{font-size:1.6rem;line-height:1.8rem;}
 main.base-box-dark>div:hover{box-shadow:0px 0px 5px 0px rgb(63,63,63);background:rgb(53, 53, 53)}
 main>div:active{
     box-shadow:0px 0px 8px 0px rgba(0,0,0,.6) inset;
@@ -103,3 +105,4 @@ li a:hover{text-shadow:1px 1px white;background:rgb(53, 53, 53)}
 #setting-iframe:before{content:" ";display:block;position:fixed;z-index:975;top:0;bottom:0;left:0;right:0;background:rgba(0,0,0,.2)}
 #setting-button{position:fixed;bottom:0;right:0;transition:background 0.2s ease-out 0s;}
 #setting-button:hover{background:rgba(0,0,0,.2)}
+.istop:before{position:relative;top:0;right:0;float:right;font-style:italic;font-family:'Material Icons';content:"\e25a置顶";background:rgb(255, 132, 32);}
