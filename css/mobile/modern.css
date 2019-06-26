@@ -72,9 +72,9 @@ main,iframe.PageMain{
     min-height:68% !important;
     word-break:break-all;
 }
-main{margin-top:3.5rem;padding-top:2%;}
+main{margin-top:3.5rem;padding-top:2%;font-size:0.6rem}
 main.pc,.float-shadow{box-shadow:rgba(0,0,0,.2) 0 0 1px 1px;border-radius: 3px;transition: box-shadow 0.5s ease 0s;}
-main.pc{width:50%;margin:0 auto;margin-bottom:0;margin-top:4.5rem;padding:5%;}
+main.pc{width:50%;margin:0 auto;margin-bottom:0;margin-top:4.5rem;padding:5%;font-size:1rem;}
 main.pc:hover,.float-shadow:hover{box-shadow:
     rgba(0,0,0,.2) 0px 0px 1px 0px,
     rgba(0, 0, 0, .18) 0px 2px 10px 3px,

@@ -1,4 +1,4 @@
-main{padding:0 0 1% 0 !important;margin-top:0}
+main{padding:0 0 1% 0 !important;margin-top:0;}
 p:before{content:""}
 .base-box-dark{background:rgb(63, 63, 63)!important;color:white;}
 main>div{
@@ -94,7 +94,7 @@ main.base-box-dark>div:active{
 #front-page-skip:hover #path823{stroke: #1baae2 !important;fill: #1baae2 !important}
 nav{position:relative;display:block;top:-20%;width:100%;margin:0 auto;text-align:center;background:whitesmoke;height:3rem;font-size:1rem}
 nav.pc{width:60%}
-nav ul{display:inline;font-size:0.5rem;list-style:none;padding:0;}
+nav ul{display:inline;font-size:0.8rem;list-style:none;padding:0;}
 nav.pc ul{font-size:2rem;}
 nav ul li{float:left;width:20%;}
 li a{
