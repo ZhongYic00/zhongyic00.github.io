@@ -1,4 +1,4 @@
-main{padding:0 0 1% 0 !important;}
+main{padding:0 0 1% 0 !important;margin-top:0}
 p:before{content:""}
 .base-box-dark{background:rgb(63, 63, 63)!important;color:white;}
 main>div{
@@ -58,20 +58,18 @@ main.base-box-dark>div:active{
     background:rgb(167, 167, 167);
 }
 #sidebar{
-    display:'none';
-    position:fixed;top:22%;left:3%;width:16%;padding:1% 0;
+    display:'block';
+    position:fixed;top:25%;left:3%;width:16%;padding:1% 0;
     background:rgb(255, 255, 240);
 }
 .full{width:100%}
 #selfintro{position: relative;top:0;bottom:0;text-align:center;margin:auto;}
 #overview{clear:both;text-align:center;vertical-align: middle;width:100%;}
 #overview p{margin:0.3rem 0 0 0;}
-#front-page{
-    height:100%;
-    text-align:center;
-}
-#front-page h1{font-size:8rem;margin:0;}
-#front-page h2{font-size:3rem;font-style:italic}
+#front-page{height:100%;text-align:center;}
+#title-box{padding-top:10%;height:20%;padding-bottom:10%;}
+#title-box h1{font-size:8rem;margin:0}
+#title-box h2{font-size:3rem;font-style:italic;margin:0}
 #front-page-bg{
     position:absolute;
     top:0;
@@ -81,24 +79,29 @@ main.base-box-dark>div:active{
     width:100%;
     height:100%;
     z-index:-1;
+    filter:blur(2px) saturate(60%);
 }
 #front-page-skip{
+    position:relative;
     background-size:100% 100%;
-    height:6rem;
-    width:6rem;
+    min-height:5rem;
+    min-width:5rem;
+    height:10%;width:10%;
     margin:0 auto;
     cursor: pointer;
 }
 #front-page-skip:hover #path854{stroke:#1baae2 !important}
 #front-page-skip:hover #path823{stroke: #1baae2 !important;fill: #1baae2 !important}
-nav{position:relative;display:block;top:-20%;width:60%;margin:0 auto;text-align:center;background:whitesmoke;height:3rem;}
-nav ul{display:inline;font-size:2rem;list-style:none;padding:0;}
+nav{position:relative;display:block;top:-20%;width:100%;margin:0 auto;text-align:center;background:whitesmoke;height:3rem;font-size:1rem}
+nav.pc{width:60%}
+nav ul{display:inline;font-size:1.5rem;list-style:none;padding:0;}
+nav.pc ul{font-size:2rem;}
 nav ul li{float:left;width:20%;}
 li a{
     display:block;height:100%;line-height:3rem;color:black !important;font-weight: 600;
     transition: background 0.2s ease-out 0s;
 }
-li a:hover{text-shadow:1px 1px white;background:rgb(53, 53, 53)}
+li a:hover{text-shadow:1px 1px white;background:rgb(145, 145, 145)}
 .base-box-dark li a:hover{text-shadow:1px 1px rgb(64, 106, 109)}
 .front-page-dark{color:rgb(135, 221, 168);text-shadow:0rem 0rem 0.3rem rgb(100, 100, 100)}
 #setting-iframe{width:30rem;top:0;bottom:0;right:0;left:0;margin:auto;}
