@@ -1,7 +1,7 @@
 body{width:100%;}
 main{width:80%;padding:0 10%}
 p{font-size:1rem;line-height:3rem;word-wrap:break-word;word-break:break-word}
-.correction{line-height:1.2rem;}
+.correction{line-height:1.2rem;font-size:1rem}
 .wa,.lack,.surplus{position:relative}
 .wa .correction,.lack .correction,.surplus .correction{visibility:hidden}
 .lack span{display:none}

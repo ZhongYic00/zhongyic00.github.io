@@ -22,14 +22,13 @@ ajaxGet('data.json').then(function(jsonText){
 	}
 }
 );
-var main,id=0,correctionTemplate=newElement('span'),reasonTemplate=newElement('span');
+var main,srctitle,id=0,correctionTemplate=newElement('span'),reasonTemplate=newElement('span');
 correctionTemplate.classList.add('correction'),reasonTemplate.classList.add('reason');
 function scorePoint(p,t,c,r){
 	var rt=newElement('span');
 	rt.classList.add(t);
 	rt.classList.add('hidden');
 	rt.dataset.c=c,rt.dataset.r=r;
-	console.log(rt);
 	rt.appendChild(function(p,c){
 		let tmp=newElement('span');
 		tmp.textContent=p||c;
@@ -58,7 +57,7 @@ function nextExercise(){
 		return ;
 	}
 	while(main.childNodes.length)main.removeChild(main.lastChild);
-	console.log(exercises[id]);
+	srctitle.textContent=exercises[id].source;
 	for(i in exercises[id].content){
 		let nd=exercises[id].content[i];
 		if(!nd.type){
@@ -81,6 +80,8 @@ function hideAnswer(){
 }
 window.onload=function(){
 	main=newElement('p');
+	srctitle=newElement('h5');
+	document.getElementsByTagName('main')[0].appendChild(srctitle);
 	document.getElementsByTagName('main')[0].appendChild(main);
 	let show=document.getElementById('show'),hide=document.getElementById('hide'),next=document.getElementById('next');
 	let st=document.getElementById('start');

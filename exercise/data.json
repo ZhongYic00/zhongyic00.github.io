@@ -115,7 +115,7 @@
 				"correction":"to",
 				"reason":"go to school 在哪里上学"
 				},
-				{"p":"Hongqi Middle School. We study quite a few "},
+				{"p":" Hongqi Middle School. We study quite a few "},
 				{
 				"p":"subject",
 				"type":"wa",
@@ -140,10 +140,10 @@
 				{
 				"p":"",
 				"type":"lack",
-				"correction":"is ",
-				"reason":"缺表语"
+				"correction":"is",
+				"reason":"缺系动词"
 				},
-				{"p":"your favorite sport? I look forward to "},
+				{"p":" your favorite sport? I look forward to "},
 				{
 				"p":"hear",
 				"type":"wa",
@@ -226,7 +226,159 @@
 				"correction":"the",
 				"reason":"此处需要特指，一般都是knew the truth"
 				},
-				{"p":"truth. I still think that it was the right thing to do."}
+				{"p":" truth. I still think that it was the right thing to do."}
+			]
+		},
+		{
+			"source":"2003年全国一卷",
+			"content":[
+				{"p":"My father and I stayed at the South Lake Hotel for a week when we "},
+				{
+				"p":"visit",
+				"type":"wa",
+				"correction":"visited",
+				"reason":"讲述过去事情应用过去时"
+				},
+				{"p":" Beijing last month. It is in the downtown area, "},
+				{
+				"p":"but",
+				"type":"wa",
+				"correction":"so/and",
+				"reason":"语义，此处带有因果关系，绝对不能是转折"
+				},
+				{"p":" it is easy to go "},
+				{
+				"p":"to",
+				"type":"surplus",
+				"correction":"",
+				"reason":"go somewhere/anywhere/etc. 这些[..]where都是副词，前面不能加介词"
+				},
+				{"p":" anywhere from the hotel by public transport.  We lived in a "},
+				{
+				"p":"comfortably",
+				"type":"wa",
+				"correction":"comfortable",
+				"reason":"词性错误"
+				},
+				{"p":" double-room with a big bath. What I liked best "},
+				{
+				"p":"were",
+				"type":"wa",
+				"correction":"was",
+				"reason":"此处系动词应参考后面表语的单复数"
+				},
+				{"p":" the free high-speed Internet connection in the room. I checked my email messages every day. I also shared "},
+				{
+				"p":"for",
+				"type":"wa",
+				"correction":"with",
+				"reason":"share with sb sth（可调换with sb、sth次序）"
+				},
+				{"p":" my friends many photos "},
+				{
+				"p":"taking",
+				"type":"wa",
+				"correction":"taken",
+				"reason":"photos为中心词，和take属于被完成的关系，用过去分词作定语表被动"
+				},
+				{"p":" in Beijing. The food was wonderful with reasonable prices, and we enjoyed several local "},
+				{
+				"p":"dish",
+				"type":"wa",
+				"correction":"dishes",
+				"reason":"一类事物，且无特指"
+				},
+				{"p":".  It is such "},
+				{
+				"p":"",
+				"type":"lack",
+				"correction":"a",
+				"reason":"such + (adj.) + [可数名词单数或复数形式/不可数名词]"
+				},
+				{"p":" great hotel that I would recommend it to any friend of "},
+				{
+				"p":"me",
+				"type":"wa",
+				"correction":"mine",
+				"reason":"friend of mine，sth of 名词性物主代词 = sb's sth"
+				},
+				{"p":" who is going to Beijing."}
+			]
+		},
+		{
+			"source":"2011年全国卷I",
+			"content":[
+				{"p":"One of my unforgettable "},
+				{
+				"p":"memory",
+				"type":"wa",
+				"correction":"memories",
+				"reason":"one of + 可数名词复数"
+				},
+				{"p":" of my school in Xinjiang is that of "},
+				{
+				"p":"",
+				"type":"lack",
+				"correction":"the",
+				"reason":"我不知道，改对了你教我吧"
+				},
+				{"p":" lunches we brought from our homes. I "},
+				{
+				"p":"hold",
+				"type":"wa",
+				"correction":"held",
+				"reason":"注意时态"
+				},
+				{"p":" my lunch-box in my hand when I was going to school. The smell from it was very good. "},
+				{
+				"p":"Since",
+				"type":"wa",
+				"correction":"When",
+				"reason":"语义，since是从...时候起"
+				},
+				{"p":" the lunch bell finally rang, my friends and "},
+				{
+				"p":"me",
+				"type":"wa",
+				"correction":"I",
+				"reason":"作主语应用主格I"
+				},
+				{"p":" met under a tall tree and had our lunches. My best friend Aigulie "},
+				{
+				"p":"was",
+				"type":"surplus",
+				"correction":"",
+				"reason":"use to do 曾经做某事，看后面一句有个now"
+				},
+				{"p":" used to share her Nang with me. Nang is a "},
+				{
+				"p":"specially",
+				"type":"wa",
+				"correction":"special",
+				"reason":"形容词作定语"
+				},
+				{"p":" kind of cake in Xinjiang. I like "},
+				{
+				"p":"them",
+				"type":"wa",
+				"correction":"it",
+				"reason":"特指馕这一种食物"
+				},
+				{"p":" very much. Now Aigulie and I study at different colleges "},
+				{
+				"p":"or",
+				"type":"wa",
+				"correction":"so",
+				"reason":"语义，有因果关联"
+				},
+				{"p":" we can only see each other during the summer vacation. I think "},
+				{
+				"p":"over",
+				"type":"wa",
+				"correction":"of",
+				"reason":"think over 仔细考虑，think of 想起"
+				},
+				{"p":" her a lot and I miss the food and the good time we had together."}
 			]
 		}
 	]
