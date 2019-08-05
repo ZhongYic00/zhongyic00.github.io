@@ -380,6 +380,82 @@
 				},
 				{"p":" her a lot and I miss the food and the good time we had together."}
 			]
+		},
+		{
+			"source":"2016年全国二卷",
+			"content":[
+				{"p":"The summer holiday is coming. My Classmates and I are talking about"},
+				{
+				"p":"how",
+				"type":"wa",
+				"correction":"what",
+				"reason":"语义"
+				},
+				{"p":"to do during the holiday. We can "},
+				{
+				"p":"chose",
+				"type":"wa",
+				"correction":"choose",
+				"reason":"全文时态为一般现在时，过去时无根据"
+				},
+				{"p":"between staying at home and "},
+				{
+				"p":"take",
+				"type":"wa",
+				"correction":"taking",
+				"reason":"between A and B，AB为并列结构应保持一致，且between为介词，应接（动）名词"
+				},
+				{"p":"a trip. If we stay at home, it is comfortable "},
+				{
+				"p":"but",
+				"type":"wa",
+				"correction":"and",
+				"reason":"语义无转折，为顺承"
+				},
+				{"p":" there is no need to spend money. But in that case, we will learn little about "},
+				{
+				"p":"",
+				"type":"lack",
+				"correction":"the",
+				"reason":"the world"
+				},
+				{"p":" world. If we go on a trip abroad, we can broaden "},
+				{
+				"p":"your",
+				"type":"wa",
+				"correction":"our",
+				"reason":"语义错误"
+				},
+				{"p":"view and gain "},
+				{
+				"p":"knowledges",
+				"type":"wa",
+				"correction":"knowledge",
+				"reason":"knowledge不可数"
+				},
+				{"p":" we cannot get from books. Some classmates suggest we "},
+				{
+				"p":"can",
+				"type":"surplus",
+				"correction":"should",
+				"reason":"suggest/advise/... + 宾语从句，从句用虚拟语气（should可省略）"
+				},
+				{"p":" go to places of interest nearby. I "},
+				{
+				"p":"thought",
+				"type":"wa",
+				"correction":"think",
+				"reason":"注意全文时态"
+				},
+				{"p":" that it is a good idea. It does not cost "},
+				{
+				"p":"many",
+				"type":"wa",
+				"correction":"much",
+				"reason":"接不可数名词或虚指“多”用much"
+				},
+				{"p":", yet we can still learn a lot."}
+			]
 		}
 	]
 }
