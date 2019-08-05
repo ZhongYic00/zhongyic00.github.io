@@ -22,7 +22,7 @@ ajaxGet('data.json').then(function(jsonText){
 	}
 }
 );
-var main,srctitle,id=0,correctionTemplate=newElement('span'),reasonTemplate=newElement('span');
+var appmain,content,header,srctitle,idtitle,id=0,correctionTemplate=newElement('span'),reasonTemplate=newElement('span');
 correctionTemplate.classList.add('correction'),reasonTemplate.classList.add('reason');
 function scorePoint(p,t,c,r){
 	var rt=newElement('span');
@@ -51,24 +51,39 @@ function scorePoint(p,t,c,r){
 	});
 	return rt;
 }
-function nextExercise(){
+function updateExercise(){
 	if(id>=exercises.length){
 		alert("今天只有这么多练习啦！");
 		return ;
 	}
-	while(main.childNodes.length)main.removeChild(main.lastChild);
-	srctitle.textContent=exercises[id].source;
+	while(content.childNodes.length)content.removeChild(content.lastChild);
+	srctitle.textContent=exercises[id].source,idtitle.textContent='No. '+ (id+1);
 	for(i in exercises[id].content){
 		let nd=exercises[id].content[i];
 		if(!nd.type){
 			let tmp=newElement('span');
 			tmp.textContent=nd.p;
-			main.appendChild(tmp);
+			content.appendChild(tmp);
 		}else{
-			main.appendChild(scorePoint(nd.p,nd.type,nd.correction,nd.reason));
+			content.appendChild(scorePoint(nd.p,nd.type,nd.correction,nd.reason));
 		}
 	}
+}
+function prevExercise(){
+	if(id==0){
+		alert("这已经是第一篇练习啦！");
+		return ;
+	}
+	id--;
+	updateExercise();
+}
+function nextExercise(){
 	id++;
+	updateExercise();
+}
+function startExercise(){
+	id=0;
+	updateExercise();
 }
 function showAnswer(){
 	classAttach('wa','show'),classAttach('surplus','show'),classAttach('lack','show');
@@ -79,14 +94,23 @@ function hideAnswer(){
 		tmp[0].classList.add('hidden'),tmp[0].classList.remove('show');
 }
 window.onload=function(){
-	main=newElement('p');
+	appmain=newElement('div');
+	content=newElement('p');
+	header=newElement('div');
+	appmain.style='margin-top:5rem';
+	idtitle=newElement('h5');
+	idtitle.style='float:right;';
 	srctitle=newElement('h5');
-	document.getElementsByTagName('main')[0].appendChild(srctitle);
-	document.getElementsByTagName('main')[0].appendChild(main);
-	let show=document.getElementById('show'),hide=document.getElementById('hide'),next=document.getElementById('next');
+	srctitle.style='float:left';
+	appmain.appendChild(content);
+	header.appendChild(srctitle),header.appendChild(idtitle);
+	document.getElementsByTagName('main')[0].appendChild(header);
+	document.getElementsByTagName('main')[0].appendChild(appmain);
+	let show=document.getElementById('show'),hide=document.getElementById('hide'),prev=document.getElementById('prev'),next=document.getElementById('next');
 	let st=document.getElementById('start');
-	st.addEventListener('click',nextExercise);
+	st.addEventListener('click',startExercise);
 	show.addEventListener('click',showAnswer);
 	hide.addEventListener('click',hideAnswer);
+	prev.addEventListener('click',prevExercise);
 	next.addEventListener('click',nextExercise);
 }
