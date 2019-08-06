@@ -456,6 +456,82 @@
 				},
 				{"p":", yet we can still learn a lot."}
 			]
+		},
+		{
+			"source":"2015年全国二卷",
+			"content":[
+				{"p":"One day, little Tony went to a shopping center with his "},
+				{
+				"p":"parent",
+				"type":"wa",
+				"correction":"parents",
+				"reason":"通常为复数，且由后文“Tony saw parents”可知确为两人"
+				},
+				{"p":". It was very crowded. Tony saw a toy "},
+				{
+				"p":"on",
+				"type":"wa",
+				"correction":"in",
+				"reason":"in a window，固定搭配，on语义上也不合逻辑"
+				},
+				{"p":" a shop window. He liked it so "},
+				{
+				"p":"very",
+				"type":"surplus",
+				"correction":"",
+				"reason":"like sth very/so much，此处very冗余，根据so...that...句式判断留so"
+				},
+				{"p":" much that he quickly walked into the shop. After "},
+				{
+				"p":"looks",
+				"type":"wa",
+				"correction":"looking",
+				"reason":"after此处为介词，引导状语从句，故接动名词"
+				},
+				{"p":" at the toy for some time, he turned around and found "},
+				{
+				"p":"where",
+				"type":"wa",
+				"correction":"that",
+				"reason":"一般宾语从句（从句为陈述句）用that做引导词"
+				},
+				{"p":" his parents were missing. Tony was scared and "},
+				{
+				"p":"begun",
+				"type":"wa",
+				"correction":"began",
+				"reason":"begin-began-begun"
+				},
+				{"p":" to cry. A woman saw him crying and "},
+				{
+				"p":"telling",
+				"type":"wa",
+				"correction":"told",
+				"reason":"此处要分清动作的主体，tell是woman发出，因此和saw并列、时态一致"
+				},
+				{"p":" him to wait outside "},
+				{
+				"p":"a",
+				"type":"wa",
+				"correction":"the",
+				"reason":"特指这家toy shop"
+				},
+				{"p":" shop. Five minutes later. Tony saw "},
+				{
+				"p":"",
+				"type":"lack",
+				"correction":"his",
+				"reason":"语义，若不加限定指的是parents这个群体"
+				},
+				{"p":" parents. Mom said, - How nice to see you again! Dad and I were "},
+				{
+				"p":"terrible",
+				"type":"wa",
+				"correction":"terribly",
+				"reason":"副词才能修饰形容词"
+				},
+				{"p":"worried./ Tony promised her that this would never happen again."}
+			]
 		}
 	]
 }

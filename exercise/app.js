@@ -20,9 +20,14 @@ ajaxGet('data.json').then(function(jsonText){
 	for(var i in tmp.tests){
 		exercises.push(tmp.tests[i]);
 	}
+	jump.val.max=exercises.length;
+	conclusion=newElement('span');
+	conclusion.style="font-size:3rem";
+	conclusion.textContent="共"+exercises.length+"篇练习";
+	if(content)content.appendChild(conclusion);
 }
 );
-var appmain,content,header,srctitle,idtitle,id=0,correctionTemplate=newElement('span'),reasonTemplate=newElement('span');
+var appmain,content,header,srctitle,idtitle,conclusion,id=0,correctionTemplate=newElement('span'),reasonTemplate=newElement('span');
 correctionTemplate.classList.add('correction'),reasonTemplate.classList.add('reason');
 function scorePoint(p,t,c,r){
 	var rt=newElement('span');
@@ -57,7 +62,7 @@ function updateExercise(){
 		return ;
 	}
 	while(content.childNodes.length)content.removeChild(content.lastChild);
-	srctitle.textContent=exercises[id].source,idtitle.textContent='No. '+ (id+1);
+	srctitle.textContent=exercises[id].source,idtitle.textContent='No. '+(id+1)+'/'+exercises.length;
 	for(i in exercises[id].content){
 		let nd=exercises[id].content[i];
 		if(!nd.type){
@@ -93,6 +98,10 @@ function hideAnswer(){
 	while(tmp.length)
 		tmp[0].classList.add('hidden'),tmp[0].classList.remove('show');
 }
+function jumpToExercise(){
+	id=Number(jump.val.value)-1;
+	updateExercise();
+}
 window.onload=function(){
 	appmain=newElement('div');
 	content=newElement('p');
@@ -104,13 +113,15 @@ window.onload=function(){
 	srctitle.style='float:left';
 	appmain.appendChild(content);
 	header.appendChild(srctitle),header.appendChild(idtitle);
+	if(!content.childNodes.length)content.appendChild(conclusion);
 	document.getElementsByTagName('main')[0].appendChild(header);
 	document.getElementsByTagName('main')[0].appendChild(appmain);
-	let show=document.getElementById('show'),hide=document.getElementById('hide'),prev=document.getElementById('prev'),next=document.getElementById('next');
-	let st=document.getElementById('start');
+	document.forms[0].target="rfFrame";
+	let show=document.getElementById('show'),hide=document.getElementById('hide'),prev=document.getElementById('prev'),next=document.getElementById('next'),jumpbtn=jump.btn,st=document.getElementById('start');
 	st.addEventListener('click',startExercise);
 	show.addEventListener('click',showAnswer);
 	hide.addEventListener('click',hideAnswer);
 	prev.addEventListener('click',prevExercise);
 	next.addEventListener('click',nextExercise);
+	jumpbtn.addEventListener('click',jumpToExercise);
 }
