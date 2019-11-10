@@ -1,132 +1,126 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
 <head>
-<title>ZhYic-Home</title> <link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="picture/ZhYiclogo_dark.ico" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta charset="UTF-8">
-<meta http-equiv="x-dns-prefetch-control" content="on">
-<link rel="stylesheet" type="text/css" href="css/home.css" />
-<link rel="dns-prefetch" href="//cdn.bootcss.com" />
-<link rel="dns-prefetch" href="//secure.gravatar.com" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-<meta name="renderer" content="webkit">
-<meta http-equiv="Cache-Control" content="no-transform"/>
-<meta http-equiv="Cache-Control" content="no-siteapp"/>
-<!--[if lt IE 9]>
-<script src="//cdn.bootcss.com/html5shiv/r29/html5.min.js"></script>
-<script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-<![endif]-->
+    <title>ZhYic-Home</title>
+    <link rel="shortcut icon" href="picture/ZhYiclogo_dark.ico" />
+    <link rel="bookmark" href="picture/ZhYiclogo_dark.ico" />
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8">
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-transform" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="stylesheet" type="text/css" href="css/mobile/modern.css">
+    <script src="js/velocity.js"></script>
+    <script src="js/loading.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/mobile/index-ext.css">
 </head>
-<script>
-    window.location.replace('index-mobile.html');
-</script>
-<body id="base" gtools_scp_screen_capture_injected="true">
-<!--[if lt IE 8]>
-<div class="browsehappy" role="dialog"> 当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/" target="_blank">升级你的浏览器</a>。
-</div> <![endif]-->
-<div class="head">
-    <div style="margin-top:1em;"><h1 class="bluishgreen">ZhYic</h1></div>
-    <div style="margin-left:30%"><h4 class="white">A vegetable chicken</h4></div>
-    <ul class="menu">
-        <li class="option"><div class="selfcontain"><a class="block big circle-spread" href="javascript:jump(500,this,'archive.html')">Archive</a></div></li>
-        <li class="option"><div class="selfcontain"><a class="block big circle-spread" href="javascript:jump(500,this,'tags.html')">Tags</a></div></li>
-        <li class="option"><div class="selfcontain"><a class="block big circle-spread" href="javascript:jump(500,this,'about.html')">About</a></div></li>
-        <li class="option"><div class="selfcontain"><a class="block big circle-spread" href="javascript:jump(500,this,'Friends.html')">Friends</a></div></li>
-    </ul>
-</div>
-<div class="white" style="width:60%;margin-top:3%;background-color: rgba(90, 82, 126, 0.3);padding-left:5%;padding-right:5%;padding-bottom:1%;padding-top:1%;box-shadow:0 0 0.3em 1px rgb(95, 87, 131);">
-    <h3>最近更新</h3>
-    <a class="block bg-grey shadow-float radius" href="HBOI2019游记.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>HBOI2019游记</h4>
-            <p>Day0 以下皆为废话各位可以跳过 在学校 早上在学校机房调了一下前一天剩下的题，感觉打得很对...</p>
+<body>
+    <div id="banner">
+        <div id="title-box">
+            <div id="title-box-emp"></div>
+            <h1>ZhYic's Blog</h1>
+            <h2>A Rubbish Has Its Will</h2>
         </div>
-    </a>
-	<a class="block bg-grey shadow-float radius" href="混题记录2.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>混题记录2</h4>
-            <p>前言 NOIp2018即将来临，ZhYic踏上了每天水水水的道路。没有作业没有文化课没有卷子，有的只是每天一两题的龟速和时常的爆零、垫底。ZhYic虽然文化课也不是特别差劲（反正之...</p>
+        <div style="font-size:2rem;text-transform:uppercase" id="banner-skip" onclick="scrollByTag('nav')">
+            <span>Explore The blog</span>
         </div>
-    </a>
-	<a class="block bg-grey shadow-float radius" href="即将退役选手的复习计划.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>即将退役选手的复习计划</h4>
-            <p>各类模板 树状数组 1.基本构型 树状数组是一种支持O(logn)修改查询的维护数列前缀和的数据结构。核心在于tree数组和位运算的结合。所有...割点 缩点（强连通分量）乘法逆元的三种求法...</p>
+        <div id="banner-bg"></div>
+    </div>
+    <div id="all">
+        <nav class="float-shadow base-box">
+            <ul>
+                <li><a href="index-mobile.html"><i class="material-icons">home</i>Home</a></li>
+                <li><a href="archive.html"><i class="material-icons">archive</i>Archive</a></li>
+                <li><a href="gallery.html"><i class="material-icons">photo</i>Gallery</a></li>
+                <li><a href="about.html"><i class="material-icons">info</i>About</a></li>
+                <li><a href="Friends.html"><i class="material-icons">face</i>Friends</li>
+            </ul>
+        </nav>
+        <div id="sidebar" class="float-shadow base-box">
+            <div id="selfintro">
+                <a href="https://zhongyic00.github.io">
+                    <img src="picture/ZhYiclogo_v2.svg" style="width:50%;float:left;"></a>
+                <h2>ZhYic</h2>
+                <p class="center small dgrey">An "Vegetable" OIer<br>and<br>HTML Enthusiast</p>
+            </div>
+            <table id="overview">
+                <tr>
+                    <td>
+                        <p>posts</p>
+                        <p><a href="archive.html">29</a></p>
+                    </td>
+                    <td>
+                        <p>version</p>
+                        <p>2</p>
+                    </td>
+                    <td>
+                        <p>tags</p>
+                        <p>0</p>
+                    </td>
+                </tr>
+            </table>
         </div>
-    </a>
-	<a class="block bg-grey shadow-float radius" href="单调队列整理.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>单调队列整理</h4>
-            <p>什么是单调队列 单调队列是一种通过某些数据单调性来优化时间复杂度的方法，其时间复杂度为O(n) 单调队列一般将较优解置于队首，保证“优秀度”从队首到队尾递减，且保证队列中元素...</p>
+        <iframe id="setting-iframe" src="settings.html" frameborder=0></iframe>
+        <div class="setting-option" id="setting-button">
+            <i class="material-icons">settings_brightness</i>
         </div>
-    </a>
-	<a class="block bg-grey shadow-float radius" href="CodeforcesRound519.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>CodeforcesRound519</h4>
-            <p>前言 没什么好说了。 第一次打CF到1点多。 爆肝！！！ 题解 A. Elections题意 给一个数列a，问最小的k使 做法 1# 可以暴力枚举k（数据规模小） 2# 可以算得k=...B. Lost Array 题意 有一个原数...</p>
-        </div>
-    </a>
-	<a class="block bg-grey shadow-float radius" href="Codeforces_EducationalRound53.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>Codeforces_EducationalRound53</h4>
-            <p>前言 ZhYic是个非常菜的小伙子，这天听同学说打CF，于是兴奋起来，上了这趟黑车。“打CF？水水水？好啊！” 然后打CF时先是迟到了半个多小时。 后来打了AB之后一看C：“DP？好像不可能做到啊。看看D吧。”...</p>
-        </div>
-    </a>
-	<a class="block bg-grey shadow-float radius" href="10月月考混分分析.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>2018年10月月考混分分析</h4>
-            <p>混分统计 数学 选择题 1. 一条光线从点(﹣2,﹣3)射出，经y轴反射后与圆(x+3)^2+(y﹣2)^2=1相切，则入射光线所在直线的斜率为() 分析：计算能力不足...</p>
-        </div>
-    </a>
-    <a class="block bg-grey shadow-float radius" href="混题记录1.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>混题记录1</h4>
-            <p>树剖类 [NOI2015]软件包管理器 题解 对于树上每个点，0表示未安装，1表示已安装。 安装一个软件x，把path0,x全部赋1即可，卸载同样操作。 每次取已安装软件总数绝对值作为答案即可...</p>
-        </div>
-    </a>
-    <a class="block bg-grey shadow-float radius" href="被神仙吊打及跟着大佬混记录1.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>被神仙吊打及跟着大佬混记录1</h4>
-            <p>前言： 跟着大佬上分不愁  我等蒟蒻又被吊打啦！  OrzImmortals  ARC 058 C - こだわり者いろはちゃん / Iroha's Obsession 题意...</p>
-        </div>
-    </a>
-    <a class="block bg-grey shadow-float radius" href="Spfa.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>Spfa最短路模板</h4>
-            <p class="center no-margin">Spfa的写法 bfs正规spfa (code) 区别 bfs是将目前搜到的点所连的边加入搜索队列，堆优化后每次取最短的边进行松弛，dfs需要一回走到底，每条分支都进行更新，相当于剪枝搜索。因此dfs对于每个点需要多次更新，时间复杂度远大于bfs。策略：dfs是剪枝暴搜，如果顺当前道路走到当前点p，费用大于到p的最短路，那么以此更新p后所有点必然大于原最短路径。bfs是纯正dp思想，贝尔曼福德的改进版。适用：dfs适用于边少......</p>
-        </div>
-    </a>
-    <a class="block bg-grey shadow-float radius" href="TreelikeArry.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>树状数组模板</h4>
-            <p class="center no-margin">(code)解释如下： 来源：百度图片搜索(img)树状数组每个节点所存的值都有不同含义，具体意义则为C[i]=A[i]+A[i-1]+....+A[i-2^k+1]（k表示i的二进制末尾连续0的个数）; 举个粟子......</p>
-        </div>
-    </a>
-    <a class="block bg-grey shadow-float radius" href="Sanjiaoxing-Tijie.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>洛谷OJP1222三角形题解</h4>
-            <p class="center no-margin">这道题已经有一位巨神发了汤普森积分的解法了，而且我的解法并不是最优的，仅供参考。 首先，计算几何中一种非常常用的算法是扫描线算法（这是一篇比较全面的博文），但是与矩形中的扫描线算法不同，三角形因为边不是都与坐标轴平行，故不能采用矩形面积计算中常用的差分+线段树维护 回顾一下扫描线算法的思想(quote)......于是我们可以想到，仿照类似于矩形面</p>
-        </div>
-    </a>
-    <a class="block bg-grey shadow-float radius" href="Tourist's_budget.html">
-        <div class="center grey-hover no-shadow padding-thin margin-thin">
-            <h4>洛谷OJP1016旅行家的预算题解</h4>
-            <p class="center no-margin">看了一下各位大佬的题解，感觉代码有些长，这里介绍一下~~简短的~~简陋的方法（不涉及单调队列，完全按照题面意思的贪心+模拟）<strong>思路</strong> 首先将起点和终点与道路上的加油站视为等价节点，按照距离起点的距离（即为通过顺序）排序。然后对于每一个节点我们可以进行以下贪心策略 - 如果可以直达下一个油价更低的节点就加满够到此节点的油，开过去（中间的不用管） - 如果不能直达就加满油（因为中转节点的油更贵要少加），开到能到范围内油价最低的加油站[1] 对于[1]的证明： 因为从A到B的路</p>
-        </div>
-    </a>
-</div>
-<div style="margin-left: auto!important;margin-right: auto!important"><span class="white">page: </span><a href="index.html">1</a><p>...</p></div>
-<div class="bottom">
-    <ul class="footer">
-    <li class="footer"><a class="small grey-hover" href="about.html">About</a></li>
-    <li class="footer"><a class="small grey-hover" href="support.html">Support</a></li>
-    <li class="footer" style="border-style:none none none none"><a class="small grey-hover" href="mailto:zhong200234@outlook.com">Contact</a></li>
-    </ul>
-<br />
-<p>© 2018 ZhongYic00</p>
-</div>
-<script src="js/test.js"></script>
-<script>background_load([216,191,216],[106,90,205]);</script>
+        <main class="base-box">
+            <div data-url="脑图汇总.html" class="istop">
+                <h1>脑图汇总</h1>
+                <p>...</p>
+            </div>
+            <div data-url="周考0727小结.html">
+                <h1>周考0727小结</h1>
+                <p>放假近一个月了，心态有些浮躁，总是想着各种玩乐的事情，当然是出不了好成绩的。 考前一定记得好好休息，大脑清醒是一切的基础。 数学大量爆发出计算错误，还有一些明显是找几何关系的题就要及时发现避免浪费时间。...</p>
+            </div>
+            <div data-url="高二期末复习（二）.html">
+                <h1>生物-高二期末复习（二）</h1>
+                <p>选择题 人短时间剧烈运动时呼吸作用消耗氧气量小于产生二氧化碳量 错误。 若进行有氧呼吸，消耗氧气量与产生二氧化碳量相等； 若进行无氧呼吸，不消耗氧气。 浆细胞内DNA数量多于染色体数量
+                    正确。浆细胞无法进行分化，所以与有丝分裂期DNA复制无关。因为细胞质...</p>
+            </div>
+            <div data-url="生物周考.html">
+                <h1>生物周考</h1>
+                <p>选择题 细胞中的RNA具有催化、物质转运即控制生物性状等多种功能。 DNA具有控制生物性状的功能。 RNA的功能：mRNA 蛋白质翻译模板，rRNA 构成核糖体，tRNA 运...</p>
+            </div>
+            <div data-url="高二期末复习（一）.html">
+                <h1>生物-高二期末复习（一）</h1>
+                <p>选择题 衣原体是一种体积比细菌小的原核生物，缺乏合成生物能量来源的ATP酶，能量完全依赖于被感染的活细胞，据此分析下列说法正确的是A. 衣原体与细菌细胞膜的主要成分相同...</p>
+            </div>
+            <div data-url="HBOI2019游记.html">
+                <h1>HBOI2019游记</h1>
+                <p>Day0 以下皆为废话各位可以跳过 在学校 早上在学校机房调了一下前一天剩下的题，感觉打得很对...</p>
+            </div>
+            <div data-url="即将退役选手的复习计划.html">
+                <h1>即将退役选手的复习计划</h1>
+                <p>upd:已退役 各类模板 树状数组 1.基本构型 树状数组是一种支持O(logn)修改查询的维护数列前缀和的数据结构。核心在于tree数组和位运算的结合。所有... 割点 缩点（强连通分量）乘法逆元的三种求法</p>
+            </div>
+            <div data-url="混题记录2.html">
+                <h1>混题记录2</h1>
+                <p>前言 NOIp2018即将来临，ZhYic踏上了每天水水水的道路。没有作业没有文化课没有卷子，有的只是每天一两题的龟速和时常的爆零、垫底。ZhYic虽然文化课也不是特别差劲（反正之...</p>
+            </div>
+            <div data-url="单调队列整理.html">
+                <h1>单调队列整理</h1>
+                <p>什么是单调队列 单调队列是一种通过某些数据单调性来优化时间复杂度的方法，其时间复杂度为O(n) 单调队列一般将较优解置于队首，保证“优秀度”从队首到队尾递减，且保证队列中元素...</p>
+            </div>
+    
+            <nav>
+                <table id="page-turn">
+                    <tr>
+                        <td><a href="index-mobile.html">1</a></td>
+                        <td><a href="index-mobile.html">2</a></td>
+                        <td><a href="index-mobile.html">3</a></td>
+                    </tr>
+                </table>
+            </nav>
+        </main>
+    </div>
+    <iframe src="footer.html" id="footer" frameborder="0"></iframe>
+    <div id="to-top"><i class="material-icons">keyboard_arrow_up</i></div>
+    <script>Velocity(document.getElementsByTagName("main"), { opacity: 1 }, { delay: 200, duration: "slow", easing: "ease-out" });</script>
+    <script type="module" src="js/animation.js"></script>
+    <script src="js/index-ext.js"></script>
 </body>
-
 </html>
