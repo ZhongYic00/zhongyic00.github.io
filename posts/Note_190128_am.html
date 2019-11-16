@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<head>
+<title>ZhYic-2019清北学堂集训day2上午学习笔记</title> <link rel="shortcut icon" href="//picture/ZhYiclogo_dark.ico"/> <link rel="bookmark"href="//picture/ZhYiclogo_dark.ico" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta http-equiv="x-dns-prefetch-control" content="on">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+<meta name="renderer" content="webkit">
+<meta http-equiv="Cache-Control" content="no-transform"/>
+<meta http-equiv="Cache-Control" content="no-siteapp"/>
+<link rel="stylesheet" type="text/css" href="/css/mobile/modern.css">
+<script src="/js/velocity.js"></script>
+<link rel="stylesheet" href="/css/styles/solarized-light.css">
+<script src="/js/highlight.pack.js"></script><script>hljs.initHighlightingOnLoad();</script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.0/dist/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script src="/js/loading.js"></script>
+</head>
+<body>
+    <div id="header-container">
+    <div id="header">
+        <span id="menu-button">
+            <img id="menu-symbol"/>
+        </span>
+        <div id="header-context"><h1>2019清北学堂集训day2上午学习笔记</h1><!--here--></div>
+        <span id="setting-area">
+        <span class="setting-option" id="theme-button">
+            <img id="theme-symbol"/>
+        </span>
+        <span class="setting-option" id="setting-button">
+            <img id="setting-symbol" src="/picture/setting_sym.svg">
+        </span>
+</span>
+    </div>
+    <iframe id="setting-iframe" src="/settings.html" frameborder=0></iframe>    </div>
+    <div id="menu-container"></div>    <nav id="article-index" class="float-shadow"></nav>
+    <main><h1>树分治</h1>
+<h2>点分治</h2>
+<p>选择一个点将无根树变为有根树，再递归处理每一棵以根节点儿子为根的子树。</p>
+<h3>例题１</h3>
+<p>[IOI2011]Race</p>
+<p>求一条路径使得权值和为k且边的数量最小。</p>
+<h4>解法</h4>
+<p>用一个桶记录对应边权的最小边数。按照常规点分治做法处理。</p>
+<h2>边分治</h2>
+<ul>
+<li><p>在树中选择一条边，统计与边有关的信息。</p>
+</li>
+<li><p>将边删去后得到两棵不相交的子树。</p>
+</li>
+<li><p>递归处理</p>
+</li>
+<li><p>选边策略</p>
+<ul>
+<li>参考点分治选点策略</li>
+<li>通过DP求解</li>
+<li>设D为所有点度数最大值</li>
+<li>可证明当D为常数时递归深度为$logn$级别的。</li>
+
+</ul>
+</li>
+<li><p>思考：碰到一般的图时（如菊花图）如何提高算法效率</p>
+<ul>
+<li>增加虚点，重构为二叉树</li>
+<li>使得重构的树和原树等价（任意两点间经过实边相同）</li>
+<li>新树点数不超过2n。</li>
+<li>这样边分治的递归层数降为$O(logn)$级别。</li>
+
+</ul>
+</li>
+
+</ul>
+<h3>例题1</h3>
+<p>[bzoj2870]最长道路tree</p>
+<h4>解法</h4>
+<p>枚举路径最小值，统计贡献。</p>
+<h3>链分治</h3>
+<h1>CDQ分治</h1>
+<h1>整体二分</h1>
+<p>需要满足性质：</p>
+<ul>
+<li>询问答案有可二分性。</li>
+<li>修改对询问的贡献是独立的（如求和），相互不影响。</li>
+<li>修改的贡献可叠加。</li>
+
+</ul>
+<p>顾名思义就是对所有询问一起二分</p>
+<p>询问类似于第几次修改后满足条件</p>
+<h2>例题</h2>
+<p>Meteors</p>
+<h1>分块</h1>
+<p>如果每次操作复杂度为$O(1)$则复杂度为$O(n\sqrt n)$。</p>
+<p>若单次操作复杂度带$log$可通过调整块大小使得复杂度为$O(n\sqrt{nlogn})$。</p>
+<p>&nbsp;</p>
+<h2>莫队</h2>
+<h3>复杂度证明</h3>
+<p>对于左端点，在同一块内转移，一次不超过$\sqrt n$，在不同块间转移次数不超过$\sqrt n$。</p>
+<p>对于右端点，同一类内移动次数不超过$n$，最多$\sqrt n$类。</p>
+<p>所以总复杂度为$O(n\sqrt n)$。</p>
+<h3>强制在线莫队</h3>
+<p>选取一些关键点，预处理出关键点到任意点的答案，询问时左端点右移即可。</p>
+<h2>树分块&amp;树上莫队</h2>
+<p>借助dfs序（括号序列）。可将一个连通分量缩成一个序列。</p>
+<h3>例题</h3>
+<p>[SPOJ]COT2</p>
+<p>给定一棵n个颜色的树，m次查询，每次询问(u,v)路径上颜色种类。</p>
+<h4>做法2</h4>
+<p>主席树。</p>
+<p>定义pre[i]为颜色与i相同的最近的祖先，其他同莫队及序列上数颜色。</p>
+<h1>块状链表</h1>
+<ul>
+<li>定位复杂度$O(\sqrt n)$，插入删除等操作复杂度都为$O(\sqrt n)$。</li>
+<li>宏观为链表，每个节点为数组。</li>
+<li>注意合并小的块。</li>
+
+</ul>
+<h2>例题</h2>
+<p>[BZOJ3337]</p>
+<p>维护一个原序列块状链表，同时维护一个块内有序的块状链表即可。码量较大。</p>
+</main>
+<iframe src="/footer.html" id="footer" frameborder="0"></iframe>
+<div id="to-top"><i class="material-icons">keyboard_arrow_up</i></div>
+    <script>
+            Velocity(document.getElementsByTagName("main"),{opacity:1},{delay:200,duration:"slow",easing:"ease-out"});</script>
+    <script type="module" src="/js/animation.js"></script>
+</body>

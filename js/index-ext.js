@@ -11,7 +11,7 @@ const scrollByTag=(tagName)=>{Velocity(document.getElementsByTagName(tagName)[0]
 const f=(url)=>{window.location.assign(url);};
     for(var i=0;i<pageLinks.length;i++){
         pageLinks[i].addEventListener('click',function(){
-            f(this.dataset.url);
+            f('posts/'+this.dataset.url);
         });
     };
 const ff=()=>{

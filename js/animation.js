@@ -9,7 +9,7 @@ var Menubox=document.createElement('div'),Menulist=document.createElement('ul'),
 Menubox.className='menu',Menulist.className='menu';
 function Draw(obj,picName,ext){
     ext=ext||'';
-    if(obj)obj.src='picture/'+picName+'.'+(ext.length>0?ext:'svg');
+    if(obj)obj.src='/picture/'+picName+'.'+(ext.length>0?ext:'svg');
 }
 const Draw_moon=()=>{Draw(ThemeSvg,'theme_dark_sym');};
 const Draw_sun=()=>{Draw(ThemeSvg,'theme_light_sym');};
@@ -140,16 +140,14 @@ function init() {
         while(Menulist.hasChildNodes())Menulist.removeChild(Menulist.firstChild);
         for(var i=0;i<3;i++){
             var Menuli=document.createElement('li'),Menuop=document.createElement('a');
-            //Menuop.style.fontSize=fontH+'px',Menuop.style.lineHeight=lineH+'px';
             var tmp=document.createTextNode(Menucontext[i]);
-            Menuop.href=Menucontext[i]+'.html',Menuop.appendChild(tmp);
+            if(Menucontext[i]!='home')Menuop.href='/'+Menucontext[i]+'.html';
+            else Menuop.href='/index.html';
+            Menuop.appendChild(tmp);
             Menuli.appendChild(Menuop),Menulist.appendChild(Menuli);
         }
-        //console.log(lineH);
         Menubox.appendChild(Menulist);MenuContainer.appendChild(Menubox);
     }
-    //if(!nightshift)Velocity(Body,{backgroundColor:LGREY},{duration:1200,easing:'ease-in-out'});
-    //else Velocity(Body,{backgroundColor:LYELLOW2},{duration:1200,easing:'ease-in-out'});
     if(currentHeight*2>currentWidth) {
             SetPlatform('mobile');
             if(Main.classList.contains('pc'))Main.classList.remove('pc');

@@ -23,9 +23,7 @@ main.pc{width:75% !important}
 #previous:hover,#next:hover{background:rgba(65, 107, 156, 0.6)}
 #previous{left:0;}
 #next{right:0;}
-#previous>img,#next>img{width:100%;position:relative;top:50%;transform:translateY(-50%);}
-#previous>img{transform:rotate(-90deg)}
-#next>img{transform:rotate(90deg)}
+#previous>i,#next>i{width:100%;position:relative;top:50%;transform:translateY(-50%);font-size:2rem;}
 #zoom-in,#zoom-out{position:absolute;right:0;top:0;z-index:200;opacity:0;font-weight:700;background:rgba(0,0,0,.6);color:white;font-size:2rem;}
 #zoom-in{cursor:zoom-in;}
 #zoom-out{cursor:zoom-out;}
@@ -77,8 +75,8 @@ main.pc{width:75% !important}
                         </div>
                     </div>
                 </div>
-                <div id="previous"><img src="picture/top_sym.svg"/></div>
-                <div id="next"><img src="picture/top_sym.svg"/></div>
+                <div id="previous"><i class="material-icons">navigate_before</i></div>
+                <div id="next"><i class="material-icons">navigate_next</i></div>
                 <div id="zoom-in"><i class="material-icons">fullscreen</i></div>
             </div>
             <div id="image-info">
