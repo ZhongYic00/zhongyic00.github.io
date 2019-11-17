@@ -1,6 +1,6 @@
-var mainY;
+var mainY,noSiderbar=0;
 const siderbar=()=>{
-    if((document.documentElement.clientHeight||document.body.clientHeight)>(document.documentElement.clientWidth||document.body.clientWidth))return;
+    if(noSiderbar)return;
     var Sidebar=document.getElementById('sidebar'),
         scrollY=Math.max(window.pageYOffset,document.documentElement.scrollTop,document.body.scrollTop);
     if(scrollY>mainY)Sidebar.classList.add('fix');
@@ -27,6 +27,7 @@ var sider=window.addEventListener('scroll',siderbar);
 {
     var cur=document.getElementsByTagName('main')[0];
     mainY=0;
+    noSiderbar=document.body.clientHeight>document.body.clientWidth;
     while(cur!==null){
         mainY+=cur.offsetTop,cur=cur.offsetParent;
     }
