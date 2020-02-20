@@ -1,4 +1,4 @@
-@import url(http://fonts.font.im/css?family=Comfortaa:300);
+@import url(https://fonts.font.im/css?family=Comfortaa:300);
 @font-face{font-family: 'respective';src:url('../../resources/fonts/Respective_Slanted.ttf')}
 .year{font-size:5em;}
 .month{font-size:4em;font-family:'respective','Comfortaa','serif';font-variant-numeric: oldstyle-nums;}
