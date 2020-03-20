@@ -2,7 +2,9 @@ var vocabulary = new Array();
 var wrong = new Array();
 var progress = 0;
 function Word(e, c) {
-	this.eng = e.textContent.replace(/\[+.*\]/ig, '').replace(/[^a-z\s]/ig, '').replace(/\s*\s?$/g, ''), this.cn = c.textContent.replace(/\s*\s?$/g, '');
+	this.eng = e.textContent.replace(/\[+.*\]/ig, '').replace(/[^a-z\s]/ig, '').replace(/\s*\s?$/g, '').replace(/\s*\s/g,' '),
+	this.cn = c.textContent.replace(/\s*\s?$/g, ''),
+	this.t = Boolean(e.textContent.search('=') != -1);
 }
 var checker = {
 	show: null,
@@ -11,6 +13,7 @@ var checker = {
 	std: null,
 	save: null,
 	clear: null,
+	thesaurus: null,
 	__save: () => {
 		window.localStorage['progress'] = progress;
 		window.localStorage['wrong'] = wrong.toString();
@@ -23,6 +26,7 @@ var checker = {
 		this.std = document.getElementById('std');
 		this.save = document.getElementById('sav');
 		this.clear = document.getElementById('clr');
+		this.thesaurus = document.getElementById('ths');
 		progress = window.localStorage['progress'] || 1;
 		//console.log(window.localStorage['wrong'].split(','));
 		wrong = window.localStorage['wrong'] ? (window.localStorage['wrong'].split(','))
@@ -30,6 +34,7 @@ var checker = {
 				return parseInt(numStr);
 			}) : new Array();
 		this.show.textContent = vocabulary[progress].cn;
+		checker.thesaurus.style.visibility=vocabulary[progress].t?'visible':'hidden';
 		this.ok.addEventListener('click', checker.chk);
 		this.ans.addEventListener('keydown', (c) => {
 			if (c.keyCode == 13) checker.chk();
@@ -44,13 +49,17 @@ var checker = {
 	},
 	chk() {
 		if (checker.ans.value == vocabulary[progress].eng) {
-			checker.reset(); checker.show.textContent = vocabulary[++progress].cn;
+			checker.reset(); checker.nxt();
 		}
 		else {
 			checker.std.textContent = vocabulary[progress].eng;
 			wrong.push(progress);
-			setTimeout(() => { checker.reset(); checker.show.textContent = vocabulary[++progress].cn; }, 1000);
+			setTimeout(() => { checker.reset(); checker.nxt(); }, 1000);
 		}
+	},
+	nxt() {
+		checker.show.textContent=vocabulary[++progress].cn;
+		checker.thesaurus.style.visibility=vocabulary[progress].t?'visible':'hidden';
 	},
 	reset() {
 		checker.ans.value = '';
@@ -71,11 +80,11 @@ var errhistory = {
 			for (i in wrong) {
 				const errItem = (id) => {
 					let a = document.createElement('p'), b = document.createElement('span'), c = document.createElement('span');
-					a.className = 'errItem', b.textContent = vocabulary[i].cn, b.className = 'errItem-c', c.textContent = vocabulary[i].eng, c.className = 'errItem-e';
+					a.className = 'errItem', b.textContent = vocabulary[id].cn, b.className = 'errItem-c', c.textContent = vocabulary[id].eng, c.className = 'errItem-e';
 					a.appendChild(b), a.appendChild(c);
 					return a;
 				}
-				errhistory.show.appendChild(errItem(parseInt(i)));
+				errhistory.show.appendChild(errItem(parseInt(wrong[i])));
 			}
 		}
 		else {
@@ -98,3 +107,6 @@ window.onunload = () => {
 	wrong = Array.from(new Set(wrong));
 	checker.__save();
 };
+window.onbeforeunload = function () {
+	return 'aaaaaa';
+}

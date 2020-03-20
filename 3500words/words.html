@@ -10,9 +10,10 @@
 	<meta charset="UTF-8">
 	<title>NCEE 3500 Words</title>
 	<style>
-		body{
-			font-family:cursive;
+		body {
+			font-family: cursive;
 		}
+
 		p,
 		input,
 		button {
@@ -74,38 +75,47 @@
 		}
 
 		#errshow {
-			display: block;
+			display: flex;
+			flex-direction: column;
 			position: relative;
 			width: 20rem;
 			background: rgb(170, 211, 229);
+			box-shadow: 0px 3px 6px 0px inset rgba(0, 0, 0, 0.41);
 			min-height: 3rem;
 			max-height: 95%;
 			width: 20rem;
 			overflow: scroll;
 		}
 
-		#errshow .errItem:nth-child(even){
-			background:rgba(0,0,0,.1);
+		#errshow .errItem:nth-child(even) {
+			background: rgba(0, 0, 0, .1);
 		}
+
 		.errItem {
-			display: block;
+			display: flex;
+			flex-direction: row;
+			align-content: flex-start;
 			font-size: 1rem;
 			width: 100%;
 			margin: 0;
 		}
-		
+
 		.errItem-c {
-			display: inline-block;
+			display: flex;
+			align-items: flex-start;
 			width: 10rem;
-			padding:0.1rem 0;
-			margin:0;
-			background: rgba(0,0,0,.2);
+			padding: 0.1rem 0;
+			margin: 0;
+			background: rgba(0, 0, 0, .2);
 			word-break: break-all;
 		}
 
 		.errItem-e {
-			padding-left:0.5rem;
-			display:inline;
+			display: flex;
+			flex-direction: row;
+			align-items: flex-start;
+			padding-left: 0.5rem;
+			/*display:inline-block;*/
 			font-weight: bold;
 			vertical-align: center;
 			width: 10rem;
@@ -118,7 +128,7 @@
 
 <body style="position:absolute;width:100%;height:100%;margin:0">
 	<center style="position:relative;top:50%;transform:translateY(-50%)">
-		<p id="cn"></p>
+		<p><span id="cn"></span><span  id="ths" style="margin-left:1rem;font-size:1.5rem;visibility:hidden">Thesaurus<i class="material-icons" style="vertical-align:middle">check_circle</i></span></p>
 		<input id="ans"></input>
 		<button id="chk">完成ok</button>
 		<button id="sav">保存</button>
@@ -126,7 +136,9 @@
 		<p id="std" style="color:red">&nbsp</p>
 	</center>
 	<div id="errbox">
-		<div id="err"><i class="material-icons" style="font-size:1.5rem;vertical-align:text-bottom">history</i>错误记录<br><i class="material-icons">expand_more</i></div>
+		<div id="err"><i class="material-icons"
+				style="font-size:1.5rem;vertical-align:text-bottom">history</i>错误记录<br><i
+				class="material-icons">expand_more</i></div>
 		<div id="errshow" style="display:none;"></div>
 	</div>
 	<iframe id="data-page" src="sheet001.htm" style="display:none"></iframe>
