@@ -4,7 +4,7 @@ var progress = 0;
 function Word(e, c) {
 	this.eng = e.textContent.replace(/\[+.*\]/ig, '').replace(/[^a-z\s]/ig, '').replace(/\s*\s?$/g, '').replace(/\s*\s/g,' '),
 	this.cn = c.textContent.replace(/\s*\s?$/g, ''),
-	this.t = Boolean(e.textContent.search('=') != -1);
+	this.t = Boolean(e.textContent.search('=') != -1||e.textContent.replace(/\[+.*\]/ig, '').search('\\u0028')!=-1);
 }
 var checker = {
 	show: null,
