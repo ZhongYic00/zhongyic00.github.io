@@ -113,6 +113,12 @@ var checker = {
 		this.change.addEventListener('click', () => {
 			methodChange(method == 'all' ? 'loop' : 'all');
 		})
+		document.addEventListener('keydown',function (e) {
+			e = e || window.event;
+			if (e.keyCode == 32 && (checker.ans.value==''||checker.ans.value==vocabulary[id.now()].eng[0])) {
+				checker.tips(checker.ans.value=='');
+			}
+		});
 	},
 	chk() {
 		if (checker.ans.value == vocabulary[id.now()].eng) {
@@ -136,8 +142,12 @@ var checker = {
 		checker.ans.value = '';
 		checker.std.innerText = '\0';
 	},
-	info(){
-		if(method=='all')checker.infobox.textContent=id.now()+'/'+vocabulary.length;
+	info() {
+		if (method == 'all') checker.infobox.textContent = id.now() + '/' + vocabulary.length;
+	},
+	tips(b){
+		//checker.ans.value=vocabulary[id.now()].eng[0];
+		setTimeout(()=>{checker.ans.value=b?vocabulary[id.now()].eng[0]:vocabulary[id.now()].eng.slice(0,2)},1);
 	}
 };
 var errhistory = {
