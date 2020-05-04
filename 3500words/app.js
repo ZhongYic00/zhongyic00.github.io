@@ -3,9 +3,10 @@ var wrong = new Array();
 var method = 'all';
 var notsave = false;
 function Word(e, c) {
-	this.eng = e.textContent.replace(/\[+.*\]|\/+.*\//ig, '').replace(/[^a-z\s]/ig, '').replace(/\s*\s?$/g, '').replace(/\s*\s/g, ' '),
+	this.eng = e.textContent.replace(/\[+.*\]|\/+.*\//ig, '').replace(/[()（）,]/ig, ' ').replace(/[^a-z\s]/ig, '').replace(/\s*\s?$/g, '').replace(/\s*\s/g, ' '),
 		this.cn = c.textContent.replace(/\s*\s?$/g, ''),
-		this.t = Boolean(e.textContent.search('=') != -1 || e.textContent.replace(/\[+.*\]/ig, '').search('\\u0028') != -1);
+		this.t = Boolean(e.textContent.search('=') != -1 || e.textContent.replace(/\[+.*\]/ig, '').search(/[(（]/) != -1);
+	this.v = Boolean(this.cn.search(/v[a-z.]/) != -1);
 }
 function methodChange(t = all) {
 	checker.__save();
@@ -63,6 +64,9 @@ var id = {
 		else window.localStorage['loop'] = this.cur;
 	}
 }
+const single = () => checker.thesaurus.style.visibility = checker.tenses.style.visibility = 'hidden',
+	tenses = () => { checker.thesaurus.style.visibility = 'hidden', checker.tenses.style.visibility = 'visible' },
+	thesaurus = () => { checker.thesaurus.style.visibility = 'visible', checker.tenses.style.visibility = 'hidden' };
 var checker = {
 	show: null,
 	ans: null,
@@ -72,6 +76,7 @@ var checker = {
 	save: null,
 	clear: null,
 	thesaurus: null,
+	tenses: null,
 	change: null,
 	infobox: null,
 	__save: () => {
@@ -87,6 +92,7 @@ var checker = {
 		this.save = document.getElementById('sav');
 		this.clear = document.getElementById('clr');
 		this.thesaurus = document.getElementById('ths');
+		this.tenses = document.getElementById('tss');
 		this.change = document.getElementById('chg');
 		this.infobox = document.getElementById('infobox');
 		wrong = window.localStorage['wrong'] ? (window.localStorage['wrong'].split(','))
@@ -97,7 +103,11 @@ var checker = {
 		document.getElementById('mtd').title = '当前：' + (method == 'all' ? '全部词汇' : '纠错练习');
 		this.info();
 		this.show.textContent = vocabulary[id.now()].cn;
-		checker.thesaurus.style.visibility = vocabulary[id.now()].t ? 'visible' : 'hidden';
+		if (vocabulary[id.now()].t) {
+			if (!vocabulary[id.now()].v)thesaurus();
+			else tenses();
+		}
+		else single();
 		this.ok.addEventListener('click', checker.chk);
 		this.bak.addEventListener('click', checker.bef);
 		this.ans.addEventListener('keydown', (c) => {
@@ -132,11 +142,19 @@ var checker = {
 	},
 	nxt(jud) {
 		checker.show.textContent = vocabulary[id.nxt(jud)].cn;
-		checker.thesaurus.style.visibility = vocabulary[id.now()].t ? 'visible' : 'hidden';
+		if (vocabulary[id.now()].t) {
+			if (!vocabulary[id.now()].v) thesaurus();
+			else tenses();
+		}
+		else single();
 	},
 	bef() {
 		checker.show.textContent = vocabulary[id.bef()].cn;
-		checker.thesaurus.style.visibility = vocabulary[id.now()].t ? 'visible' : 'hidden';
+		if (vocabulary[id.now()].t) {
+			if (!vocabulary[id.now()].v) thesaurus();
+			else tenses();
+		}
+		else single();
 	},
 	reset() {
 		checker.ans.value = '';
