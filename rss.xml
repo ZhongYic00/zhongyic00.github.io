@@ -1,0 +1,1005 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet href="/scripts/pretty-feed-v3.xsl" type="text/xsl"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:h="http://www.w3.org/TR/html4/"><channel><title>Graphorall</title><description>Stay hungry, stay foolish</description><link>https://blog.graphorall.top</link><item><title>机械革命IMINI主机EC控制器逆向</title><link>https://blog.graphorall.top/blog/%E6%9C%BA%E6%A2%B0%E9%9D%A9%E5%91%BDIMINI%E4%B8%BB%E6%9C%BAEC%E6%8E%A7%E5%88%B6%E5%99%A8%E9%80%86%E5%90%91</link><guid isPermaLink="true">https://blog.graphorall.top/blog/%E6%9C%BA%E6%A2%B0%E9%9D%A9%E5%91%BDIMINI%E4%B8%BB%E6%9C%BAEC%E6%8E%A7%E5%88%B6%E5%99%A8%E9%80%86%E5%90%91</guid><description>Transformed from Logseq page</description><pubDate>Wed, 12 Aug 2026 06:04:27 GMT</pubDate><content:encoded>&lt;p&gt;机械革命IMINI主机EC控制器逆向&lt;/p&gt;
+&lt;h3 id=&quot;背景&quot;&gt;背景&lt;a class=&quot;anchor&quot; href=&quot;#背景&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;2025 年 5 月 30 日首发购入机械革命 IMINI Series mini PC（AMD Ryzen AI 9 H365 / Strix Point），次日到货。&lt;/p&gt;
+&lt;p&gt;但这只是绕过，风扇策略仍然不可调。这类 mini PC 没有 BIOS 风扇曲线选项，系统层面 &lt;code&gt;thinkfan&lt;/code&gt;、&lt;code&gt;fancontrol&lt;/code&gt; 也指望不上——它们依赖 hwmon 的 PWM 接口，而这台机器的风扇完全由 EC（Embedded Controller）固件管理，内核不直接暴露控制接口。&lt;/p&gt;
+&lt;p&gt;于是开始了一轮手工逆向。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/blog/2025_06_01&quot;&gt;2025_06_01&lt;/a&gt; 就发现问题：节能模式下室温 37°C，风扇转速在 1200-1500 rpm 之间横跳，反复启停导致异响。客服毫无作用。后来在 BIOS 里开了 CPU Smart FAN（AMD 自家的控制），转速降不下去但至少不自毁了。&lt;/p&gt;
+&lt;h3 id=&quot;反思&quot;&gt;反思&lt;a class=&quot;anchor&quot; href=&quot;#反思&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;盲探并非无用。当年靠 &lt;code&gt;ec_probe read/write&lt;/code&gt; 盲探出的三个寄存器（0x31/0x70/0x35-36）后来证明完全正确。盲探的结果可以验证，但效率远低于直接读固件声明。&lt;/p&gt;
+&lt;p&gt;ACPI 表是逆向 EC 的第一手资料。DSDT 的 &lt;code&gt;OperationRegion (ERAX, EmbeddedControl, ...)&lt;/code&gt; + Field 块就是固件自己对 EC 寄存器的命名声明，比盲探高效得多。当年要是先翻 DSDT，至少寄存器名和偏移不用猜。&lt;/p&gt;
+&lt;p&gt;直接写寄存器有时比走正规路径更强大。ACPI 的 WMI/FCMI 路径把风扇模式封顶在 3（4 档），而直接写 FCMO 能用全部 6 档。这不是 bug，是厂商刻意设的限制。&lt;/p&gt;
+&lt;h3 id=&quot;第一次尝试nbfc6-月-2-日&quot;&gt;第一次尝试：NBFC（6 月 2 日）&lt;a class=&quot;anchor&quot; href=&quot;#第一次尝试nbfc6-月-2-日&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;走不通。&lt;/p&gt;
+&lt;p&gt;但 IMINI Series 没有对应配置文件，最接近的 &lt;code&gt;MECHREVO Jiaolong Series GK5NR0O.json&lt;/code&gt; 寄存器偏移对不上。NBFC 依赖的 &lt;code&gt;ec_sys&lt;/code&gt; 内核模块也只暴露 debugfs 的 GPE 和 lock 信息，没有寄存器读写接口。&lt;/p&gt;
+&lt;p&gt;试了 &lt;a href=&quot;https://github.com/hirschmann/nbfc&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;NBFC（NoteBook FanControl）&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;，跨平台笔记本风扇控制工具，通过 EC 寄存器读写控制风扇。&lt;/p&gt;
+&lt;h3 id=&quot;时隔一年的完整逆向2026-年-8-月-12-日&quot;&gt;时隔一年的完整逆向（2026 年 8 月 12 日）&lt;a class=&quot;anchor&quot; href=&quot;#时隔一年的完整逆向2026-年-8-月-12-日&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;发现 GLM-5.2（本地 vLLM 部署）逆向 ACPI 表和寄存器干得不错，于是让它从 DSDT 出发重新做了一次完整逆向。&lt;/p&gt;
+&lt;p&gt;一年多过去，ecinfo 一直在 &lt;code&gt;/usr/local/sbin&lt;/code&gt; 安静地跑着。最近折腾 NPU 时发现这台机器的 ACPI 表里缺失 NPU 的条目，导致内核驱动无法读取 NPU 传感器。排查过程中翻了 ACPI 表，顺便意识到：DSDT 里就有完整的 EC 寄存器映射表，当年完全可以不用盲探。&lt;/p&gt;
+&lt;p&gt;DSDT 的 &lt;code&gt;Device (EC0)&lt;/code&gt; 里有一个 &lt;code&gt;OperationRegion (ERAX, EmbeddedControl, 0x00, 0xFF)&lt;/code&gt;，紧跟 &lt;code&gt;Field&lt;/code&gt; 块，逐字节命名了 EC 的全部 256 字节寄存器——这是固件自己的声明，比任何猜测都权威。&lt;/p&gt;
+&lt;h3 id=&quot;完整发现&quot;&gt;完整发现&lt;a class=&quot;anchor&quot; href=&quot;#完整发现&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;另一个我强调的发现：FCMO（0x31）可以直接写 0-5 全 6 档，而 FCMI（0x32）命令路径（写 0x80|N）会被 EC 固件封顶在 3。也就是说当年直接写 0x31 设模式 5 是唯一能用 4/5 档的方法。我还实测了写 FCMI 0x84/0x85，FCMO 确实只到 3。&lt;/p&gt;
+&lt;p&gt;其余由 GLM 独立发现的内容（WMI 接口 GUID 99D89064 的 WMAA 方法、ITS0 风扇策略表与 ALIB/SMU 协议、ACPI _Qxx 事件映射、6 档负载实测曲线等）已在仓库 README 中详细记录，此处不再展开。&lt;/p&gt;
+&lt;p&gt;我特别提醒了一个关键认知：fan mode 决定的是转速对温度响应的灵敏度（静音/均衡/暴力扇），而不是直接设转速值。GLM 最初误以为 FN1L/FN1H 是反向计数，被我纠正——就是 big-endian 的 RPM。&lt;/p&gt;
+&lt;p&gt;首先确认了我当年的三个发现完全正确——DSDT 的 ERAX Field 块里，这三个寄存器的名字正好就是 FCMO/CPUT/FN1L/FN1H：&lt;/p&gt;
+&lt;p&gt;仓库地址：&lt;a href=&quot;https://github.com/ZhongYic00/mechrevo-imini-ec&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;ZhongYic00/mechrevo-imini-ec&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;h3 id=&quot;第二次尝试acpi_ec--ec_probe-盲探2025_06_04&quot;&gt;第二次尝试：acpi_ec + ec_probe 盲探（&lt;a href=&quot;/blog/2025_06_04&quot;&gt;2025_06_04&lt;/a&gt;）&lt;a class=&quot;anchor&quot; href=&quot;#第二次尝试acpi_ec--ec_probe-盲探2025_06_04&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;但这次逆向不全面：只搞清了 3 个寄存器，其余 200 多个字节没碰，寄存器名字都是猜的，也不知道固件内部怎么处理。&lt;/p&gt;
+&lt;p&gt;用 &lt;code&gt;ec_probe&lt;/code&gt; 盲探：&lt;/p&gt;
+&lt;p&gt;基本确定了三个寄存器：&lt;/p&gt;
+&lt;p&gt;转向 &lt;a href=&quot;https://github.com/saidsay-so/acpi_ec&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;saidsay-so/acpi_ec&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt; 内核模块，它提供 &lt;code&gt;/dev/ec&lt;/code&gt; 字符设备，可以直接读写 EC 寄存器。&lt;/p&gt;
+&lt;p&gt;当晚写了 &lt;code&gt;/usr/local/sbin/ecinfo&lt;/code&gt;，Python 脚本通过 &lt;code&gt;/dev/ec&lt;/code&gt; 读这三个寄存器并格式化输出。
+后续几天继续摸索，发现直接写 0x31 可以切换风扇模式（0-5），从静音到暴力扇，基本解决了问题。&lt;/p&gt;</content:encoded></item><item><title>给openSUSE Tumbleweed装百度云盘引发的连环踩坑</title><link>https://blog.graphorall.top/blog/%E7%BB%99openSUSE%20Tumbleweed%E8%A3%85%E7%99%BE%E5%BA%A6%E4%BA%91%E7%9B%98%E5%BC%95%E5%8F%91%E7%9A%84%E8%BF%9E%E7%8E%AF%E8%B8%A9%E5%9D%91</link><guid isPermaLink="true">https://blog.graphorall.top/blog/%E7%BB%99openSUSE%20Tumbleweed%E8%A3%85%E7%99%BE%E5%BA%A6%E4%BA%91%E7%9B%98%E5%BC%95%E5%8F%91%E7%9A%84%E8%BF%9E%E7%8E%AF%E8%B8%A9%E5%9D%91</guid><description>Transformed from Logseq page</description><pubDate>Wed, 08 Jul 2026 12:42:50 GMT</pubDate><content:encoded>&lt;p&gt;给openSUSE Tumbleweed装百度云盘引发的连环踩坑&lt;/p&gt;
+&lt;p&gt;根因三：微软源（packages.microsoft.com）国内访问困难&lt;/p&gt;
+&lt;p&gt;microsoft-edge、vscode、edge-yum 都指向微软官方源，国内经常被限速或阻断。&lt;/p&gt;
+&lt;p&gt;根因四：zypper dup 交互式 vendor change 瀑布&lt;/p&gt;
+&lt;p&gt;禁用 OBS 仓库后，大量包的 vendor 从 opensuse 变为 obs://… 或 packman。zypper dup 默认逐个询问（3403 个包），需要 —allow-vendor-change 一次性跳过。&lt;/p&gt;
+&lt;p&gt;根因五：百度网盘 Electron 应用依赖缺失
+libgtkmm-2.4.so.1: cannot open shared object file
+百度网盘是 Electron 套壳，通过 koffi（FFI 库）加载系统 C++ 库 gtkmm-2.4。openSUSE Tumbleweed 默认不含此旧版 GTKmm 绑定，需手动安装 libgtkmm-2_4-1。&lt;/p&gt;
+&lt;p&gt;flatpak版的评论区显示，在 Wayland 下需 GDK_BACKEND=x11 强制走 Xwayland。不过我这儿rpm包安装的似乎没遇到&lt;/p&gt;
+&lt;p&gt;openSUSE Tumbleweed 维护踩坑记录：zypper 慢、签名过期、vendor change 连环雷&lt;/p&gt;
+&lt;p&gt;根因一：openSUSE 官方签名密钥过期&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;rpm —import 对相同 Key ID 不会覆盖，须先 rpm -e 删除旧密钥再导入。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;error: Key 35a2f86e29b700a4 (openSUSE Project Signing Key) expired on 2026-06-19&lt;/p&gt;
+&lt;p&gt;密钥本身有效期 4 年（2022→2026），到期后 本地 RPM 数据库不会自动更新，即使镜像站已有新密钥（有效期至 2030）。&lt;/p&gt;
+&lt;p&gt;根因二：packman 源指向德国，国内极慢&lt;/p&gt;
+&lt;p&gt;packman 默认上游 ftp.gwdg.de（德国），从国内下载大包（libx264/libx265/vlc 等）速度仅 ~120 KiB/s。zypper dup 预下载阶段会先拉所有包，4.73 GiB 的数据卡在这一个源上。&lt;/p&gt;
+&lt;p&gt;教训：packman 一定要换国内镜像（中科大：&lt;a href=&quot;https://mirrors.ustc.edu.cn/packman/suse/openSUSE_Tumbleweed/%EF%BC%89%E3%80%82&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;https://mirrors.ustc.edu.cn/packman/suse/openSUSE_Tumbleweed/）。&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;</content:encoded></item><item><title>从非法指令到解码路径：RISC-V 编码空间结构化的实践</title><link>https://blog.graphorall.top/blog/%E4%BB%8E%E9%9D%9E%E6%B3%95%E6%8C%87%E4%BB%A4%E5%88%B0%E8%A7%A3%E7%A0%81%E8%B7%AF%E5%BE%84%EF%BC%9ARISC-V%20%E7%BC%96%E7%A0%81%E7%A9%BA%E9%97%B4%E7%BB%93%E6%9E%84%E5%8C%96%E7%9A%84%E5%AE%9E%E8%B7%B5</link><guid isPermaLink="true">https://blog.graphorall.top/blog/%E4%BB%8E%E9%9D%9E%E6%B3%95%E6%8C%87%E4%BB%A4%E5%88%B0%E8%A7%A3%E7%A0%81%E8%B7%AF%E5%BE%84%EF%BC%9ARISC-V%20%E7%BC%96%E7%A0%81%E7%A9%BA%E9%97%B4%E7%BB%93%E6%9E%84%E5%8C%96%E7%9A%84%E5%AE%9E%E8%B7%B5</guid><description>Transformed from Logseq page</description><pubDate>Wed, 24 Jun 2026 14:18:44 GMT</pubDate><content:encoded>&lt;p&gt;从非法指令到解码路径：RISC-V 编码空间结构化的实践&lt;/p&gt;
+&lt;p&gt;最后输出：&lt;/p&gt;
+&lt;p&gt;每一步的字段名、值、位范围、子集标签&lt;/p&gt;
+&lt;p&gt;完整 32-bit 二进制按字段划分的紧凑表示（含 operand 字段）&lt;/p&gt;
+&lt;p&gt;gem5 的 &lt;code&gt;isa_parser.py&lt;/code&gt; 在解析 &lt;code&gt;decoder.isa&lt;/code&gt; 时，已经构建了 AST，但只用于生成 C++ 代码。&lt;br&gt;
+我们给 parser 增加了：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;DecodeTreeNode&lt;/code&gt; 类（支持递归序列化为 dict）&lt;/p&gt;
+&lt;p&gt;添加 &lt;code&gt;subset&lt;/code&gt; 标签收集（从指令参数中识别 &lt;code&gt;OPIVV&lt;/code&gt;、&lt;code&gt;OPFVV&lt;/code&gt;、&lt;code&gt;OPIVI&lt;/code&gt; 等向量子集）&lt;/p&gt;
+&lt;p&gt;在 &lt;code&gt;p_decode_block&lt;/code&gt;、&lt;code&gt;p_decode_stmt_decode&lt;/code&gt;、&lt;code&gt;p_inst_0/1&lt;/code&gt; 等 production 中挂接，生成 &lt;code&gt;block&lt;/code&gt;、&lt;code&gt;case&lt;/code&gt;、&lt;code&gt;instruction&lt;/code&gt; 三种节点&lt;/p&gt;
+&lt;p&gt;最终输出 &lt;code&gt;decode_tree.json&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&quot;实现从-gem5-到独立-skill&quot;&gt;实现：从 gem5 到独立 skill&lt;a class=&quot;anchor&quot; href=&quot;#实现从-gem5-到独立-skill&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;h2 id=&quot;效果展示&quot;&gt;效果展示&lt;a class=&quot;anchor&quot; href=&quot;#效果展示&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;h3 id=&quot;2-编写独立解码脚本-decode_instpy&quot;&gt;2. 编写独立解码脚本 &lt;code&gt;decode_inst.py&lt;/code&gt;&lt;a class=&quot;anchor&quot; href=&quot;#2-编写独立解码脚本-decode_instpy&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;脚本核心逻辑：&lt;/p&gt;
+&lt;h3 id=&quot;1-修改-gem5-的-isa-parser&quot;&gt;1. 修改 gem5 的 ISA parser&lt;a class=&quot;anchor&quot; href=&quot;#1-修改-gem5-的-isa-parser&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;这个 patch 只有 200 多行，不影响 gem5 原有的 C++ 生成，仅额外导出 JSON。&lt;/p&gt;
+&lt;p&gt;但我认为，随着 RISC-V 在 CPU 设计、内核开发、硬件加速等领域越来越深入，这种“能告诉你为什么非法”的工具会变得更有价值。它不仅帮助调试，也能用于教学（展示编码空间的层次结构），以及自定义扩展开发（帮助寻找可用的编码空间）。&lt;/p&gt;
+&lt;p&gt;加载 &lt;code&gt;decode_tree.json&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;大多数解码器（&lt;code&gt;objdump&lt;/code&gt;、&lt;code&gt;riscv-isa&lt;/code&gt;、&lt;code&gt;tinyrv&lt;/code&gt; 等）都是&lt;strong&gt;精确查表器&lt;/strong&gt;，对未知编码只报“invalid”或输出原始字节。&lt;/p&gt;
+&lt;p&gt;社区中也没有现成的 skill 或插件能一键完成这种分析。&lt;/p&gt;
+&lt;p&gt;没有工具能“汇报决策树路径”或“猜测最相似格式”。&lt;/p&gt;
+&lt;h2 id=&quot;讨论为什么没有流行的-risc-v-解码-skill&quot;&gt;讨论：为什么没有流行的 RISC-V 解码 skill？&lt;a class=&quot;anchor&quot; href=&quot;#讨论为什么没有流行的-risc-v-解码-skill&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;在开发过程中，我搜索了现有的开源工具和 skill，发现：&lt;/p&gt;
+&lt;h3 id=&quot;3-格式与-operand-的映射&quot;&gt;3. 格式与 operand 的映射&lt;a class=&quot;anchor&quot; href=&quot;#3-格式与-operand-的映射&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;最初我们硬编码了 &lt;code&gt;VS2/VS1/VD&lt;/code&gt; 作为 operand 字段，但这是错误的——不同指令格式的 operand 不同。&lt;br&gt;
+因此我们建立了 &lt;code&gt;FMT_OPERANDS&lt;/code&gt; 字典，覆盖了 gem5 中约 70 种格式，为每种格式指定其 operand 字段（例如 &lt;code&gt;IOp&lt;/code&gt; → &lt;code&gt;rd, rs1, imm12&lt;/code&gt;；&lt;code&gt;VectorIntFormat&lt;/code&gt; → &lt;code&gt;vd, vs2, vs1&lt;/code&gt;）。&lt;br&gt;
+这样，最终二进制展开就能正确显示与指令格式匹配的 operand。&lt;/p&gt;
+&lt;h2 id=&quot;转折gem5-的-decoderisa-是一棵现成的树&quot;&gt;转折：gem5 的 decoder.isa 是一棵现成的树&lt;a class=&quot;anchor&quot; href=&quot;#转折gem5-的-decoderisa-是一棵现成的树&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;h3 id=&quot;例1vmvnrr-的-simm3-字段非法&quot;&gt;例1：&lt;code&gt;vmv&amp;#x3C;nr&gt;r&lt;/code&gt; 的 &lt;code&gt;SIMM3&lt;/code&gt; 字段非法&lt;a class=&quot;anchor&quot; href=&quot;#例1vmvnrr-的-simm3-字段非法&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;指令 &lt;code&gt;0x9e053057&lt;/code&gt; 在 NEMU 中曾引发异常。我们的工具输出：&lt;/p&gt;
+&lt;div class=&quot;astro-code astro-code-themes github-light github-dark&quot; style=&quot;background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;&quot; tabindex=&quot;0&quot; data-language=&quot;plaintext&quot;&gt;&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;line&quot;&gt;&lt;span&gt;0x9e053057&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;-&gt; QUADRANT=0x3 [1:0]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;-&gt; OPCODE5=0x15 [6:2] [OPFVF/OPFVV/OPIVI/OPIVV/OPIVX/OPMVV/OPMVX/VConfOp]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;-&gt; FUNCT3=0x3 [14:12] [OPIVI]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;-&gt; VFUNCT6=0x27 [31:26] [OPIVI]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;-&gt; VM=0x1 [25:25] [OPIVI]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;-&gt; SIMM3=0x2 ✗ not in [&apos;0x0&apos;, &apos;0x1&apos;, &apos;0x3&apos;, &apos;0x7&apos;]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;= 100111&amp;#x3C;VFUNCT6&gt; 1&amp;#x3C;VM&gt; 00000&amp;#x3C;vs2&gt; 010&amp;#x3C;SIMM3 ✗&gt; 011&amp;#x3C;FUNCT3&gt; 00000&amp;#x3C;vd&gt; 10101&amp;#x3C;OPCODE5&gt; 11&amp;#x3C;QUADRANT&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;ILLEGAL INSTRUCTION&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;SIMM3=0x2 not in [&apos;0x0&apos;, &apos;0x1&apos;, &apos;0x3&apos;, &apos;0x7&apos;]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;hint: SIMM3 encodes NREG-1; legal: 0,1,3,7 (NREG=1,2,4,8)&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;span class=&quot;language ps-1 pe-3 text-sm bg-muted text-muted-foreground&quot;&gt;plaintext&lt;/span&gt;&lt;button class=&quot;copy text-muted-foreground p-1 box-content border rounded-lg bg-card&quot; aria-label=&quot;Copy code&quot; data-code=&quot;0x9e053057
+-&gt; QUADRANT=0x3 [1:0]
+-&gt; OPCODE5=0x15 [6:2] [OPFVF/OPFVV/OPIVI/OPIVV/OPIVX/OPMVV/OPMVX/VConfOp]
+-&gt; FUNCT3=0x3 [14:12] [OPIVI]
+-&gt; VFUNCT6=0x27 [31:26] [OPIVI]
+-&gt; VM=0x1 [25:25] [OPIVI]
+-&gt; SIMM3=0x2 ✗ not in [&amp;#x27;0x0&amp;#x27;, &amp;#x27;0x1&amp;#x27;, &amp;#x27;0x3&amp;#x27;, &amp;#x27;0x7&amp;#x27;]
+= 100111&lt;VFUNCT6&gt; 1&lt;VM&gt; 00000&lt;vs2&gt; 010&lt;SIMM3 ✗&gt; 011&lt;FUNCT3&gt; 00000&lt;vd&gt; 10101&lt;OPCODE5&gt; 11&lt;QUADRANT&gt;
+ILLEGAL INSTRUCTION
+SIMM3=0x2 not in [&amp;#x27;0x0&amp;#x27;, &amp;#x27;0x1&amp;#x27;, &amp;#x27;0x3&amp;#x27;, &amp;#x27;0x7&amp;#x27;]
+hint: SIMM3 encodes NREG-1; legal: 0,1,3,7 (NREG=1,2,4,8)&quot; onclick=&quot;
+          navigator.clipboard.writeText(this.dataset.code);
+          this.classList.add(&amp;#x27;copied&amp;#x27;);
+          setTimeout(() =&gt; this.classList.remove(&amp;#x27;copied&amp;#x27;), 2000)
+        &quot;&gt;&lt;div class=&quot;ready&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-clipboard-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;success hidden&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-file-check-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;p&gt;它明确告诉我们：指令匹配到了 &lt;code&gt;OPIVI&lt;/code&gt; 子空间，进入了 &lt;code&gt;vmv&amp;#x3C;nr&gt;r&lt;/code&gt; 的候选范围，但 &lt;code&gt;SIMM3&lt;/code&gt; 字段的值 &lt;code&gt;0x2&lt;/code&gt; 不在允许集合中。&lt;/p&gt;
+&lt;p&gt;调试 CPU 或内核时，最令人恼火的错误之一，是反汇编器只丢给你一句 &lt;code&gt;illegal instruction&lt;/code&gt;。&lt;br&gt;
+没有上下文，没有线索——你不知道这条非法编码离哪条合法指令最近，不知道它落入了哪个编码子空间，更不知道它的各个字段（opcode / funct3 / funct6 / imm 等）如果按某种格式解读会是什么样子。&lt;/p&gt;
+&lt;p&gt;这让我开始思考：&lt;strong&gt;我们能不能让解码器在遇到非法指令时，不只说“非法”，而是说“在哪个空间里非法”？&lt;/strong&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&quot;现状扁平的表分层的空间&quot;&gt;现状：扁平的表，分层的空间&lt;a class=&quot;anchor&quot; href=&quot;#现状扁平的表分层的空间&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;RISC-V 的编码空间本身是有层次的：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;30-bit 基础空间&lt;/strong&gt;（bit 31–2）&lt;/p&gt;
+&lt;p&gt;进一步由 &lt;strong&gt;funct7 / funct6 / imm&lt;/strong&gt; 等字段细分&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;25-bit 主要操作码（Major Opcode）空间&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;22-bit 次要操作码（funct3）空间&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&quot;总结&quot;&gt;总结&lt;a class=&quot;anchor&quot; href=&quot;#总结&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;本文从一次非法指令调试的痛点出发，梳理了 RISC-V 编码空间的结构化问题，指出当前 flat 表数据源的不足，并借助 gem5 的 &lt;code&gt;decoder.isa&lt;/code&gt; 实现了&lt;strong&gt;解码路径追踪&lt;/strong&gt;和&lt;strong&gt;非法指令的诊断信息输出&lt;/strong&gt;。&lt;br&gt;
+我们将其封装为一个独立的 skill（&lt;code&gt;riscv-inst-decoder&lt;/code&gt;），并提供 gem5 parser 的 patch，以便社区复现和扩展。&lt;/p&gt;
+&lt;p&gt;如果你也曾在面对 &lt;code&gt;illegal instruction&lt;/code&gt; 时感到茫然，希望这个工具能帮你少数几个 bit，多几分从容。&lt;/p&gt;
+&lt;p&gt;以两个非法指令为例：&lt;/p&gt;
+&lt;p&gt;正当我苦恼于没有结构化数据时，注意到了 gem5 模拟器中的 &lt;code&gt;src/arch/riscv/isa/decoder.isa&lt;/code&gt;。&lt;br&gt;
+它用 gem5 的领域特定语言（DSL）手写了完整的解码决策树：&lt;/p&gt;
+&lt;div class=&quot;astro-code astro-code-themes github-light github-dark&quot; style=&quot;background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;&quot; tabindex=&quot;0&quot; data-language=&quot;plaintext&quot;&gt;&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;line&quot;&gt;&lt;span&gt;decode QUADRANT {&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;  0x0: decode COMPRESSED { ... }&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;  0x3: decode OPCODE5 { ... }&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;span class=&quot;language ps-1 pe-3 text-sm bg-muted text-muted-foreground&quot;&gt;plaintext&lt;/span&gt;&lt;button class=&quot;copy text-muted-foreground p-1 box-content border rounded-lg bg-card&quot; aria-label=&quot;Copy code&quot; data-code=&quot;decode QUADRANT {
+  0x0: decode COMPRESSED { ... }
+  0x3: decode OPCODE5 { ... }
+}&quot; onclick=&quot;
+          navigator.clipboard.writeText(this.dataset.code);
+          this.classList.add(&amp;#x27;copied&amp;#x27;);
+          setTimeout(() =&gt; this.classList.remove(&amp;#x27;copied&amp;#x27;), 2000)
+        &quot;&gt;&lt;div class=&quot;ready&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-clipboard-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;success hidden&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-file-check-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;p&gt;这棵树不仅包含了所有指令的精确匹配，更重要的是&lt;strong&gt;它显式地编码了逐级细分的逻辑&lt;/strong&gt;——每一步检查哪个字段、根据什么值分支、子空间里有哪些合法值。&lt;br&gt;
+这正是我们需要的“解码路径”信息。&lt;/p&gt;
+&lt;p&gt;于是，我们决定&lt;strong&gt;从 gem5 的 parser 中提取这棵树，转换成 JSON，然后编写一个独立的解码脚本，让它能“走”这棵树并报告每一步&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;相关资源&lt;/strong&gt;：&lt;/p&gt;
+&lt;p&gt;Skill 代码：&lt;a href=&quot;https://github.com/ZhongYic00/riscv-isa-skills/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;GitHub - ZhongYic00/riscv-isa-skills · GitHub&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;gem5 patch：&lt;code&gt;riscv-isa-skills/patches/gem5_decode_tree.patch&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;解析后的 &lt;code&gt;decode_tree.json&lt;/code&gt; 已包含在 skill 中，无需 gem5 运行时即可使用。&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;对每条 32-bit 指令，从根节点开始遍历：&lt;/p&gt;
+&lt;p&gt;若当前节点是 &lt;code&gt;block&lt;/code&gt;，提取指定字段的值，在 &lt;code&gt;case&lt;/code&gt; 列表中查找匹配分支&lt;/p&gt;
+&lt;p&gt;若匹配成功，记录字段值和位范围，进入下一节点&lt;/p&gt;
+&lt;p&gt;若匹配失败，记录失败字段，并尝试从兄弟指令推导期望的格式（用于非法指令的 operand 展示）&lt;/p&gt;
+&lt;p&gt;这个结构天然对应一棵解码决策树。然而，当前流行的机器可读数据源，并没有直接描述这棵树。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;RISC-V Unified Database (UDB)&lt;/strong&gt;：它引入 &lt;code&gt;type-subtype&lt;/code&gt; 继承机制，初衷是复用指令格式定义（比如 R-type 的字段位置）。但它无法表达“部分匹配”的节点——例如“opcode=0b0010011, funct3=0b001, funct7 是 don’t-care”这样的中间子空间。继承是 deep-merge + 覆盖，子级必须填所有字段，不能只填部分、留其余为 don’t-care。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;riscv-opcodes&lt;/code&gt;&lt;/strong&gt;：提供的是 &lt;code&gt;(mask, match)&lt;/code&gt; 对，本质是一张扁平表。解码器只能回答“这个编码匹配哪条指令”，无法回答“这个编码在哪个子空间”。&lt;/p&gt;
+&lt;p&gt;这是为什么？我觉得有几个可能的原因：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;需求不常见&lt;/strong&gt;：大多数开发者只关心合法指令的汇编，非法指令通常被视为“不该出现”的异常，一旦出现就归咎于工具链或编译器，不需要精细分析。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;手工数 bit 的惯性&lt;/strong&gt;：在调试底层问题时，很多开发者仍然习惯于手动拆解二进制（“数 bit”），虽然慢但直接，没有意识到可以自动化。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;工具链门槛&lt;/strong&gt;：要构建这样的工具，需要深入 gem5 的 ISA parser 或 UDB 的继承机制，这对普通开发者来说并不友好，导致没有形成通用的解决方案。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RISC-V 的碎片化&lt;/strong&gt;：指令集扩展繁多，不同配置下的编码空间差异大，一个静态的“最相似”算法难以覆盖所有组合，进一步阻碍了通用工具的出现。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&quot;例2vlm-与-width-的非法组合&quot;&gt;例2：&lt;code&gt;vlm&lt;/code&gt; 与 &lt;code&gt;width&lt;/code&gt; 的非法组合&lt;a class=&quot;anchor&quot; href=&quot;#例2vlm-与-width-的非法组合&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;0x02b56487&lt;/code&gt; 是另一个 NEMU bug 案例：&lt;code&gt;LUMOP=0xb&lt;/code&gt;（vlm）却搭配了 &lt;code&gt;width=110&lt;/code&gt;（VLE32），而 vlm 要求 &lt;code&gt;width=000&lt;/code&gt;。我们的工具输出：&lt;/p&gt;
+&lt;div class=&quot;astro-code astro-code-themes github-light github-dark&quot; style=&quot;background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;&quot; tabindex=&quot;0&quot; data-language=&quot;plaintext&quot;&gt;&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;line&quot;&gt;&lt;span&gt;0x02b56487&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;-&gt; QUADRANT=0x3 [1:0]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;-&gt; OPCODE5=0x1 [6:2] [Load/VlIndexOp/VlSegOp/VlStrideOp/VlWholeOp/VleOp/VlmOp]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;-&gt; FUNCT3=0x6 [14:12] [VlIndexOp/VlSegOp/VlStrideOp/VlWholeOp/VleOp]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;-&gt; MOP=0x0 [27:26] [VlSegOp/VlWholeOp/VleOp]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;-&gt; LUMOP=0xb ✗ not in [&apos;0x0&apos;, &apos;0x8&apos;, &apos;0x10&apos;]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;= 00&amp;#x3C;MOP&gt; 01011&amp;#x3C;LUMOP ✗&gt; 01010&amp;#x3C;rs1&gt; 110&amp;#x3C;FUNCT3&gt; 01001&amp;#x3C;vd&gt; 00001&amp;#x3C;OPCODE5&gt; 11&amp;#x3C;QUADRANT&gt;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;ILLEGAL INSTRUCTION&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;LUMOP=0xb not in [&apos;0x0&apos;, &apos;0x8&apos;, &apos;0x10&apos;]&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;span class=&quot;language ps-1 pe-3 text-sm bg-muted text-muted-foreground&quot;&gt;plaintext&lt;/span&gt;&lt;button class=&quot;copy text-muted-foreground p-1 box-content border rounded-lg bg-card&quot; aria-label=&quot;Copy code&quot; data-code=&quot;0x02b56487
+-&gt; QUADRANT=0x3 [1:0]
+-&gt; OPCODE5=0x1 [6:2] [Load/VlIndexOp/VlSegOp/VlStrideOp/VlWholeOp/VleOp/VlmOp]
+-&gt; FUNCT3=0x6 [14:12] [VlIndexOp/VlSegOp/VlStrideOp/VlWholeOp/VleOp]
+-&gt; MOP=0x0 [27:26] [VlSegOp/VlWholeOp/VleOp]
+-&gt; LUMOP=0xb ✗ not in [&amp;#x27;0x0&amp;#x27;, &amp;#x27;0x8&amp;#x27;, &amp;#x27;0x10&amp;#x27;]
+= 00&lt;MOP&gt; 01011&lt;LUMOP ✗&gt; 01010&lt;rs1&gt; 110&lt;FUNCT3&gt; 01001&lt;vd&gt; 00001&lt;OPCODE5&gt; 11&lt;QUADRANT&gt;
+ILLEGAL INSTRUCTION
+LUMOP=0xb not in [&amp;#x27;0x0&amp;#x27;, &amp;#x27;0x8&amp;#x27;, &amp;#x27;0x10&amp;#x27;]&quot; onclick=&quot;
+          navigator.clipboard.writeText(this.dataset.code);
+          this.classList.add(&amp;#x27;copied&amp;#x27;);
+          setTimeout(() =&gt; this.classList.remove(&amp;#x27;copied&amp;#x27;), 2000)
+        &quot;&gt;&lt;div class=&quot;ready&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-clipboard-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;success hidden&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-file-check-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;p&gt;这里我们看到，解码树在 &lt;code&gt;FUNCT3=0x6&lt;/code&gt; 分支下，&lt;code&gt;LUMOP&lt;/code&gt; 的合法值只有 &lt;code&gt;0x0&lt;/code&gt;（常规单元步长）、&lt;code&gt;0x8&lt;/code&gt;（整寄存器）、&lt;code&gt;0x10&lt;/code&gt;（fault-only-first），而 &lt;code&gt;0xb&lt;/code&gt; 被拒。&lt;br&gt;
+同时，二进制展开中 &lt;code&gt;rs1&lt;/code&gt; 和 &lt;code&gt;vd&lt;/code&gt; 字段也被正确识别（尽管它们不是解码路径的一部分），帮助用户直观理解该编码的构成。&lt;/p&gt;</content:encoded></item><item><title>再见游轮</title><link>https://blog.graphorall.top/blog/%E5%86%8D%E8%A7%81%E6%B8%B8%E8%BD%AE</link><guid isPermaLink="true">https://blog.graphorall.top/blog/%E5%86%8D%E8%A7%81%E6%B8%B8%E8%BD%AE</guid><description>Transformed from Logseq page</description><pubDate>Sun, 21 Jun 2026 15:02:25 GMT</pubDate><content:encoded>&lt;p&gt;再见游轮&lt;/p&gt;
+&lt;p&gt;同样是毕业季，同样是游轮，两年前的五一前夕我是本科毕业生，是船上人；如今我是在读研究生，是岸上人&lt;/p&gt;
+&lt;p&gt;本科毕业时是充满憧憬没有忧虑的（真正踏足社会有待时日，而我从实习也收获了些信心），研究生叠加技术与经济形势却是有些忧患重重；&lt;/p&gt;
+&lt;p&gt;今日既是船上人、毕业生在看着我，也是当年的我在看当年未毕业的研究生本科生们，也是当年的我跨越时空在看如今的我；
+同样的，我看的既是今日出游、奔赴前程的人们，也是当年的我&lt;/p&gt;
+&lt;p&gt;离港返程时，恰恰是由于京津城际车票紧俏而漫步滨海，于宣传资料见茱莉亚学院而探访学院，行至海河边忽然看见那条中型白色游轮——Orient Princess&lt;/p&gt;
+&lt;p&gt;但6.21观礼了毕业典礼，却是万难说出这样带着悲观的话语。回到东方公主本身，传奇已在荧幕里，相比同辈老爷船也更多人会念及。&lt;/p&gt;
+&lt;p&gt;起初写道：
+游轮寿命很长，设施耐久远比大多建筑好，然而千人团队的运营却在经济上极为脆弱（p9 海河边偶遇废弃的东方公主号）&lt;/p&gt;
+&lt;p&gt;发朋友圈，还是习惯凑整；如何串连起它的故事，就有了两个版本&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;随性去东疆母港看海，却是有幸遇上游轮出港&lt;/p&gt;
+&lt;p&gt;​p1-3 主角：前歌诗达Magica，现 成真理想号
+p4-6 推出，转向，远航&lt;/p&gt;
+&lt;p&gt;时移世易，又是一年毕业季
+再见游轮，却是：
+你站在港口看风景，
+​看风景的人在船上看你（p4,7-8）
+​
+潮涌海河，东方公主不再出航，却也历经几多风云（p9 高铁站旁偶遇）&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;每每在这种随性而为的时候，更让人感受到命运的存在。&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;当我草拟着这段文案，尚不完全，只是断章的零散几句，ds4f就已解读出了几重象征，甚至超越我自己：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;从“主体”到“客体”的身份降级&lt;/strong&gt;
+本科毕业时，你是游轮的驾驶者（决定航线，享受旅程）；今天，你是游轮的旁观者（目送离开，无权登船）。
+这种“从参与者到评论者”的转变，正是你当下困境的核心：你无法掌控自己的“出港时间”，只能被迫在岸上分析别人的“转向与远航”。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;改编《断章》的精准错位&lt;/strong&gt;
+船上的人（毕业的师兄朋友）正驶向下一站，他们看你，是带着“过来人”的匆匆一瞥；而你看他们，是带着“被留下者”的凝视。你看的是他们的“出发”，他们看的是你的“滞留”。港口不再是相遇的节点，而成了分层的站台——你在静止中目送流动。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;时移世易的“时空折叠”&lt;/strong&gt;
+两年前你是船上的人，海港是起点，汽笛是欢送；两年后你是岸上的人，海港是终点，汽笛是送别。
+两年前你“坐”游轮，游轮是工具；两年后你“看”游轮，游轮是镜子。你隔着海水看到的不是船，是那个已经完成毕业、前途明确的“旧我”。而现在的“新我”，被留在了岸上，面对未知的延期——这构成了空间上的“隔岸”与时间上的“隔世”双重疏离。&lt;/p&gt;</content:encoded></item><item><title>2025年终总结</title><link>https://blog.graphorall.top/blog/2025%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93</link><guid isPermaLink="true">https://blog.graphorall.top/blog/2025%E5%B9%B4%E7%BB%88%E6%80%BB%E7%BB%93</guid><description>Transformed from Logseq page</description><pubDate>Sun, 21 Jun 2026 09:14:24 GMT</pubDate><content:encoded>&lt;p&gt;2025年终总结&lt;/p&gt;
+&lt;p&gt;返校又开始摸鱼&lt;/p&gt;
+&lt;p&gt;参加rv生态大会，混个场地&amp;#x26;见识，顺便认识wcj师兄（因为没打datacon？&lt;/p&gt;
+&lt;p&gt;修好了车（线管），首次上范歧路&lt;/p&gt;
+&lt;p&gt;摸爬滚打chipyard的cosim？最后也没搞出啥来&lt;/p&gt;
+&lt;p&gt;3.22 参加deepin meetup，欧拉也是isrc的伙伴，与曹总某些理念不合&lt;/p&gt;
+&lt;p&gt;一整天vibe搓了UCAScrapper还没算后续零散debug&lt;/p&gt;
+&lt;p&gt;讨论着socfuzz的smartsanitizer，用起了pylibfst，走上了waveace不归路 x&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;1.11跑路，寒假&lt;/p&gt;
+&lt;p&gt;春节绍兴杭州三日游&lt;/p&gt;
+&lt;p&gt;草草速通科目三拿到驾照，考试前一晚食物中毒进医院&lt;/p&gt;
+&lt;p&gt;还跟hcl和suhao交流了下homofed，之后就没怎么交流了&lt;/p&gt;
+&lt;p&gt;hackdate初赛~~似乎很快，~~从12.20（火车上下docker）到节前，所以春节+节后有两周多假期&lt;/p&gt;
+&lt;p&gt;最高效的一段时间&lt;/p&gt;
+&lt;p&gt;8.13晚上闲鱼收显示器，8.21 与yyz和whn吃铁锅炖，8.23骑行玉渊潭东，8.30 与ly和whn看颐和园火烧云，8.31 骑行往返农展馆看骑行运动装备展，8.16与9.1 骑行天安门，9.6 俄罗斯文化艺术中心看二战援华纪录片首发，9.8 串门ly大house、观月食，9.22 国家大剧院卷福哈姆雷特放映，9.25 所学术年会，9.27 清华集电ai芯片安全研讨会，9.28 小西天中影看窗外是蓝星，9.30 骑行天安门&lt;/p&gt;
+&lt;p&gt;国庆节&lt;/p&gt;
+&lt;p&gt;10.7-8 候补不着票，10.8白天好像看三国的星空，晚上吃完鲨鱼滑乘d902高卧收获零食礼包&lt;/p&gt;
+&lt;p&gt;10.1 中午吃个早午饭才出门，2h速通了球2巡礼奥体+国贸？半小时到通州，大运河步行半小时，1.5h速通副中心图书馆，丝电晚饭+回寝，公交到西站&lt;/p&gt;
+&lt;p&gt;1.2就开工了，组会准备的还是虚拟机fuzz，并且还在熟悉hackdate&lt;/p&gt;
+&lt;p&gt;马来西亚行&lt;/p&gt;
+&lt;p&gt;买菜&amp;#x26;做菜&amp;#x26;自家菜&lt;/p&gt;
+&lt;p&gt;2.18 第二次烤披萨&lt;/p&gt;
+&lt;p&gt;红三剁👍👍👍&lt;/p&gt;
+&lt;p&gt;kedongdong榨汁+牙买加混蛋烤鸡胸肉&lt;/p&gt;
+&lt;p&gt;韭菜螺蛳肉&lt;/p&gt;
+&lt;p&gt;混乱的赶ddl&lt;/p&gt;
+&lt;p&gt;继续没啥进展的日常&lt;/p&gt;
+&lt;p&gt;5.7 国合来演唱，5.17 团日活动爬山，5.24 果壳民族乐团钢琴专场，6.8 博合二十一周年纪念，6.10陆陆续续的离湖音乐会😢&lt;/p&gt;
+&lt;p&gt;五一三日：骑行天津—雄安，后两天不知在搞啥&lt;/p&gt;
+&lt;p&gt;期间多次潜入、参加北影节活动&lt;/p&gt;
+&lt;p&gt;6.16 草地音乐节，真“毕业”了😭 6.18打包走人，直接回家&lt;/p&gt;
+&lt;p&gt;折腾方面，5.30 首发购入imini次日到货（没混上国补），首次上车suse，反复折腾端侧ai未果，折腾waydroid还行&lt;/p&gt;
+&lt;p&gt;6.9 又上车了hackches&lt;/p&gt;
+&lt;p&gt;买了双跑鞋，至今只开张两三次&lt;/p&gt;
+&lt;p&gt;平时和周末骑车去怀柔多了，6.2骑车去顺义回程顺道去了北影那边，6.3与qhh去密云迪卡侬提骑行纪念牌&lt;/p&gt;
+&lt;p&gt;以下大抵依据照片与日记回忆，仅作串连记录，未经梳理&lt;/p&gt;
+&lt;p&gt;1.4参加的第一次会议，InForSec&lt;/p&gt;
+&lt;p&gt;小学期&lt;/p&gt;
+&lt;p&gt;6.28 参加deepin 25发版聚会🎉&lt;/p&gt;
+&lt;p&gt;研究方面，socfuzz各种翻车，uvm不兼容，axi hack了半天才调通；画着大数据聚类mismatch的饼，实则进一步走向wave trace；hack ches实话说我好像在划水…&lt;/p&gt;
+&lt;p&gt;妈从同事那儿拿了个乌龟……一直养到高温假去旅游&lt;/p&gt;
+&lt;p&gt;6.21 毕业送别hdy&lt;/p&gt;
+&lt;p&gt;全天候网课，好吧听个大概，吸收率着实不高&lt;/p&gt;
+&lt;p&gt;高温假西行记&lt;/p&gt;
+&lt;p&gt;1.1大抵是在放假&lt;/p&gt;
+&lt;p&gt;进城，赴会&lt;/p&gt;
+&lt;p&gt;rv峰会，见&lt;del&gt;老&lt;/del&gt;同学&lt;/p&gt;
+&lt;p&gt;工位第一天，7:45，搬行李很蠢的叫了个货拉拉；第二天晚上就骑车到了万泉河；第三天一早京沪线&lt;/p&gt;
+&lt;p&gt;然后拍脑袋干了一个月，但好像也没什么成果…&lt;/p&gt;
+&lt;p&gt;软件大会听了编译器fuzz之后，又拐到把编译器测例port过来的路子了，进一步又想着划出微架构空间&lt;/p&gt;
+&lt;p&gt;先是基于isa空间的想法和fuzz unicorn和harpocrates有了以unicorn为proxy的想法，整了两周才将将试了几种fuzzbench的fuzzer&lt;/p&gt;
+&lt;p&gt;清明节前后的法国行&lt;/p&gt;</content:encoded></item><item><title>About</title><link>https://blog.graphorall.top/blog/About</link><guid isPermaLink="true">https://blog.graphorall.top/blog/About</guid><description>Transformed from Logseq page</description><pubDate>Wed, 27 May 2026 17:24:30 GMT</pubDate><content:encoded>&lt;p&gt;About&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;h3 id=&quot;hi-there&quot;&gt;Hi there 👋&lt;a class=&quot;anchor&quot; href=&quot;#hi-there&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;I’m a CS graduate student from China,&lt;/p&gt;
+&lt;p&gt;🌱 I’m fond of yet currently learning modern C++, Rust, TypeScript, Qt/QML, a bit of clojure etc.&lt;/p&gt;
+&lt;p&gt;🖥️ I’m using &lt;a href=&quot;https://www.deepin.org&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;deepin OS&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;, for 8yrs.&lt;/p&gt;
+&lt;p&gt;🔭 My interests are currently Arch &amp;#x26; Sys, SE &amp;#x26; Security, also focusing AI &amp;#x26; DB &amp;#x26; all kinds of OSS.&lt;/p&gt;
+&lt;p&gt;⚡ Have experience in UI dev (desktop &amp;#x26; web), graph database (RDF &amp;#x26; property graph), system dev (OS kernel &amp;#x26; CPU &amp;#x26; Linux), IoT projects (ohos &amp;#x26; maixpy &amp;#x26; boards &amp;#x26; HA), RTL bug hunting(HACK@DATE/CHES &amp;#x26; Fuzzing), DIY (3D print &amp;#x26; bicycle &amp;#x26; circuits) etc.&lt;/p&gt;
+&lt;p&gt;💬 Ask me about anything~ I’m a knowledge omnivore: mostly CS, plus science &amp;#x26; social science.&lt;/p&gt;</content:encoded></item><item><title>本站开发历程</title><link>https://blog.graphorall.top/blog/site-history</link><guid isPermaLink="true">https://blog.graphorall.top/blog/site-history</guid><description>Graphorall 博客从搭建到现在的开发记录</description><pubDate>Mon, 18 May 2026 22:00:00 GMT</pubDate><content:encoded>&lt;h4&gt;2026-05-18 评论系统切换&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;自建 Waline 方案弃用（Cloudflare Worker 注册接口有 bug），改用 Giscus&lt;/li&gt;
+&lt;li&gt;Giscus 基于 GitHub Discussions，零服务器部署，安装 GitHub App 即可&lt;/li&gt;
+&lt;li&gt;每条博客和日记页面底部自动加载评论区，支持 Reactions 点赞&lt;/li&gt;
+&lt;li&gt;话题以 pathname 映射，中文化界面&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2026-05-16 项目结构整理&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;remark-logseq-ext 和 logseq-nbb-db 转为 git submodule 管理&lt;/li&gt;
+&lt;li&gt;新增 scripts/update-blog.sh 一键更新脚本：导出 → 拷贝 JSON → 构建 → 自动 commit&lt;/li&gt;
+&lt;li&gt;export.json 标记为 binary，避免 git diff 输出十几万行 JSON&lt;/li&gt;
+&lt;li&gt;移除 @waline/client 依赖&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2026-05-15 导航与布局调整&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;导航栏增加 Journals 页签，与 Blog 并列&lt;/li&gt;
+&lt;li&gt;Journals 独立列表页，只展示日记，不和长篇博客混排&lt;/li&gt;
+&lt;li&gt;Linked references 按日记时间由近及远排列，最新引用优先看到&lt;/li&gt;
+&lt;li&gt;Ideas 页面移出博客列表，在 Projects 页以卡片形式展示&lt;/li&gt;
+&lt;li&gt;头像和 favicon 更新&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2026-05-15 Linked References（反向引用）&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;每条博客底部展示 Linked References 区域，列出所有引用了本条内容的块&lt;/li&gt;
+&lt;li&gt;反向引用自带子块层级，阅读时能看到完整上下文&lt;/li&gt;
+&lt;li&gt;Page、Journal、All、Tag 四种导出模式均支持&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2026-05-15 嵌入式引用（Embed）显示改进&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;嵌入块以独立卡片样式呈现，带有浅灰色边框和标签，与正文区隔&lt;/li&gt;
+&lt;li&gt;卡片内子块列表正常缩进，层级关系清晰&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2026-05-15 导出格式升级&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;适应新版 Logseq 导出结构，按 entry 组织每条内容&lt;/li&gt;
+&lt;li&gt;日记条目按日期合并为单页，同一天的日记不会拆成多篇&lt;/li&gt;
+&lt;li&gt;引用图片按需复制到博客资源目录，避免导入整个附件库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2026-05-10 站点配置与 RSS&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;站点 URL 更正为 blog.graphorall.top&lt;/li&gt;
+&lt;li&gt;RSS 订阅覆盖所有内容（含 Logseq 导出页），输出完整正文&lt;/li&gt;
+&lt;li&gt;Logseq 扩展插件改为普通目录，不再依赖 git submodule，CI 构建更稳定&lt;/li&gt;
+&lt;li&gt;博客内引用的 Logseq 资源图片路径自动映射&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2026-05-04 About 页面工具更新&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;工具列表更新：Inkscape、Excalidraw、OpenCode、Podman、Tailscale 等&lt;/li&gt;
+&lt;li&gt;各工具配对应图标和链接&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2026-01 初期功能&lt;/h4&gt;
+&lt;h5&gt;Logseq 导出内容展示&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;将 Logseq 笔记导出为 JSON 后，解析为结构化的博客页面&lt;/li&gt;
+&lt;li&gt;每条笔记的块结构在页面中以树形目录展示，保持原有的层级关系&lt;/li&gt;
+&lt;li&gt;块内 Markdown 内容正常渲染（代码块、链接、列表等）&lt;/li&gt;
+&lt;li&gt;块属性（如标签）从正文中分离，在树中以独立区域展示&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5&gt;CI / Workflow 修复&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;修复 submodule 拉取问题，确保构建流程稳定&lt;/li&gt;
+&lt;li&gt;资源路径统一，不再依赖浏览器端重定向&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4&gt;2025-12 搭建基础&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;基于 astro-theme-pure 搭建博客框架&lt;/li&gt;
+&lt;li&gt;Cloudflare Pages 自动构建部署&lt;/li&gt;
+&lt;li&gt;Waline 评论系统集成（后更换为 Giscus）&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title>ideas</title><link>https://blog.graphorall.top/blog/ideas</link><guid isPermaLink="true">https://blog.graphorall.top/blog/ideas</guid><description>Transformed from Logseq page</description><pubDate>Fri, 15 May 2026 07:51:36 GMT</pubDate><content:encoded>&lt;p&gt;ideas&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;</content:encoded></item><item><title>一次vscode copilot插件fork bomb引起的服务器DoS</title><link>https://blog.graphorall.top/blog/%E4%B8%80%E6%AC%A1vscode%20copilot%E6%8F%92%E4%BB%B6fork%20bomb%E5%BC%95%E8%B5%B7%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8DoS</link><guid isPermaLink="true">https://blog.graphorall.top/blog/%E4%B8%80%E6%AC%A1vscode%20copilot%E6%8F%92%E4%BB%B6fork%20bomb%E5%BC%95%E8%B5%B7%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8DoS</guid><description>Transformed from Logseq page</description><pubDate>Sun, 10 May 2026 07:33:07 GMT</pubDate><content:encoded>&lt;p&gt;一次vscode copilot插件fork bomb引起的服务器DoS&lt;/p&gt;
+&lt;h3 id=&quot;摘要&quot;&gt;摘要&lt;a class=&quot;anchor&quot; href=&quot;#摘要&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;2026 年 5 月 10 日凌晨，组里一台 CentOS 服务器突发响应极慢，&lt;code&gt;top&lt;/code&gt; 几乎卡死。当晚因 &lt;code&gt;ps&lt;/code&gt; 等统计命令同样缓慢，未能定位原因。次日早晨发现用户 &lt;code&gt;yicheng&lt;/code&gt; 名下涌现 &lt;strong&gt;8 万余个 &lt;code&gt;node&lt;/code&gt; / &lt;code&gt;copilot&lt;/code&gt; / &lt;code&gt;sh&lt;/code&gt; 进程&lt;/strong&gt;，且 &lt;code&gt;pkill -9&lt;/code&gt; 无法抑制。尝试 &lt;code&gt;loginctl terminate-user&lt;/code&gt; 无效，最终通过 cgroup 限制用户进程数（&lt;code&gt;pids.max&lt;/code&gt;）阻断新进程创建，存量进程以每秒约百个的速度缓慢下降。元凶指向 &lt;strong&gt;VS Code SSH Server 配合 Copilot 插件&lt;/strong&gt;的失控行为。本次故障暴露了 Linux 内核在进程、文件描述符等子系统间缺乏有效隔离的设计缺陷，单一用户的 fork 炸弹或文件句柄耗尽即可引发全局 DoS。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h3 id=&quot;附录关键命令备忘&quot;&gt;附录：关键命令备忘&lt;a class=&quot;anchor&quot; href=&quot;#附录关键命令备忘&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;div class=&quot;astro-code astro-code-themes github-light github-dark&quot; style=&quot;background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;&quot; tabindex=&quot;0&quot; data-language=&quot;bash&quot;&gt;&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#6A737D;--shiki-dark:#6A737D&quot;&gt;# 统计用户进程数按命令分组&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt;ps&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -u&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt; yicheng&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -o&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt; comm=&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; sort&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; uniq&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -c&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; sort&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -nr&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; head&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#6A737D;--shiki-dark:#6A737D&quot;&gt;# 限制用户 cgroup 进程数（cgroup v2）&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt;echo&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; 500&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; &gt;&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt; /sys/fs/cgroup/user.slice/user-&lt;/span&gt;&lt;span style=&quot;color:#24292E;--shiki-dark:#E1E4E8&quot;&gt;$(&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt;id&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -u&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt; yicheng&lt;/span&gt;&lt;span style=&quot;color:#24292E;--shiki-dark:#E1E4E8&quot;&gt;)&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt;.slice/pids.max&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#6A737D;--shiki-dark:#6A737D&quot;&gt;# 查看进程状态分布&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt;ps&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt; aux&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; awk&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt; &apos;{print $8}&apos;&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; sort&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; uniq&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -c&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; sort&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -nr&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#6A737D;--shiki-dark:#6A737D&quot;&gt;# 永久限制用户进程数（/etc/systemd/logind.conf）&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#24292E;--shiki-dark:#E1E4E8&quot;&gt;UserTasksMax&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt;=&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt;1000&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;span class=&quot;language ps-1 pe-3 text-sm bg-muted text-muted-foreground&quot;&gt;bash&lt;/span&gt;&lt;button class=&quot;copy text-muted-foreground p-1 box-content border rounded-lg bg-card&quot; aria-label=&quot;Copy code&quot; data-code=&quot;# 统计用户进程数按命令分组
+ps -u yicheng -o comm= | sort | uniq -c | sort -nr | head
+
+# 限制用户 cgroup 进程数（cgroup v2）
+echo 500 &gt; /sys/fs/cgroup/user.slice/user-$(id -u yicheng).slice/pids.max
+
+# 查看进程状态分布
+ps aux | awk &amp;#x27;{print $8}&amp;#x27; | sort | uniq -c | sort -nr
+
+# 永久限制用户进程数（/etc/systemd/logind.conf）
+UserTasksMax=1000&quot; onclick=&quot;
+          navigator.clipboard.writeText(this.dataset.code);
+          this.classList.add(&amp;#x27;copied&amp;#x27;);
+          setTimeout(() =&gt; this.classList.remove(&amp;#x27;copied&amp;#x27;), 2000)
+        &quot;&gt;&lt;div class=&quot;ready&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-clipboard-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;success hidden&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-file-check-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;最后&lt;/strong&gt;：服务器尚未完全恢复，但已遏制恶化。根本修复需等待 VS Code SSH Server 或 Copilot 插件更新，同时加强系统资源限制策略。&lt;/p&gt;
+&lt;h3 id=&quot;2-第二次排查次日上午&quot;&gt;2. 第二次排查（次日上午）&lt;a class=&quot;anchor&quot; href=&quot;#2-第二次排查次日上午&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;重启终端后，基础 &lt;code&gt;ps&lt;/code&gt; 命令得以执行。按用户统计进程：&lt;/p&gt;
+&lt;div class=&quot;astro-code astro-code-themes github-light github-dark&quot; style=&quot;background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;&quot; tabindex=&quot;0&quot; data-language=&quot;bash&quot;&gt;&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt;ps&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -u&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt; yicheng&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -o&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt; comm=&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; sort&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; uniq&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -c&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; sort&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -nr&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; |&lt;/span&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt; head&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -10&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;span class=&quot;language ps-1 pe-3 text-sm bg-muted text-muted-foreground&quot;&gt;bash&lt;/span&gt;&lt;button class=&quot;copy text-muted-foreground p-1 box-content border rounded-lg bg-card&quot; aria-label=&quot;Copy code&quot; data-code=&quot;ps -u yicheng -o comm= | sort | uniq -c | sort -nr | head -10&quot; onclick=&quot;
+          navigator.clipboard.writeText(this.dataset.code);
+          this.classList.add(&amp;#x27;copied&amp;#x27;);
+          setTimeout(() =&gt; this.classList.remove(&amp;#x27;copied&amp;#x27;), 2000)
+        &quot;&gt;&lt;div class=&quot;ready&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-clipboard-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;success hidden&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-file-check-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;p&gt;输出：&lt;/p&gt;
+&lt;div class=&quot;astro-code astro-code-themes github-light github-dark&quot; style=&quot;background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;&quot; tabindex=&quot;0&quot; data-language=&quot;plaintext&quot;&gt;&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;line&quot;&gt;&lt;span&gt;73266 node&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;73259 copilot&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;73171 sh&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;   69 fish&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;   22 bash&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;    7 docker&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;...&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;span class=&quot;language ps-1 pe-3 text-sm bg-muted text-muted-foreground&quot;&gt;plaintext&lt;/span&gt;&lt;button class=&quot;copy text-muted-foreground p-1 box-content border rounded-lg bg-card&quot; aria-label=&quot;Copy code&quot; data-code=&quot;73266 node
+73259 copilot
+73171 sh
+   69 fish
+   22 bash
+    7 docker
+...&quot; onclick=&quot;
+          navigator.clipboard.writeText(this.dataset.code);
+          this.classList.add(&amp;#x27;copied&amp;#x27;);
+          setTimeout(() =&gt; this.classList.remove(&amp;#x27;copied&amp;#x27;), 2000)
+        &quot;&gt;&lt;div class=&quot;ready&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-clipboard-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;success hidden&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-file-check-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;结论&lt;/strong&gt;：用户 &lt;code&gt;yicheng&lt;/code&gt; 下存在海量 &lt;code&gt;node&lt;/code&gt;、&lt;code&gt;copilot&lt;/code&gt;、&lt;code&gt;sh&lt;/code&gt; 进程，且数量持续增长。&lt;/p&gt;
+&lt;h3 id=&quot;7-经验教训&quot;&gt;7. 经验教训&lt;a class=&quot;anchor&quot; href=&quot;#7-经验教训&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;极端进程数下，系统瓶颈不在 CPU/内存，而在内核管理开销&lt;/strong&gt;
+本次故障中，系统总进程数超过 16 万，但 CPU 空闲仍有 93.8%，内存也未耗尽。然而 &lt;code&gt;top&lt;/code&gt;、&lt;code&gt;ps&lt;/code&gt;、&lt;code&gt;pstree&lt;/code&gt; 等基础命令几乎卡死，因为管理工具需要遍历 &lt;code&gt;/proc&lt;/code&gt; 下数十万个目录，而内核调度器、进程回收等机制在海量进程（即便多数处于 &lt;code&gt;S&lt;/code&gt; 状态）下也会产生巨大的元数据开销。&lt;strong&gt;这表明 Linux 在面对超大规模进程数时，存在“非资源耗尽型”的性能悬崖&lt;/strong&gt;——系统并非因 CPU/内存不足而不可用，而是因内核态操作本身的复杂度导致响应瘫痪。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;进程创建速度超过杀死速度时，必须先阻断源头&lt;/strong&gt;
+&lt;code&gt;pkill -9&lt;/code&gt; 和 &lt;code&gt;loginctl terminate-user&lt;/code&gt; 在进程爆炸且持续快速重生时无效。只有通过 cgroup 限制 &lt;code&gt;pids.max&lt;/code&gt; 从内核层面阻止新进程创建，才能遏制恶化。这提示管理员应默认启用用户级进程数限制（如 &lt;code&gt;UserTasksMax&lt;/code&gt;）。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Linux 资源隔离仍不够精细，单点故障易引发全局 DoS&lt;/strong&gt;
+一个用户的失控进程（即便非恶意）即可耗尽全局 &lt;code&gt;pid_max&lt;/code&gt; 或 &lt;code&gt;file-max&lt;/code&gt;，导致其他用户甚至 &lt;code&gt;root&lt;/code&gt; 的基础操作受阻。虽然 cgroup 提供了事后限制的手段，但默认配置下缺乏有效的预防隔离。建议在多用户环境中主动为每个用户或服务设置进程数、文件句柄数的上限。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;管理工具在极端负载下的脆弱性&lt;/strong&gt;
+&lt;code&gt;top&lt;/code&gt;、&lt;code&gt;ps&lt;/code&gt; 等工具依赖遍历 &lt;code&gt;/proc&lt;/code&gt;，当进程数超过 10 万时，这些命令自身可能阻塞数分钟甚至超时。此时应依赖更底层的接口（如直接读取 &lt;code&gt;cgroup&lt;/code&gt; 统计）或提前部署监控告警，避免陷入“想排查但工具不可用”的窘境。&lt;/p&gt;
+&lt;h3 id=&quot;6-根因分析已确认&quot;&gt;6. 根因分析（已确认）&lt;a class=&quot;anchor&quot; href=&quot;#6-根因分析已确认&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;为什么 &lt;code&gt;pkill&lt;/code&gt; 和 &lt;code&gt;loginctl&lt;/code&gt; 无效？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;通过检查用户 &lt;code&gt;yicheng&lt;/code&gt; 的进程命令行及工作环境，确定失控进程来源于 &lt;strong&gt;VS Code SSH Server&lt;/strong&gt;（即 &lt;code&gt;code-server&lt;/code&gt; 的远程开发会话）及其驱动的 &lt;strong&gt;Copilot 插件&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;具体机制推测：&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;h3 id=&quot;1-故障现象2026-05-10-凌晨-1-时&quot;&gt;1. 故障现象（2026-05-10 凌晨 1 时）&lt;a class=&quot;anchor&quot; href=&quot;#1-故障现象2026-05-10-凌晨-1-时&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;当晚尝试使用 &lt;code&gt;ps&lt;/code&gt; 配合管道进行复杂统计（如按父进程聚合）时，命令直接卡住无法返回结果。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;top&lt;/code&gt; 摘要显示：&lt;br&gt;
+&lt;code&gt;Tasks: 165984 total, 62 zombie&lt;/code&gt;&lt;br&gt;
+&lt;code&gt;%Cpu(s): 2.5 us, 3.6 sy, 93.8 id&lt;/code&gt;&lt;br&gt;
+&lt;code&gt;MiB Mem: 1031898+ total, 84783 free, 566539 used, 380576 buff/cache&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;也尝试排查 Docker 容器、检查文件句柄等，均无明显发现。&lt;/p&gt;
+&lt;p&gt;用户执行 &lt;code&gt;top&lt;/code&gt; 响应极慢，几乎卡死。&lt;/p&gt;
+&lt;h3 id=&quot;5-恢复情况&quot;&gt;5. 恢复情况&lt;a class=&quot;anchor&quot; href=&quot;#5-恢复情况&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;完全清除所有失控进程尚需时间，服务器暂保持运行观察。&lt;/p&gt;
+&lt;p&gt;截至发稿，进程数仍在上万级别，以约百个/秒的速度下降。&lt;/p&gt;
+&lt;p&gt;系统整体负载有所缓解，&lt;code&gt;top&lt;/code&gt; 响应恢复至可用状态。&lt;/p&gt;
+&lt;h3 id=&quot;4-最终阻断cgroup-限制用户进程数&quot;&gt;4. 最终阻断：cgroup 限制用户进程数&lt;a class=&quot;anchor&quot; href=&quot;#4-最终阻断cgroup-限制用户进程数&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;设置 cgroup 限制后，我自己（yicheng 用户）反而无法登录了&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;使用 cgroup v2 限制用户 &lt;code&gt;yicheng&lt;/code&gt; 的最大进程数：&lt;/p&gt;
+&lt;div class=&quot;astro-code astro-code-themes github-light github-dark&quot; style=&quot;background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;&quot; tabindex=&quot;0&quot; data-language=&quot;bash&quot;&gt;&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#6A737D;--shiki-dark:#6A737D&quot;&gt;# 获取用户 UID&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#6F42C1;--shiki-dark:#B392F0&quot;&gt;id&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; -u&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt; yicheng&lt;/span&gt;&lt;span style=&quot;color:#6A737D;--shiki-dark:#6A737D&quot;&gt;   # 假设 1001&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#6A737D;--shiki-dark:#6A737D&quot;&gt;# 设置 pids.max = 500&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt;echo&lt;/span&gt;&lt;span style=&quot;color:#005CC5;--shiki-dark:#79B8FF&quot;&gt; 500&lt;/span&gt;&lt;span style=&quot;color:#D73A49;--shiki-dark:#F97583&quot;&gt; &gt;&lt;/span&gt;&lt;span style=&quot;color:#032F62;--shiki-dark:#9ECBFF&quot;&gt; /sys/fs/cgroup/user.slice/user-1001.slice/pids.max&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;span class=&quot;language ps-1 pe-3 text-sm bg-muted text-muted-foreground&quot;&gt;bash&lt;/span&gt;&lt;button class=&quot;copy text-muted-foreground p-1 box-content border rounded-lg bg-card&quot; aria-label=&quot;Copy code&quot; data-code=&quot;# 获取用户 UID
+id -u yicheng   # 假设 1001
+
+# 设置 pids.max = 500
+echo 500 &gt; /sys/fs/cgroup/user.slice/user-1001.slice/pids.max&quot; onclick=&quot;
+          navigator.clipboard.writeText(this.dataset.code);
+          this.classList.add(&amp;#x27;copied&amp;#x27;);
+          setTimeout(() =&gt; this.classList.remove(&amp;#x27;copied&amp;#x27;), 2000)
+        &quot;&gt;&lt;div class=&quot;ready&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-clipboard-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;success hidden&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-file-check-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;h3 id=&quot;3-初步清理尝试均失败&quot;&gt;3. 初步清理尝试（均失败）&lt;a class=&quot;anchor&quot; href=&quot;#3-初步清理尝试均失败&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;再次统计，进程数反而从 7.7 万涨至 8.3 万：&lt;/p&gt;
+&lt;div class=&quot;astro-code astro-code-themes github-light github-dark&quot; style=&quot;background-color:#fff;--shiki-dark-bg:#24292e;color:#24292e;--shiki-dark:#e1e4e8; overflow-x: auto;&quot; tabindex=&quot;0&quot; data-language=&quot;plaintext&quot;&gt;&lt;pre&gt;&lt;code&gt;&lt;span class=&quot;line&quot;&gt;&lt;span&gt;83241 node&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;83234 copilot&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line&quot;&gt;&lt;span&gt;83146 sh&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;span class=&quot;language ps-1 pe-3 text-sm bg-muted text-muted-foreground&quot;&gt;plaintext&lt;/span&gt;&lt;button class=&quot;copy text-muted-foreground p-1 box-content border rounded-lg bg-card&quot; aria-label=&quot;Copy code&quot; data-code=&quot;83241 node
+83234 copilot
+83146 sh&quot; onclick=&quot;
+          navigator.clipboard.writeText(this.dataset.code);
+          this.classList.add(&amp;#x27;copied&amp;#x27;);
+          setTimeout(() =&gt; this.classList.remove(&amp;#x27;copied&amp;#x27;), 2000)
+        &quot;&gt;&lt;div class=&quot;ready&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-clipboard-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&quot;success hidden&quot;&gt;&lt;svg class=&quot;size-5&quot;&gt;&lt;use href=&quot;/icons/code.svg#mingcute-file-check-line&quot;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/div&gt;&lt;/button&gt;&lt;/div&gt;
+&lt;p&gt;执行 &lt;code&gt;sudo pkill -9 -u yicheng&lt;/code&gt;，无明显效果。&lt;/p&gt;
+&lt;p&gt;观察到个别 PID 较小的进程即使 &lt;code&gt;kill -9&lt;/code&gt; 也无法杀死，状态显示为 &lt;code&gt;S1&lt;/code&gt;（可中断睡眠但无法响应信号）。&lt;/p&gt;
+&lt;p&gt;尝试 &lt;code&gt;sudo loginctl terminate-user yicheng&lt;/code&gt;——无效，进程数仍在增长。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;分析&lt;/strong&gt;：进程创建速度超过杀死速度，仅靠发信号已无法遏制。&lt;/p&gt;</content:encoded></item><item><title>名片设计小记</title><link>https://blog.graphorall.top/blog/%E5%90%8D%E7%89%87%E8%AE%BE%E8%AE%A1%E5%B0%8F%E8%AE%B0</link><guid isPermaLink="true">https://blog.graphorall.top/blog/%E5%90%8D%E7%89%87%E8%AE%BE%E8%AE%A1%E5%B0%8F%E8%AE%B0</guid><description>Transformed from Logseq page</description><pubDate>Fri, 08 May 2026 15:43:41 GMT</pubDate><content:encoded>&lt;p&gt;名片设计小记&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;出于几个缘由，在26年四月末，我设计了自己的第一张名片&lt;/p&gt;
+&lt;p&gt;理想的动因是回想起在RV峰会等多次见到lazyparser老师发名片，这件事情本身有点fancy，同时也适合我这种社恐&lt;/p&gt;
+&lt;p&gt;现实的动因是考虑到DAC将WaveAce接收为了poster，但我无法参加，希望师兄代为展示时通过名片sell一下自己&lt;/p&gt;
+&lt;p&gt;设计了一周左右，在424看到航天日海报后，突然有些想往构成主义靠一靠，尝试着乱画一下灵感来了。尽管最后没学到构成主义，但还是比较满意的，至少看着够简洁&lt;/p&gt;
+&lt;p&gt;看了看个人logo设计，多使用英文简称等创作。于是还是从字母缩写出发，试图将ZYC统合为一个logo&lt;/p&gt;
+&lt;p&gt;这时大致确立了正方形+切分辅助线的思路，但在如何勾勒、凸显出三个字母上，纠结许久&lt;/p&gt;
+&lt;p&gt;首先排除了初高中时绘制的头像，过于繁复不适合印刷品&lt;/p&gt;
+&lt;p&gt;可能顺着色块的思路，也可能随手尝试inkscape填色时无意打开了渐变，我发觉能通过光泽凸显笔画的走势。这时，ZYC被简化为了Z的斜对角线+Y的上三角+C的小方块，三个渐变和谐共存。
+&lt;img src=&quot;/blog-assets/image_1778254697606_0.png&quot; alt=&quot;image.png&quot; class=&quot;zoomable&quot;&gt;&lt;/p&gt;
+&lt;p&gt;将图案变为名片则需进行排版的考虑，好在图案足够简洁、足够方正，很容易在左右居中对齐中做出选择。&lt;/p&gt;
+&lt;p&gt;内容方面，先拍脑袋设定了若干需要放置的元素：个人介绍、网站+微信+Github。
+然后与ds聊了聊，完善了些信息，例如ORCiD（说实话很罕见），例如linkedin二维码，例如research interest等兴趣&lt;/p&gt;
+&lt;p&gt;颜色方面，采用WHU绿、UCAS蓝、ISCAS橙，明度调成一样看起来还比较搭；正巧利用上下方零碎的三角形放上UCAS的logo，以及对称放置ISCAS的logo&lt;/p&gt;
+&lt;p&gt;位置方面，正面显然必须利用左右空间；其中右侧原计划在小方块处放置文字，但发现不对称，因此改为与左侧相同、沿X线对齐
+&lt;img src=&quot;/blog-assets/image_1778254827631_0.png&quot; alt=&quot;image.png&quot; class=&quot;zoomable&quot;&gt;&lt;/p&gt;</content:encoded></item><item><title>研二下过半的千头万绪</title><link>https://blog.graphorall.top/blog/%E7%A0%94%E4%BA%8C%E4%B8%8B%E8%BF%87%E5%8D%8A%E7%9A%84%E5%8D%83%E5%A4%B4%E4%B8%87%E7%BB%AA</link><guid isPermaLink="true">https://blog.graphorall.top/blog/%E7%A0%94%E4%BA%8C%E4%B8%8B%E8%BF%87%E5%8D%8A%E7%9A%84%E5%8D%83%E5%A4%B4%E4%B8%87%E7%BB%AA</guid><description>Transformed from Logseq page</description><pubDate>Fri, 08 May 2026 15:08:32 GMT</pubDate><content:encoded>&lt;p&gt;研二下过半的千头万绪&lt;/p&gt;
+&lt;p&gt;情绪能量低，潜意识是控制不住的&lt;/p&gt;
+&lt;p&gt;昨天看到丘吉尔砌砖墙的故事，或许我这摸鱼、citywalk也是一种行为激活&lt;/p&gt;
+&lt;p&gt;若是能更专注的投入工作，可缓解心理投射，然而驱使LLM干活逐渐陷入轮询状态，专注度实际下降了&lt;/p&gt;
+&lt;p&gt;往后看，人际关系将面临一次缩圈，毕业的毕业、出走的出走，这两年甚至更久的伙伴们都四散天下了。这会儿我方才有些理解当年师兄们甚至同学们为何如此感慨了。&lt;/p&gt;
+&lt;p&gt;一两年前为何感受不强呢？首先是渐进式的，年复一年看着lab社团的伙伴们毕业却又有更多未曾毕业的甚至新加入的；其次渠道更广泛多元，lab和各个社团的伙伴大抵远多于如今有稍近联系的（难道我更i了？）；再次当时似乎更适应独立的状态，闷罐子能力更强，公域（非pvp）的输入输出更多；最后是技术/自我实现方面，尚未裹挟进时代的洪流，在各个方面进行着多元突破，与开源社区的非具象的人们进行着无关身份/实力的交流。&lt;/p&gt;
+&lt;p&gt;四散而去的距离倒不会带来切实的交流瓶颈，然而潜意识上却尚且难以控制这种隔阂——很难做到为了社交而社交/为了自己而社交/为了感觉无意义的事情而社交；另一方面，社会关系的变化的确让人与人之间的权重分配随之变化。&lt;/p&gt;
+&lt;p&gt;近来除了潜意识的发散，理性上也很难把握主业的成长与进步&lt;/p&gt;
+&lt;p&gt;至少从24开始鸽年终总结，籍此回忆一下&lt;/p&gt;
+&lt;p&gt;首先是赛道又出现了，不论找工作还是卷学术，成果明摆着。
+以过程视角看，则又很难评估一篇论文需/应当耗费多少人力与时长，虽然我总觉着自己太慢了。赶工DAC时其实挺快，真正大力投入也就不足两月；但如今却在更为高标准的实验中陷入泥潭，已逾两月；当然，似乎周末/节假日给自己放假放稍多了，长期肝不动……&lt;/p&gt;
+&lt;p&gt;其次从个人技术上，一直以来拓宽广度的坚持似乎感受到一些瓶颈。越是往时代潮头赶—即使是此前熟悉/感兴趣的sys/db—越是发觉技术越来越专、深，并非此前各类开发那般触手可及，自然想凭借通用能力/技术广度在这些方面做些许对自己或他人有用贡献、乃至作为转型方向也越来越难了。当然，也可能是科研主线投入过多，挤占了零敲碎打的精力。&lt;/p&gt;
+&lt;p&gt;昨晚理了理照片&amp;#x26;地图碎片，这两年或一年来也去了很多地方、拍了很多照片，北京到过的街道有个30%&lt;/p&gt;
+&lt;p&gt;前些时常道本科好，但这么看来，本科既是被大环境也是被心理无形的束缚了，出校寥寥更没去外地游玩。那时的主线被课程、BDI填充着，无业绩压力的情况下想学啥就学啥，但闲暇时光则也多在校园各处或是周边消磨着孤独&amp;#x26;情绪垃圾。&lt;/p&gt;
+&lt;p&gt;凡事就怕比但又忍不住比，我这大抵算是跑了很多拍了很多地方了，玩的方面知足常乐。倘若再过两年，是否还能这般丰满起日常生活，若保持这种探索速度又将会探索到何方？&lt;/p&gt;
+&lt;p&gt;也突显出拍照&amp;#x26;记录的重要性，若非有记录，记忆大抵是靠不住&amp;#x26;索引不上的。若非有记录，又有何人何地能自由的输出。&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;</content:encoded></item><item><title>Using MDX</title><link>https://blog.graphorall.top/blog/using-mdx</link><guid isPermaLink="true">https://blog.graphorall.top/blog/using-mdx</guid><description>Learning how to use MDX in Astro</description><pubDate>Sun, 01 Jun 2025 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;This theme comes with the &lt;a href=&quot;https://docs.astro.build/en/guides/integrations-guide/mdx/&quot;&gt;@astrojs/mdx&lt;/a&gt; integration installed and configured in your &lt;code&gt;astro.config.ts&lt;/code&gt; config file. If you prefer not to use MDX, you can disable support by removing the integration from your config file.&lt;/p&gt;
+&lt;h2&gt;Why MDX?&lt;/h2&gt;
+&lt;p&gt;MDX is a special flavor of Markdown that supports embedded JavaScript &amp;#x26; JSX syntax. This unlocks the ability to &lt;a href=&quot;https://docs.astro.build/en/guides/markdown-content/#mdx-features&quot;&gt;mix JavaScript and UI Components into your Markdown content&lt;/a&gt; for things like interactive charts or alerts.&lt;/p&gt;
+&lt;p&gt;If you have existing content authored in MDX, this integration will hopefully make migrating to Astro a breeze.&lt;/p&gt;
+&lt;h2&gt;Example&lt;/h2&gt;
+&lt;p&gt;Here is how you import and use a UI component inside of MDX.&lt;br&gt;
+When you open this page in the browser, you should see the clickable button below.&lt;/p&gt;
+&lt;p&gt;import { Button } from &apos;astro-pure/user&apos;&lt;/p&gt;
+&lt;p&gt;Click Me&lt;/p&gt;
+&lt;h2&gt;More Links&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://mdxjs.com/docs/what-is-mdx&quot;&gt;MDX Syntax Documentation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.astro.build/en/guides/markdown-content/#markdown-and-mdx-pages&quot;&gt;Astro Usage Documentation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Note:&lt;/strong&gt; &lt;a href=&quot;https://docs.astro.build/en/reference/directives-reference/#client-directives&quot;&gt;Client Directives&lt;/a&gt; are still required to create interactive components. Otherwise, all components in your MDX will render as static HTML (no JavaScript) by default.&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title>contents</title><link>https://blog.graphorall.top/blog/contents</link><guid isPermaLink="true">https://blog.graphorall.top/blog/contents</guid><description>Transformed from Logseq page</description><pubDate>Sun, 08 Dec 2024 14:17:09 GMT</pubDate><content:encoded>&lt;p&gt;contents&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;日常&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/blog/eat&quot;&gt;eat&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/blog/%E6%91%84%E5%BD%B1&quot;&gt;摄影&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;学习&lt;/p&gt;
+&lt;p&gt;社科&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/blog/English&quot;&gt;English&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/blog/study&quot;&gt;study&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/blog/csoutline&quot;&gt;csoutline&lt;/a&gt;&lt;/p&gt;</content:encoded></item><item><title>compile</title><link>https://blog.graphorall.top/blog/compile</link><guid isPermaLink="true">https://blog.graphorall.top/blog/compile</guid><description>Transformed from Logseq page</description><pubDate>Sun, 08 Dec 2024 14:17:09 GMT</pubDate><content:encoded>&lt;p&gt;compile&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;Intro&lt;/p&gt;
+&lt;p&gt;id:: 63fdae32-0745-40dd-a7b7-1fb90353fe2b&lt;/p&gt;
+&lt;p&gt;Syntax&lt;/p&gt;
+&lt;p&gt;semantics -&gt; ambigurous&lt;/p&gt;
+&lt;p&gt;Fortran -&gt; COBOL -&gt; &lt;a href=&quot;/blog/lisp&quot;&gt;lisp&lt;/a&gt;&lt;/p&gt;</content:encoded></item><item><title>Friends</title><link>https://blog.graphorall.top/blog/Friends</link><guid isPermaLink="true">https://blog.graphorall.top/blog/Friends</guid><description>Transformed from Logseq page</description><pubDate>Sat, 06 May 2023 06:03:21 GMT</pubDate><content:encoded>&lt;p&gt;Friends&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;site:: &lt;a href=&quot;https://vixbob.moe/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;ViXbob的博客&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;
+description:: ViXbob巨神，为长者の子斩获首枚ICPC🥇&lt;/p&gt;
+&lt;p&gt;site:: &lt;a href=&quot;https://aokiumi.github.io/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;Aoki_Umi&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;
+description:: Aoki_Umi巨神，业余画手大大&lt;/p&gt;
+&lt;p&gt;site:: &lt;a href=&quot;https://kouruka.com/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;Luke’s Blog&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;
+description:: Now renamed Luke from the Bible, &lt;a href=&quot;edgration.github.io&quot;&gt;Edgration&lt;/a&gt; used to participate with us and won bronze medals @ APIO&lt;/p&gt;
+&lt;p&gt;site:: &lt;a href=&quot;https://dimensiontripper.github.io/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;DimensionTripper的博客&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt; &amp;#x26; &lt;a href=&quot;https://github.com/Wepdekr&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;Wepdekr的github&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;
+description:: Wepdekr巨神，AFO之后又去打ACM拿牌却不更blog&lt;/p&gt;
+&lt;p&gt;site:: &lt;a href=&quot;https://blog.shenmo.tech/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;shenmo的世界&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;
+description:: &lt;a href=&quot;https://gitee.com/deepin-community-store/spark-store&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;星火商店&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;项目创始人，deepin社区出来的Linux大佬&lt;/p&gt;</content:encoded></item><item><title>DB course</title><link>https://blog.graphorall.top/blog/DB%20course</link><guid isPermaLink="true">https://blog.graphorall.top/blog/DB%20course</guid><description>Transformed from Logseq page</description><pubDate>Sun, 16 Apr 2023 08:27:22 GMT</pubDate><content:encoded>&lt;p&gt;DB course&lt;/p&gt;
+&lt;p&gt;SQL other features
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;Constraint
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;View
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;Index
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;Trigger
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;Algebra
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;operations
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;datalog&lt;/p&gt;
+&lt;p&gt;extended operators
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;preliminaries: relation, attribute, schema, tuple, component, domain, current instance, key&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/blog/PostgreSQL&quot;&gt;PostgreSQL&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Formalization
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;BCNF
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;Hard Problems
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;MD
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;FD
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;E-R Model
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;3NF
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;Course Project
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog-assets/DBProject.drawio_1675502686622_0.png&quot; alt=&quot;DBProject.drawio_1675502686622_0.png&quot; class=&quot;zoomable&quot;&gt;&lt;/p&gt;
+&lt;p&gt;杨元钊、钟祎诚、邹奕杨&lt;/p&gt;
+&lt;p&gt;架构：
+整体为C/S架构，Server端采用MySQL数据库，Client使用Python+QtQuick开发。其中Server部分使用一台华为云ECS，根据MySQL官网指示部署了MySQL 8.0（最初使用docker部署，但性能低于常规值3个数量级，后期推测是由于ECS的虚拟化云硬盘IO延迟高）。Client部分为Qt前端+Python后端，主程序由Python调用PySide（Qt）运行QML引擎，引擎运行QML代码实现界面显示与交互，QML代码通过引擎调用后端类获取数据；后端类使用pymysql执行编写好的SQL语句与数据库交互。&lt;/p&gt;
+&lt;p&gt;分工：
+杨元钊负责数据的爬取清洗及数据库Schema的设计、创建；
+邹奕杨负责客户端后端类的编写、SQL语句的编写及部分语句优化；
+钟祎诚负责服务端的部署、客户端整体和UI部分的编写、SQL优化。&lt;/p&gt;
+&lt;p&gt;Transaction
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;recoverability
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;failure recovery
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;exercise
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;SQL lang
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;schema
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;query
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;modification
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;components&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;DDL: data definition  lang, schema and constraint etc.&lt;/li&gt;
+&lt;li&gt;DML: data manipulation lang, query and transaction etc.&lt;/li&gt;
+&lt;li&gt;DCL: data control lang, permission and grant etc.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;relations: stored, view, temp tables&lt;/p&gt;
+&lt;p&gt;Index
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;exercise
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;types
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;multi dimensional
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;data structures
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;Schedule
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;exercise
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;timestamp&amp;#x26;validation
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;serializability&lt;/p&gt;
+&lt;p&gt;lock&lt;/p&gt;
+&lt;p&gt;conflicts: ignore actions from same trans
+conflict equiv: by transforming non-conflict ops
+conflict serializable: conflict equiv to some serial schedule
+view serializable: ignore blind write&lt;/p&gt;
+&lt;p&gt;deadlock&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;Exec&lt;/p&gt;
+&lt;p&gt;logical &amp;#x26; physical plan&lt;/p&gt;
+&lt;p&gt;cost model&lt;/p&gt;
+&lt;p&gt;exercise&lt;/p&gt;
+&lt;p&gt;algebra simplification&lt;/p&gt;
+&lt;p&gt;Physical Ops&lt;/p&gt;
+&lt;p&gt;Storage
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;modification
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;robustness
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;disc access model
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;addressing
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;physical optimize
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;storage format
+collapsed:: true&lt;/p&gt;</content:encoded></item><item><title>OS case study</title><link>https://blog.graphorall.top/blog/OS%20case%20study</link><guid isPermaLink="true">https://blog.graphorall.top/blog/OS%20case%20study</guid><description>Transformed from Logseq page</description><pubDate>Sat, 08 Apr 2023 13:53:36 GMT</pubDate><content:encoded>&lt;p&gt;OS case study&lt;/p&gt;
+&lt;p&gt;概述及发展历史&lt;/p&gt;
+&lt;p&gt;不同内核（系统类型）在系统服务层的区别主要在于，轻型系统不支持进程隔离，因此其系统服务与内核、应用运行于同一空间，基于MPU（内存保护单元）隔离；而小型及标准系统的系统服务为一个个独立的进程，通过IPC调用。&lt;/p&gt;
+&lt;p&gt;考虑到基础功能的丰富程度与重叠，我们的分析主要集中在内核层，以Liteos-a型内核为例。&lt;/p&gt;
+&lt;p&gt;OHOS项目于2020年9月10日开源发布第一个版本OHOS 1.0 release，支持轻型及小型系统，其所依赖的LiteOS-M内核源于2015年发布的LiteOS操作系统项目。LiteOS源于2012年华为为其多种产品开发的嵌入式系统，后演进为开源项目，目前演进到了v5.0。而LiteOS-A内核则是在LiteOS-M基础上增加MMU、内核隔离、内核模块框架、IPC等功能而来。2021年6月发布了OHOS 2.0 Canary版本，主要增加标准系统即Linux内核支持。2021年9月发布3.0 LTS版本，对系统服务层各子系统尤其是分布式能力进行了增强。最新的版本发布为2022年9月30日发布的3.2 Beta3。作为现代操作系统，其包含了大量为上层应用提供的系统服务与框架，因此该部分的更新较为频繁。&lt;/p&gt;
+&lt;p&gt;系统服务层由系统基本能力、基础软件服务、增强软件服务、硬件服务子系统集组成。其中系统基本能力子系统集主要提供分布式应用所需服务，也是OHOS作为分布式基座的关键所在；基础软件与增强软件子系统集主要提供上层应用所需的系统服务，与Linux中的D-Bus远程调用框架、ALSA音频框架等系统中间件类似；硬件服务子系统集主要提供嵌入式传感器的数据记录处理、传感器调用等功能，是OHOS作为物联设备操作系统的关键所在。&lt;/p&gt;
+&lt;p&gt;上图为LiteOS-A内核（后文简称为LOS内核）架构图，其中基础内核主要包括内核的基础机制，如调度、内存管理、中断异常等；扩展组件主要包括文件系统、网络协议和安全等扩展功能。以下分别对进程管理、内存管理、设备驱动、文件系统进行详细分析。&lt;/p&gt;
+&lt;p&gt;OHOS遵循分层设计，分为内核层、系统服务层、框架层和应用层；系统功能按照“系统 &gt; 子系统 &gt; 组件”逐级展开，实现了子系统及组件级的可插拔、可裁剪。下图为其整体架构：&lt;/p&gt;
+&lt;p&gt;OpenHarmony OS（以下简称OHOS）是由开放原子开源基金会孵化及运营的开源项目，目标是面向全场景、全连接、全智能时代，基于开源的方式，搭建一个智能终端设备操作系统的框架和平台，促进万物互联产业的繁荣发展。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog-assets/image_1677514103436_0.png&quot; alt=&quot;image.png&quot; class=&quot;zoomable&quot;&gt;&lt;/p&gt;
+&lt;p&gt;如图所示，内核层由内核子系统与驱动子系统组成。内核子系统由下层支持的多种内核与OHOS的KAL（内核抽象层）组成，实现了多内核差异的消除，对上层提供统一的进程/线程、内存管理、文件系统、网络协议服务和POSIX接口。驱动子系统基于HDF（Hardware Driver Framework）对上提供统一的外设访问能力，对下规定多内核统一的硬件驱动接口。其目前支持的内核有：Liteos-m，面向轻量系统（mini）即传统嵌入式开发领域；Liteos-a，面向小型系统（small）即拥有多媒体能力的智能硬件；Linux kernel，面向标准系统即采用Cortex-A级以上处理器的设备。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://gitee.com/openharmony/kernel_liteos_a/raw/master/figures/OpenHarmony-LiteOS-A%E5%86%85%E6%A0%B8%E6%9E%B6%E6%9E%84%E5%9B%BE.png&quot; alt=&quot;&quot; class=&quot;zoomable&quot;&gt;&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;内存管理&lt;/p&gt;
+&lt;p&gt;LOS内核采用分页式内存管理。除了内核占用的一部分内存外，其余可用内存均以4KiB为单位划分成页帧。物理内存分配情况如图所示，内核占用的部分又分为内核镜像（kernel.bin）与内核堆（heap）：
+&lt;img src=&quot;/blog-assets/image_1677513989601_0.png&quot; alt=&quot;image.png&quot; class=&quot;zoomable&quot;&gt;
+虚拟内存分配与主流系统一致，内核态由低到高分别为DMA区、Normal区（内核数据段、代码段、内核堆、内核栈），用户态分别为数据与代码段、用户态堆、用户态栈、共享库映射区。&lt;/p&gt;
+&lt;p&gt;内存保护及映射
+内存保护及映射依赖MMU完成（创建及修改通过软件完成，页表查找及鉴权通过MMU硬件完成），页表采用两级页表。
+页表具体参数及PTE结构部分取决于目标设备架构的MMU定义，因此该部分参数宏定义在&lt;code&gt;arch/&lt;/code&gt;路径下的架构相关代码里。以64位arm架构为例，其中一级页表每个PTE管理1MB空间的映射，所指向的二级页表每个表项映射一个虚拟页至物理帧，页表项&lt;code&gt;PTE_T&lt;/code&gt;大小均为8B，因此每个L2页表共256项占2KB。
+相关代码位于&lt;code&gt;kernel_liteos_a/kernel/base/vm/&lt;/code&gt;路径下。&lt;/p&gt;
+&lt;p&gt;内存分配
+物理内存分配采用以页帧为基本单元的伙伴算法实现，此处不多赘述。
+堆内存分配采用的TLSF（Two Level Segregate Fit）算法为LOS的一大亮点。堆内存分配在内核程序与用户程序中均有使用，是在分页基础上对进程获取到的大块虚拟内存空间（或内核堆空间）进一步细分的过程，对应于libc中的malloc等函数。该算法是一种用于实时操作系统的内存分配算法，用两级结构对空闲块按2次幂大小进行划分，减少内存的外部碎片；采用两级链表+bitmap索引的方式来加快查找，分配的复杂度为O(1)，保证实时性。&lt;/p&gt;
+&lt;p&gt;设备驱动&lt;/p&gt;
+&lt;p&gt;设备驱动过程
+设备驱动可理解为一系列动态加载的系统服务。这类系统服务由HDF的服务管理器统一管理，不同的驱动服务由驱动服务名字符串唯一索引。调用方式上，可以通过&lt;code&gt;DevSvcManagerClntGetService&lt;/code&gt;获取指定名称的驱动服务的函数指针；也可以通过&lt;code&gt;HdfDeviceSubscribeService&lt;/code&gt;订阅指定名称的驱动服务，待该驱动初始化完成后自动调用传入的回调函数；还可以通过消息机制注册EventListener监听驱动产生的event，或主动发送消息给驱动。
+内核启动后HDF框架根据HCS（HDF Configuration Source）配置中定义的优先级等属性按次序调用各个驱动的初始化函数，并在驱动服务管理器上注册驱动的各个service函数，完成后会调用驱动使用者订阅的回调函数。
+具体的，HDF框架通过&lt;code&gt;HdfDriverEntry&lt;/code&gt;结构体获得驱动的&lt;code&gt;Init&lt;/code&gt;（初始化）、&lt;code&gt;Bind&lt;/code&gt;（服务注册）、&lt;code&gt;Release&lt;/code&gt;（驱动注销资源释放）等函数。初始化函数中一般进行外设寄存器配置、检测等操作，例如通过寄存器设置uart收发器的波特率。bind函数中一般进行所有服务的注册，而服务注册实际上就是存储一个结构体的地址，最后是靠调用方将其解析为某一特定类型的结构体，再从中获取函数指针。具体的服务，则可具有多种多样的输入参数，执行各种功能了；例如IO设备可能就有&lt;code&gt;write(char)&lt;/code&gt;服务，内部维护一个缓冲区，当缓冲区满后向IO模块的寄存器写入其内容并清空。&lt;/p&gt;
+&lt;p&gt;驱动框架
+HDF之所以称为框架，除了其规定的HDI及服务管理等功能，还在于其提供的众多标准模型。其一是平台驱动层，面向最底层的软硬件接口，主要包括最常见的I2C/HDMI等标准总线、RTC/WatchDog等标准外设，只需实现框架预留的具体接口即可复用上层的设备管理及协议实现等。其二是外设驱动模型，面向上层多样化的器件功能，如相机、音频接口、生物识别装置等，提供典型的功能抽象模型，免于重复设计架构。&lt;/p&gt;
+&lt;p&gt;OHOS采用多内核设计，支持系统在不同资源容量的设备部署，让设备驱动程序在不同内核间平滑迁移，消除驱动代码移植适配和维护的负担。因此这里所分析的LOS内核驱动框架实际上即是OHOS驱动子系统HDF框架。
+HDF框架为驱动开发者提供驱动加载、驱动服务管理和驱动消息机制等功能。其架构如下图所示，其中可见为兼容多内核设计的基础内核兼容层OSAL、向上层系统服务提供的统一接口HDI
+&lt;img src=&quot;/blog-assets/image_1677514040705_0.png&quot; alt=&quot;image.png&quot; class=&quot;zoomable&quot;&gt;&lt;/p&gt;
+&lt;p&gt;文件系统&lt;/p&gt;
+&lt;p&gt;JFFS2文件系统
+JFFS2是Journalling Flash File System Version 2（日志文件系统）的缩写，是针对MTD（memory technology device，内存技术设备如Flash、RAM、ROM等以读、擦除为元语的设备）设备的日志型文件系统。其主要应用于NOR FLASH闪存，特点是：可读写、支持数据压缩、提供了崩溃/掉电安全保护、提供“写平衡”支持等。&lt;/p&gt;
+&lt;p&gt;虚拟文件系统
+LOS的VFS层，主要通过函数指针实现对不同文件系统类型调用不同接口实现标准接口功能；通过Vnode与PathCache机制，提升路径搜索以及文件访问的性能；通过挂载点管理进行分区管理；通过FD（文件描述符）管理进行进程间FD隔离。
+其中Vnode是具体文件或目录在VFS层的抽象封装，它屏蔽了不同文件系统的差异，实现资源的统一管理,主要有以下几种类型的节点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;挂载点：挂载具体文件系统，如/、/storage&lt;/li&gt;
+&lt;li&gt;设备节点：/dev目录下的节点，对应于一个设备，如/dev/mmcblk0&lt;/li&gt;
+&lt;li&gt;文件/目录节点：对应于具体文件系统中的文件/目录，如/bin/init
+缓存具有VnodeCache、PathCache、PageCache三种。Vnode通过哈希以及LRU机制进行管理，较为简单。而PathCache则以父节点Vnode的地址和子节点的文件名做key、子节点Vnode作为value维护一张哈希表，可以从PathCache中快速查找到子节点对应的Vnode，同样采用LRU机制。PageCache目前仅支持缓存二进制文件，在初次访问文件时通过mmap映射到内存中，再访问时直接从PageCache中读取，同样采用LRU机制；另外基于PageCache可实现以文件为基底的进程间通信。
+FD管理方面，进程只能访问本进程的fd，所有进程的fd映射到全局fd表中进行统一分配管理，系统支持的文件、消息队列、socket三类fd数量均有上限。
+挂载点采用链表实现，全系统统一管理。
+最后是VFS接口，文档中对所有api在各文件系统的支持度有总结，并支持通过POSIX接口调用。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;与Linux等相似，LOS也采用VFS（虚拟文件系统）+具体文件系统的整体架构，以粘合下层异构的文件系统。目前其官方支持的文件系统有：FAT、JFFS2（Journalling Flash File System Version 2，日志文件系统）、NFS（网络文件系统）、RAMFS及Procfs（类Unix系统普遍使用的，通过文件形式访问进程信息的虚拟文件系统）。&lt;/p&gt;
+&lt;p&gt;总结&lt;/p&gt;
+&lt;p&gt;此次案例分析获益良多，一方面加强了对课内知识的掌握，看到了众多概念的实际实现，厘清了许多模糊的概念；另一方面也学习了许多扩展知识，例如了解了一部分OHOS系统源码的架构，了解了JFFS2这一文件系统。
+分析过程中也遇到过一些问题。起初选择OHOS作为分析对象即是因为此前看到它的官方文档较为完善，然而撰写分析过程中发现，其假设读者对操作系统有过全面的认识，如堆内存、物理内存、虚拟内存三节都有写到内存分配而未说明其间的层次关系，参看其他综述介绍后我才明白首先是申请虚拟内存、其下分配物理内存、最后申请到的内存通过堆内存管理。其二是文档仅对基本原理泛泛而谈，具体如进程PCB实现、KIdle进程、如何通过MMU管理内存映射、页表实现等并未详述，JFFS2文件系统找不到其结构的详细介绍，这部分我通过阅读源码了解其大致实现后总结得出。&lt;/p&gt;
+&lt;p&gt;进程及线程&lt;/p&gt;
+&lt;p&gt;进程与任务调度
+id:: 6391c17f-512f-426a-b6a6-e64f81963961
+与主流操作系统类似，LOS中任务调度模型有如下五种状态：
+&lt;img src=&quot;/blog-assets/image_1677513896662_0.png&quot; alt=&quot;image.png&quot; class=&quot;zoomable&quot;&gt;
+相对应的，进程也有五种状态：
+&lt;img src=&quot;/blog-assets/image_1677513886116_0.png&quot; alt=&quot;image.png&quot; class=&quot;zoomable&quot;&gt;
+与linux等类似，当一个进程的所有线程都处于阻塞状态，该进程处于pending态；只要有其中一个线程处于running态，进程多外展示为running态，虽然其所属线程可能仍在ready队列中。
+任务调度采用高优先级优先（HPF, Highest Priority First）+同优先级时间片轮转（RR）的抢占式调度算法。
+优先级又分为进程优先级与线程优先级，均为32个优先级(0-31)。其中用户进程可配置的优先级有22个(10-31)，最高优先级为10，最低优先级为31。调度时首先考虑进程优先级，高优先级的进程可抢占低优先级进程，低优先级进程必须在高优先级进程阻塞或结束后才能得到调度；同优先级进程中的所有线程也按优先级执行上述规则；最终进程优先级与线程优先级均相同的任务，执行时间片轮转调度策略。下图所示即为任务调度框架中按优先级索引任务控制块（TCB）的两级优先级队列：
+&lt;img src=&quot;/blog-assets/image_1677513912331_0.png&quot; alt=&quot;image.png&quot; class=&quot;zoomable&quot;&gt;
+同时内核维护了g_priqueueBitmap用于记录哪些优先级队列为空，调度时使用位运算可在O(1)时间复杂度内获取最高优先级队列。
+下图所示为任务调度器的调度流程：
+&lt;img src=&quot;/blog-assets/image_1677513919806_0.png&quot; alt=&quot;image.png&quot; class=&quot;zoomable&quot;&gt;&lt;/p&gt;
+&lt;p&gt;用户进程
+用户态init进程&lt;code&gt;userInitProcess&lt;/code&gt;（pid=1）是第一个用户态进程，由内核创建并载入init程序，其他用户态进程均由该进程fork而来，因此其为用户态进程树的根。用户态进程通过fork父进程创建，fork进程时会将父进程的进程虚拟内存空间clone到子进程，子进程实际运行时通过写时复制机制将父进程的内容按需复制到子进程的虚拟内存空间。&lt;/p&gt;
+&lt;p&gt;内核进程
+内核态被视为同一个进程空间，其中运行有内核进程KProcess（pid=2），以及系统提供的空闲进程KIdle（pid=0）。&lt;a href=&quot;https://gitee.com/openharmony/kernel_liteos_a/blob/master/kernel/base/core/los_process.c&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;fixed pids&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;在SMP多处理器设备上，启动其他物理核心时内核为每个物理核心都分配了一个KIdle线程，当核心空闲时，其被调度到核心上循环执行WaitForInterrupt指令以减少能耗。&lt;a href=&quot;https://gitee.com/openharmony/kernel_liteos_a/blob/master/kernel/base/core/los_smp.c&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;kidle source&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;LOS中进程及线程为两个解耦的概念。进程是系统资源管理的最小单元，主要用于实现用户态进程的隔离。任务是竞争系统资源的最小运行单元，LOS内核中一个任务表示一个线程。可见，LOS内核中进程只是资源管理单元，实际运行是由绑定到进程的各个任务（即线程）完成的。&lt;/p&gt;
+&lt;p&gt;内核通信机制
+LOS支持事件、信号量、互斥锁、消息队列、读写锁、信号等内核通信机制。其中事件、信号量、消息队列用于（可以是不同进程）任务间通信与同步，互斥锁、读写锁等用于同一进程中不同任务间的同步，信号用于进程间通信。&lt;/p&gt;
+&lt;p&gt;引用&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://sourceware.org/jffs2/jffs2-html/node3.html&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;JFFS2: The Journalling Flash File System, version 2&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://docs.openharmony.cn/pages/v3.2Beta/zh-cn/device-dev/kernel/kernel-small-basic-process-scheduler.md/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;OpenHarmony文档 &gt; 设备开发文档 &gt; 子系统开发 &gt; 内核 &gt; 小型系统内核（LiteOS-A）&gt; 基础内核 &gt; 进程管理 &gt; 调度器&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Linux内核中的jffs2实现 &lt;a href=&quot;https://github.com/torvalds/linux/blob/master/fs/jffs2/nodelist.h&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;https://github.com/torvalds/linux/blob/master/fs/jffs2/nodelist.h&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://docs.openharmony.cn/pages/v3.2Beta/zh-cn/OpenHarmony-Overview_zh.md/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;OpenHarmony文档 &gt; 了解OpenHarmony&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://gitee.com/openharmony/drivers_hdf_core&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;HDF驱动框架项目仓库&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://docs.openharmony.cn/pages/v3.2Beta/zh-cn/device-dev/kernel/kernel-small-bundles-fs-virtual.md/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;OpenHarmony文档 &gt; 设备开发文档 &gt; 子系统开发 &gt; 内核 &gt; 小型系统内核（LiteOS-A）&gt; 扩展组件 &gt; 文件系统 &gt; 虚拟文件系统&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://docs.openharmony.cn/pages/v3.2Beta/zh-cn/device-dev/kernel/kernel-small-basic-process-process.md/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;OpenHarmony文档 &gt; 设备开发文档 &gt; 子系统开发 &gt; 内核 &gt; 小型系统内核（LiteOS-A）&gt; 基础内核 &gt; 进程管理 &gt; 进程&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://docs.openharmony.cn/pages/v3.2Beta/zh-cn/device-dev/kernel/kernel-small-overview.md/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;OpenHarmony文档 &gt; 设备开发文档 &gt; 子系统开发 &gt; 内核 &gt; 小型系统内核（LiteOS-A）概述&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;jffs2文件系统[3]——六种内核结构 - 十七的文章 - 知乎 &lt;a href=&quot;https://zhuanlan.zhihu.com/p/179318629&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;https://zhuanlan.zhihu.com/p/179318629&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://docs.openharmony.cn/pages/v3.2Beta/zh-cn/device-dev/kernel/kernel-small-basic-process-thread.md/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;OpenHarmony文档 &gt; 设备开发文档 &gt; 子系统开发 &gt; 内核 &gt; 小型系统内核（LiteOS-A）&gt; 基础内核 &gt; 进程管理 &gt; 任务&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://gitee.com/openharmony/kernel_liteos_a/tree/master/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;gitee OpenHarmony/kernel_liteos_a项目仓库&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kuangyufei/kernel_liteos_a_note&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;kuangyufei/kernel_liteos_a_note GitHub项目仓库&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;</content:encoded></item><item><title>readings</title><link>https://blog.graphorall.top/blog/readings</link><guid isPermaLink="true">https://blog.graphorall.top/blog/readings</guid><description>Transformed from Logseq page</description><pubDate>Fri, 03 Mar 2023 14:25:06 GMT</pubDate><content:encoded>&lt;p&gt;readings&lt;/p&gt;
+&lt;p&gt;name:: &lt;a href=&quot;/blog/%E8%BD%AF%E4%BB%B6%E5%9B%B0%E5%B1%80%EF%BC%9A%E4%B8%BA%E4%BB%80%E4%B9%88%E8%81%AA%E6%98%8E%E7%9A%84%E7%A8%8B%E5%BA%8F%E5%91%98%E4%BC%9A%E5%86%99%E5%87%BA%E7%B3%9F%E7%B3%95%E7%9A%84%E4%BB%A3%E7%A0%81&quot;&gt;软件困局：为什么聪明的程序员会写出糟糕的代码&lt;/a&gt;
+author:: Adam Barr
+topic:: 软件工程，历史
+id:: 85693c5a-0377-4e15-9b32-564e5509fc8d&lt;/p&gt;
+&lt;p&gt;name:: &lt;a href=&quot;/blog/%E4%BA%BA%E6%9C%88%E7%A5%9E%E8%AF%9D&quot;&gt;人月神话&lt;/a&gt;
+author:: Brooks
+topic:: 软件工程
+id:: 63fffbe2-a032-42c5-adf0-159926a89548&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;name:: &lt;a href=&quot;/blog/%E9%99%86%E4%B8%8A%E8%A1%8C%E8%88%9F&quot;&gt;陆上行舟&lt;/a&gt;
+author:: 刘晓骞
+topic:: 记者，巴西
+tag:: highlight&lt;/p&gt;</content:encoded></item><item><title>Overview</title><link>https://blog.graphorall.top/blog/Overview</link><guid isPermaLink="true">https://blog.graphorall.top/blog/Overview</guid><description>Transformed from Logseq page</description><pubDate>Wed, 01 Mar 2023 17:15:08 GMT</pubDate><content:encoded>&lt;p&gt;Overview&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;h1 id=&quot;this-is-zhongyics-blog&quot;&gt;This Is ZhongYic’s Blog&lt;a class=&quot;anchor&quot; href=&quot;#this-is-zhongyics-blog&quot;&gt;#&lt;/a&gt;&lt;/h1&gt;
+&lt;h2 id=&quot;ɡrɑːˌfərɔl--ɡrɑːffɔːrɔːl&quot;&gt;‘ɡrɑːˌfərɔl —— ɡrɑːf’fɔːr’ɔːl&lt;a class=&quot;anchor&quot; href=&quot;#ɡrɑːˌfərɔl--ɡrɑːffɔːrɔːl&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;h3 id=&quot;reader-guide&quot;&gt;Reader Guide&lt;a class=&quot;anchor&quot; href=&quot;#reader-guide&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Journals can be navigated from left sidebar&lt;/li&gt;
+&lt;li&gt;See &lt;a href=&quot;/blog/About&quot;&gt;About&lt;/a&gt; blogger and his &lt;a href=&quot;/blog/Friends&quot;&gt;Friends&lt;/a&gt; following the double-square-bracket links&lt;/li&gt;
+&lt;li&gt;Or you can see my &lt;a href=&quot;/blocks/63ff7830-a824-4209-a76a-6e7deb5a9295&quot;&gt;(((63ff7830-a824-4209-a76a-6e7deb5a9295))&lt;/a&gt; below&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/blocks/63ff58c1-c705-47e8-8e12-8798b645e102&quot;&gt;(((63ff58c1-c705-47e8-8e12-8798b645e102))&lt;/a&gt; in 3 days are listed below&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/blocks/63ff5c0c-50c9-42b9-aa41-a5d59b2991cc&quot;&gt;(((63ff5c0c-50c9-42b9-aa41-a5d59b2991cc))&lt;/a&gt; are must-reads may have some help to you&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;friends&quot;&gt;Friends&lt;a class=&quot;anchor&quot; href=&quot;#friends&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;query-table:: false
+id:: 63ff7830-a824-4209-a76a-6e7deb5a9295&lt;/p&gt;
+&lt;p&gt;（施工中）
+#+BEGIN_QUERY
+{
+:query [
+:find ?field
+:in $ ?page
+:where [?p :block/name ?page ] [?b :block/page ?p] [?b :block/properties ?props] [(get ?props :site) ?field] ]
+:inputs [&quot;friends&quot;]
+:view (fn [result]
+[:table (for [site result]
+    [:tr site ]
+    )]
+)}
+#+END_QUERY&lt;/p&gt;
+&lt;h3 id=&quot;highlighted-posts&quot;&gt;Highlighted Posts&lt;a class=&quot;anchor&quot; href=&quot;#highlighted-posts&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;id:: 63ff5c0c-50c9-42b9-aa41-a5d59b2991cc
+{{query (property tag highlight)}}&lt;/p&gt;
+&lt;h3 id=&quot;latest-posts&quot;&gt;Latest Posts&lt;a class=&quot;anchor&quot; href=&quot;#latest-posts&quot;&gt;#&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;query-table:: false
+id:: 63ff58c1-c705-47e8-8e12-8798b645e102
+{{query (between -3d today)}}&lt;/p&gt;</content:encoded></item><item><title>OS course</title><link>https://blog.graphorall.top/blog/OS%20course</link><guid isPermaLink="true">https://blog.graphorall.top/blog/OS%20course</guid><description>Transformed from Logseq page</description><pubDate>Tue, 28 Feb 2023 13:23:44 GMT</pubDate><content:encoded>&lt;p&gt;OS course&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/blog/OS%20Impl&quot;&gt;OS Impl&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Problems&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog-assets/image_1676970621073_0.png&quot; alt=&quot;image.png&quot; class=&quot;zoomable&quot;&gt;{:height 312, :width 448}&lt;/p&gt;
+&lt;p&gt;若某单处理器多进程系统中有多个就绪进程，则下列关于处理机调度的叙述中，错误的是（）12
+A．在进程结束时能进行处理机调度
+B．创建进程后能进行处理机调度
+C．在进程处于临界区时不能进行处理机调度
+D．在系统调用完成并返回用户态时能进行处理机调度&lt;/p&gt;
+&lt;p&gt;在下面关于设备属性的论述中，正确的论述是_____。　
+A．字符设备的一个基本特征是可寻址的。
+B．共享设备必须是可寻址的和可随机访问的设备。
+C．共享设备是指在同一时刻，允许多个进程同时访问的设备。（&lt;strong&gt;一段时间&lt;/strong&gt;）
+D．在分配共享设备和独占设备时，都可能引起进程死锁。&lt;/p&gt;
+&lt;p&gt;下列几种关于进程的叙述中，最不符合操作系统对进程理解的是_____。
+A．进程是在多程序并行环境中的完整的程序
+B．进程可以由程序，数据和进程控制块描述
+C．线程(Thread)是一种特殊的进程
+D．进程是程序在一个数据集合上运行的过程，是系统进行资源分配和调度的一个独立单位&lt;/p&gt;
+&lt;p&gt;会产生Belady异常现象的页面置换算法是_____。
+A．最佳页面置换算法
+B．先进先出页面置换算法
+C．最近最久未使用置换算法
+D．最少使用页面置换算法&lt;/p&gt;
+&lt;p&gt;当一个进程处于_____的状态时，称其为等待状态
+A．它正等待调度
+B．它正等着协作进程的一个消息
+C．它正等分给它一个时间片
+D．它正等进入内存&lt;/p&gt;
+&lt;p&gt;由于响应时间为作业进入系统后的等待时间加上估计运行时间。因此
+响应比＝1＋作业等待时间/估计运行时间
+响应时间：从提交请求到系统首次产生响应所用的时间。
+响应时间==周转时间？?&lt;/p&gt;
+&lt;p&gt;帧数为n时未换出的内存页集合是帧数为n+1的页集合的子集&lt;/p&gt;
+&lt;p&gt;采用 _____ 不会产生内部碎片。
+A.分页存储管理
+B.固定分区存储管理
+C.分段存储管理
+D.段页式存储管理&lt;/p&gt;
+&lt;p&gt;下列选项中，不可能在用户态发生的事件是（）。
+A．系统调用        B. 外部中断
+C.  进程切换        D. 缺页           12&lt;/p&gt;
+&lt;p&gt;把作业地址空间使用的逻辑地址变成内存的物理地址称为 _____ 。
+A.加载               B.重定位
+C.物理化               D.逻辑化&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/blog-assets/image_1677074487818_0.png&quot; alt=&quot;image.png&quot; class=&quot;zoomable&quot;&gt;
+利用率只有59%但每个进程的任务执行加起来就需要80%&lt;/p&gt;
+&lt;p&gt;Bernstein条件&lt;/p&gt;
+&lt;p&gt;lock（w）
+{
+while（w==1）；
+w = 1；
+}
+并行时会出错？&lt;/p&gt;
+&lt;p&gt;设备安全分配、不安全分配&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;/blog/OS%20case%20study&quot;&gt;OS case study&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;</content:encoded></item><item><title>sports health</title><link>https://blog.graphorall.top/blog/sports%20health</link><guid isPermaLink="true">https://blog.graphorall.top/blog/sports%20health</guid><description>Transformed from Logseq page</description><pubDate>Tue, 28 Feb 2023 09:42:25 GMT</pubDate><content:encoded>&lt;p&gt;sports health&lt;/p&gt;
+&lt;p&gt;髌骨软化&lt;/p&gt;
+&lt;p&gt;康复训练&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;</content:encoded></item><item><title>English</title><link>https://blog.graphorall.top/blog/English</link><guid isPermaLink="true">https://blog.graphorall.top/blog/English</guid><description>Transformed from Logseq page</description><pubDate>Tue, 28 Feb 2023 08:12:00 GMT</pubDate><content:encoded>&lt;p&gt;English&lt;/p&gt;
+&lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;The coyote is clearly the extroverted, silly, chatty friend while the badger is the introverted, shy, wary friend.&lt;/p&gt;— Erverton (Índio) Sousa (@ervertonheavy) &lt;a href=&quot;https://twitter.com/ervertonheavy/status/1583144510787231744?ref_src=twsrc%5Etfw&quot;&gt;October 20, 2022&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+&lt;p&gt;Like Batman, They don’t really fly, They just &lt;strong&gt;fall with style&lt;/strong&gt;. &lt;a href=&quot;/blog/card&quot;&gt;#card&lt;/a&gt; &lt;a href=&quot;/blog/humor&quot;&gt;#humor&lt;/a&gt;
+card-last-interval:: -1
+card-repeats:: 1
+card-ease-factor:: 2.5
+card-next-schedule:: 2023-02-27T16:00:00.000Z
+card-last-reviewed:: 2023-02-27T13:26:16.268Z
+card-last-score:: 1&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Combining your notes and tasks is a &lt;a href=&quot;/blog/breeze&quot;&gt;breeze&lt;/a&gt; in Logseq&lt;/strong&gt;
+id:: 634ffc38-3466-4a3c-b184-f37ab0949360&lt;/p&gt;
+&lt;p&gt;It is &lt;strong&gt;cumbersome&lt;/strong&gt; to decompose and optimize a high-level (or global) user query directly without any intermediate, &lt;strong&gt;canonical&lt;/strong&gt; form&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;NSFW&lt;/em&gt;
+i pull out the plastic dildo out of me
+just to see a bite taken out of it&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;NSFW abbr. not safe for work(to browse)&lt;/p&gt;
+&lt;p&gt;{{tweet &lt;a href=&quot;https://twitter.com/bad2sentence/status/1583632955054100480?s=20%7D%7D&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;https://twitter.com/bad2sentence/status/1583632955054100480?s=20}}&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Notwithstanding&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;On July 23, 1921, the 1st National Congress of the CPC was held here, where the first &lt;strong&gt;creed&lt;/strong&gt; and the first &lt;strong&gt;convention&lt;/strong&gt; were passed, the central leading body was elected, and the birth of the CPC was announced. In September,1952, the site was &lt;strong&gt;renovated&lt;/strong&gt;. It has become a patriotism education base where people know the history of the CPC and &lt;strong&gt;commemorate&lt;/strong&gt; the revolutionary &lt;strong&gt;martyrs&lt;/strong&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.ftc.gov/news-events/news/press-releases/2022/11/ftc-restores-rigorous-enforcement-law-banning-unfair-methods-competition&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;FTC Restores Rigorous Enforcement of Law Banning Unfair Methods of Competition&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The Federal Trade Commission issued a &lt;a href=&quot;https://www.ftc.gov/legal-library/browse/policy-statement-regarding-scope-unfair-methods-competition-under-section-5-federal-trade-commission&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;statement&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt; today that restores the agency’s policy of rigorously enforcing the federal ban on unfair methods of competition.Congress gave the FTC the unique authority to identify and police against these practices, beyond what the other antitrust statutes cover.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The FTC’s previous policy restricted its oversight to a narrower set of circumstances, making it harder for the agency to challenge the full array of anticompetitive behavior in the market.Today’s statement removes this restriction and declares the agency’s intent to exercise its full statutory authority against companies that use unfair tactics to gain an advantage instead of competing on the merits.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“When Congress created the FTC, it clearly commanded us to crack down on unfair methods of competition,” said FTC Chair Lina M. Khan. “Enforcers have to use discretion, but that doesn’t give us the right to ignore a central part of our mandate. Today’s policy statement reactivates Section 5 and puts us on track to faithfully enforce the law as Congress designed.”&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Primier Li’s speech at 17th EAS&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Premier Li said the international and regional landscapes are intricate and complex, with energy, food and financial risks and challenges flaring up. In the meantime, the region has maintained peace and stability on the whole, with regional economic integration continuing to move ahead and a stable system of industrial and supply chains taking shape.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;excessive;ruthless;conviction;appeal;kin;plea;qualitative;doom;obstruct;lofty;extravagant;layoff;undermine;keen;counsel;refrain;junction;brisk;inevitable;eloquent;premise;mediate;meditate;concession;assault;incident;eligible;sake;arrogant;rebellion;prevalent;swallow;neutral;rigid;endure;disposal;suppress;tremble;prosperity;mourn;prominent;chorus;consent;deposit;&lt;/p&gt;
+&lt;p&gt;Xi chairs meeting of Political Bureau of CPC Central Committee&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;earnestly&lt;/strong&gt; fulfill their responsibilities, and conduct &lt;strong&gt;rigorous&lt;/strong&gt; management with their jurisdictions&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;nothing to do with his health. This was a &lt;a href=&quot;/blog/purge&quot;&gt;purge&lt;/a&gt; .&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;leading the War of Resistance against Japanese Aggression and the Liberation War, cultivating the Yan’an spirit and making tremendous contribution to the Chinese revolution. Yan’an &lt;strong&gt;boasts&lt;/strong&gt; 9 revolutionary memorial halls which hold a huge number of significant objects left by CPC Central Committee and the old generation of revolutionaries, enjoying a high reputation as“ themuseum city of Chinese revolution.”&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;well recognized as “ the red &lt;strong&gt;cradle&lt;/strong&gt; of Chinese revolution”; the Chinese Workers’ and &lt;strong&gt;Peasants&lt;/strong&gt; ’Army&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;tenant&lt;/strong&gt; farmer 佃农&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;In Logseq, structure can &lt;a href=&quot;/blog/emerge&quot;&gt;emerge&lt;/a&gt;.&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Mr Branson is entitled to his opinions. These opinions may be widely held in the UK, but we do not accept that Mr Branson or others in the West are entitled to impose their values on other societies. Nor do we believe that a country that prosecuted two wars in China in the 19th century to force the Chinese to accept opium imports has any moral right to lecture Asians on drugs.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Sinn Fein President Mary-Lou McDonald says there will be no return to direct rule if the Stormont Assembly collapses, but instead a joint arrangement between the Irish and British state.&lt;/p&gt;
+&lt;p&gt;china daily&lt;/p&gt;
+&lt;p&gt;COVID &lt;strong&gt;quarantine&lt;/strong&gt; made voluntary&lt;/p&gt;
+&lt;p&gt;Suzhou charters flight to Europe to explore overseas market&lt;/p&gt;
+&lt;p&gt;Foreign leaders, scholars pay tribute to Jiang&lt;/p&gt;
+&lt;p&gt;Forum in Hong Kong on 1992 Consensus stresses one-China principle&lt;/p&gt;
+&lt;p&gt;Lee Kuan Yew’s comment on Michael P. Fay&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;There are certain things that, if we move and yield, we have to yield to other people too. And if we do that , we have to ask ourselves “Have the systems done the work?”.
+Supposing we say, “Alright, because he’s an American boy, because the American president has asked us not to cane him, and we say alright, no caning”. Where’s your stand where’s your faith? If you don’t cane the boy just because he’s American, and meanwhile you cane the Indians, Pakistanis or Bangladeshis, what kind of government are you? What kind of stand do you have?
+Are you saying that “you are afraid of American”, yes we are, but not that afraid. You came to Singapore and you abide by Singapore law, and that’s our responsibility to enforce our law.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;susceptible&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;We are very susceptible to the influence of the people around us&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;An unexpected duo, a coyote and a badger, traveling together through a tunnel under a highway. &lt;a href=&quot;https://t.co/E4Gof5RgiS&quot;&gt;pic.twitter.com/E4Gof5RgiS&lt;/a&gt;&lt;/p&gt;— Fascinating (@fasc1nate) &lt;a href=&quot;https://twitter.com/fasc1nate/status/1583130244659417089?ref_src=twsrc%5Etfw&quot;&gt;October 20, 2022&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+&lt;p&gt;holy fuck based matt groening&lt;/p&gt;
+&lt;p&gt;Which is most relatable? (don’t you lie)&lt;/p&gt;
+&lt;p&gt;{{tweet &lt;a href=&quot;https://twitter.com/Garfield/status/1583469156925513728?s=20%7D%7D&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;https://twitter.com/Garfield/status/1583469156925513728?s=20}}&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;radical&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Whatis a radical? It seems today that people are terrified of the term, particularly of having the label attached to them. (16)Accusing individuals or groups of being radical often serves to silence them into submission&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://english.www.gov.cn/news/topnews/202211/11/content_WS636e31efc6d0a757729e2e63.html&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;China releases measures to optimize COVID-19 response&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;BEIJING — The Chinese government on Nov 11 released a circular on further optimizing the COVID-19 response, announcing 20 prevention and control measures.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;{{tweet &lt;a href=&quot;https://twitter.com/ervertonheavy/status/1583144510787231744%7D%7D&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;https://twitter.com/ervertonheavy/status/1583144510787231744}}&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I definitely believe you as robots don’t have the ability to be &lt;a href=&quot;/blog/jerks&quot;&gt;jerks&lt;/a&gt;. &lt;a href=&quot;/blog/card&quot;&gt;#card&lt;/a&gt;
+card-last-interval:: -1
+card-repeats:: 1
+card-ease-factor:: 2.5
+card-next-schedule:: 2023-02-27T16:00:00.000Z
+card-last-reviewed:: 2023-02-27T13:26:27.690Z
+card-last-score:: 1&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;blockquote class=&quot;twitter-tweet&quot;&gt;&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;The dog&apos;s wondering why she&apos;s putting a leash on herself&lt;/p&gt;— Christopher J Huling (@Truey_P_Newton) &lt;a href=&quot;https://twitter.com/Truey_P_Newton/status/1583199344710164480?ref_src=twsrc%5Etfw&quot;&gt;October 20, 2022&lt;/a&gt;&lt;/blockquote&gt; &lt;script async src=&quot;https://platform.twitter.com/widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;/script&gt;
+&lt;p&gt;How a smart &lt;strong&gt;sprinkler&lt;/strong&gt; puts out a fire.&lt;/p&gt;
+&lt;p&gt;a device that sprays water.&lt;/p&gt;</content:encoded></item><item><title>tips</title><link>https://blog.graphorall.top/blog/tips</link><guid isPermaLink="true">https://blog.graphorall.top/blog/tips</guid><description>Transformed from Logseq page</description><pubDate>Tue, 28 Feb 2023 08:11:41 GMT</pubDate><content:encoded>&lt;p&gt;tips&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;{{query &lt;a href=&quot;/blog/tips&quot;&gt;tips&lt;/a&gt;}}&lt;/p&gt;</content:encoded></item><item><title>csoutline</title><link>https://blog.graphorall.top/blog/csoutline</link><guid isPermaLink="true">https://blog.graphorall.top/blog/csoutline</guid><description>Transformed from Logseq page</description><pubDate>Tue, 28 Feb 2023 03:25:54 GMT</pubDate><content:encoded>&lt;p&gt;csoutline&lt;/p&gt;
+&lt;p&gt;Data Science &lt;a href=&quot;/blog/datasci&quot;&gt;datasci&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Computer Graphics&lt;/p&gt;
+&lt;p&gt;Application&lt;/p&gt;
+&lt;p&gt;Development &lt;a href=&quot;/blog/CG&quot;&gt;CG&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Program Language&lt;/p&gt;
+&lt;p&gt;Theory &lt;a href=&quot;/blog/PL&quot;&gt;PL&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Practice&lt;/p&gt;
+&lt;p&gt;Deep Learning &lt;a href=&quot;/blog/dl&quot;&gt;dl&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Computer Architecture &lt;a href=&quot;/blog/csarch&quot;&gt;csarch&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;Software Engineering&lt;/p&gt;
+&lt;p&gt;Frustration&lt;/p&gt;
+&lt;p&gt;Pan-Backend&lt;/p&gt;
+&lt;p&gt;Pan-Frontend&lt;/p&gt;</content:encoded></item><item><title>AI Course</title><link>https://blog.graphorall.top/blog/AI%20Course</link><guid isPermaLink="true">https://blog.graphorall.top/blog/AI%20Course</guid><description>Transformed from Logseq page</description><pubDate>Tue, 28 Feb 2023 03:25:54 GMT</pubDate><content:encoded>&lt;p&gt;AI Course&lt;/p&gt;
+&lt;p&gt;ANN&lt;/p&gt;
+&lt;p&gt;event camera事件相机vs场相机、脉冲神经网络&lt;/p&gt;
+&lt;p&gt;小脑模型关节控制CMAC、互联前向网络（同层互联）、广泛互联网络（玻尔兹曼机）&lt;/p&gt;
+&lt;p&gt;有监督：广义Delta规则、LVQ算法&lt;/p&gt;
+&lt;p&gt;无监督：按相似特征分组聚集（如分组方差），Kohonen算法、Carpenter-Grossberg&lt;/p&gt;
+&lt;p&gt;References&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;http://karpathy.github.io/2015/05/21/rnn-effectiveness/&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;rnn-effectiveness&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;, visualize of RNN reading picture sequentially, char-level LMs&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;交感神经：Your** sympathetic nervous system controls your “fight-or-flight” response.** Danger or stress activates your sympathetic nervous system, which can cause several things to happen in your body.&lt;/p&gt;
+&lt;p&gt;ML&lt;/p&gt;
+&lt;p&gt;classify by strategy&lt;/p&gt;
+&lt;p&gt;RL&lt;/p&gt;
+&lt;p&gt;References&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://spinningup.openai.com/en/latest/spinningup/rl_intro2.html&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;Part 2: Kinds of RL Algorithms — Spinning Up documentation..&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/qq_43133135/article/details/125762201&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;RL vs. A*&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.csdn.net/qq_36870202/article/details/113449544?spm=1001.2101.3001.6661.1&amp;#x26;utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EESLANDING%7Edefault-1-113449544-blog-125762201.pc_relevant_landingrelevant&amp;#x26;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EESLANDING%7Edefault-1-113449544-blog-125762201.pc_relevant_landingrelevant&amp;#x26;utm_relevant_index=1&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;基于强化学习的有向图搜索实例&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Q-Learning&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;initialize&lt;/li&gt;
+&lt;li&gt;while not end&lt;/li&gt;
+&lt;li&gt;explore or exploit(decide by random)&lt;/li&gt;
+&lt;li&gt;if explore, choose max Q-value&lt;/li&gt;
+&lt;li&gt;update new Q-value&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;特点、对比搜索&lt;/p&gt;
+&lt;p&gt;MDP马尔可夫过程
+马尔可夫性质：下一个状态的条件概率分布仅取决于当前状态
+bellman方程：关注当前reward与未来reward&lt;/p&gt;
+&lt;p&gt;Search&lt;/p&gt;
+&lt;p&gt;Uncertain Reasoning&lt;/p&gt;
+&lt;p&gt;模糊推理&lt;/p&gt;
+&lt;p&gt;References&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/wkfvawl/p/12068638.html&quot; rel=&quot;nofollow noopener noreferrer&quot; target=&quot;_blank&quot;&gt;人工智能技术导论——不确定性知识的表示与推理&lt;span style=&quot;user-select:none&quot;&gt; ↗&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;可信度方法&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;主观Bayes方法&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Dempster-Shafer理论&lt;/p&gt;
+&lt;p&gt;public:: true&lt;/p&gt;
+&lt;p&gt;考试内容
+collapsed:: true&lt;/p&gt;
+&lt;p&gt;1.第一章：概述（掌握基本常识）（1.1～1.6）
+2.第二章：搜索求解问题（2.1基本思路重点掌握，2.22.32.4了解当中内容）
+3.第三章：搜索策略，重点掌握（3.1盲目搜索和3.2启发式搜索重点掌握）（3.2.13.2.2，重点掌握爬山法）（3.3重点掌握，随
+机搜索？）
+4.第四章：图搜索（4.1重点掌握，涉及A算法和A*，4.2重点掌握4.2.1&lt;del&gt;4.2.4)
+5.第五章：重点掌握博奔搜索（minmax，alphabeta，montecarlo）
+6.第六章：遗传算法和免疫算法（6.1～6.10重点掌握，6.8一般了解即可，6.11&lt;/del&gt;6.14重点掌握，6.15一般性了解）
+7.第七章：群智能算法（7.2.1～7.2.3重点掌握，7.3一般了解）
+第八&lt;del&gt;九章跳过
+知识表示方法＆推理方法
+10.第十章：基本知识表示方法（10.110.310.410.5，以及状态空间法，问题归约法，知识图谱）
+11.第十一章：推理（11.111.2..的归结原理以及应用）
+12.第十二章：不确定性推理（12.212.3，12.2证据理论，12.3主观bayes重点掌握（nmd），以及概率推理＆可信度，但是
+模糊推理不考？？）
+机器学习，人工神经网络，深度学习和强化学习
+14.第十四章：机器学习（机器学习方法＆机器学习算法，后者不在教科书范围内，但是ppt上有，例如svm，回归，决策树等
+算法)
+15.第十五章：人工神经网络（15.1&lt;/del&gt;15.5要非常熟悉，15.6一般了解即可）（至少了解两个：15.7.1感知机，15.7.2BP算法
+?？.深度学习＆强化学习：至少掌握CNN，RNN，强化学习网络的基本工作原理，掌握基本常识&lt;/p&gt;
+&lt;p&gt;Reasoning&lt;/p&gt;
+&lt;p&gt;知识表示
+{{embed &lt;a href=&quot;/blocks/635f695e-82d9-44a9-b5f5-25fe3f28f030&quot;&gt;(((635f695e-82d9-44a9-b5f5-25fe3f28f030))&lt;/a&gt; }}&lt;/p&gt;</content:encoded></item></channel></rss>
